@@ -29,10 +29,15 @@ namespace Dfc.ProviderPortal.Courses.Tests
 
             _course = new Course
             {
-                ID = Guid.NewGuid(),
-                QuAP = new QuAP() //Models.Models.Qualifications.QuAP()
+                QuAP = new QuAP(), //Models.Models.Qualifications.QuAP()
+                CourseData = new CourseData
+                {
+                    ID = Guid.NewGuid(),
+                    CourseID = Guid.NewGuid(),
+                    CourseTitle = "Video Course"
+                }
             };
-            
+
             var json = JsonConvert.SerializeObject(_course);
             Uri uri = new Uri("https://dfc-dev-prov-cdb.documents.azure.com/ ");
             HttpRequestMessage request = new HttpRequestMessage

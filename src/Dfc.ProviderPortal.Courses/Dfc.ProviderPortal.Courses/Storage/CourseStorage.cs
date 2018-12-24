@@ -80,8 +80,8 @@ namespace Dfc.ProviderPortal.Courses.Storage
             // Add Course doc to collection
             try
             {
-                if (course.ID == Guid.Empty)
-                    course.ID = Guid.NewGuid();
+                if (course.id == Guid.Empty)
+                    course.id = Guid.NewGuid();
                 return await docClient.CreateDocumentAsync(UriFactory.CreateDocumentCollectionUri(SettingsHelper.Database, SettingsHelper.Collection),
                                                            course);
             }

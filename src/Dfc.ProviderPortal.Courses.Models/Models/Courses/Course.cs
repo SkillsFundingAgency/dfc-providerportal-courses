@@ -9,7 +9,7 @@ namespace Dfc.CourseDirectory.Models.Models.Courses
 {
     public class Course : ICourse // ValueObject<Course>, ICourse
     {
-        public Guid ID { get; set; }
+        public Guid id { get; set; }
         public QuAP QuAP { get; set; }
         public CourseData CourseData { get; set; }
         public IEnumerable<CourseRun> CourseRun { get; set; }

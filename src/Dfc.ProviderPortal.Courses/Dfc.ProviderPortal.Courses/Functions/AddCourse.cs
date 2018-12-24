@@ -31,10 +31,10 @@ namespace Dfc.ProviderPortal.Courses.Functions
                 log.LogInformation($"AddCourse starting");
                 course = await req.Content.ReadAsAsync<Course>(); //(dynamic)<object>
 
-                if (course.ID == null)
+                if (string.IsNullOrEmpty(course?.CourseData.CourseTitle))
                 { 
-                    response = req.CreateResponse(HttpStatusCode.BadRequest, ResponseHelper.ErrorMessage("Missing Course ID argument"));
-                    log.LogInformation($"Missing Course ID argument");
+                    response = req.CreateResponse(HttpStatusCode.BadRequest, ResponseHelper.ErrorMessage("Missing Course Title argument"));
+                    log.LogInformation($"Missing Course Title argument");
                 }
                 else
                 {
@@ -46,9 +46,19 @@ namespace Dfc.ProviderPortal.Courses.Functions
                     // 201 - Created - The operation was successful.
                     //var resultsStatusCode = results.StatusCode;
 
-                    // Return results
-                    response = req.CreateResponse(HttpStatusCode.OK);
-                    response.Content = new StringContent(JsonConvert.SerializeObject(course), Encoding.UTF8, "application/json");
+                    if (results.StatusCode.Equals(HttpStatusCode.Created))
+                    {
+                        // Return results
+                        log.LogInformation($"AddCourse Created new Course with id: " + course.id);
+                        response = req.CreateResponse(HttpStatusCode.OK);
+                        response.Content = new StringContent(JsonConvert.SerializeObject(course), Encoding.UTF8, "application/json");
+                    }
+                    else
+                    {
+                        log.LogInformation($"AddCourse did NOT create new course - StatusCode - " + results.StatusCode.ToString());
+                        response = req.CreateResponse(results.StatusCode);
+                        response.Content = new StringContent(JsonConvert.SerializeObject(course), Encoding.UTF8, "application/json");
+                    }
                 }
             }
             catch (Exception ex)

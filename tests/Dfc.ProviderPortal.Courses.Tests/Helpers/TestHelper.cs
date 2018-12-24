@@ -12,10 +12,10 @@ namespace Dfc.ProviderPortal.Courses.Tests.Helpers
         public static void AddEnvironmentVariables()
         {
             // Add environment variables needed to test Azure Functions here (launchSettings.json doesn't get processed by test projects)
-            Environment.SetEnvironmentVariable("APPSETTING_CosmosDBStorageURI", "");
-            Environment.SetEnvironmentVariable("APPSETTING_CosmosDBPrimaryKey", "");
-            Environment.SetEnvironmentVariable("APPSETTING_CosmosDBDatabase", "");
-            Environment.SetEnvironmentVariable("APPSETTING_CollectionName", "");
+            //Environment.SetEnvironmentVariable("APPSETTING_CosmosDBStorageURI", "");
+            //Environment.SetEnvironmentVariable("APPSETTING_CosmosDBPrimaryKey", "");
+            //Environment.SetEnvironmentVariable("APPSETTING_CosmosDBDatabase", "");
+            //Environment.SetEnvironmentVariable("APPSETTING_CollectionName", "");
         }
         public static IEnumerable<T> GetAFReturnedObjects<T>(Task<HttpResponseMessage> task)
         {
