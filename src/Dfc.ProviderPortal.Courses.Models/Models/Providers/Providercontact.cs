@@ -1,12 +1,15 @@
-﻿using System;
+﻿using Dfc.CourseDirectory.Models.Interfaces.Providers;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace Dfc.ProviderPortal.Courses.Models.Models.Providers
+namespace Dfc.CourseDirectory.Models.Models.Providers
 {
-    public class Providercontact
+    public class Providercontact : IProvidercontact
     {
         public string ContactType { get; set; }
-        public Contactaddress ContactAddress { get; set; }
-        public Contactpersonaldetails ContactPersonalDetails { get; set; }
+        public IContactaddress ContactAddress { get; set; }
+        public IContactpersonaldetails ContactPersonalDetails { get; set; }
         public object ContactRole { get; set; }
         public string ContactTelephone1 { get; set; }
         public object ContactTelephone2 { get; set; }
@@ -15,5 +18,10 @@ namespace Dfc.ProviderPortal.Courses.Models.Models.Providers
         public string ContactEmail { get; set; }
         public DateTime LastUpdated { get; set; }
 
+        public Providercontact(Contactaddress contactaddress, Contactpersonaldetails contactpersonaldetails)
+        {
+            ContactAddress = contactaddress;
+            ContactPersonalDetails = contactpersonaldetails;
+        }
     }
 }

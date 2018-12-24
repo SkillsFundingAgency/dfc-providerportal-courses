@@ -10,7 +10,8 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Dfc.ProviderPortal.Courses.Helpers;
-using Dfc.ProviderPortal.Courses.Models.Models.Courses;
+//using Dfc.ProviderPortal.Courses.Models.Models.Courses;
+using Dfc.CourseDirectory.Models.Models.Courses;
 using Dfc.ProviderPortal.Courses.Storage;
 
 namespace Dfc.ProviderPortal.Courses.Functions

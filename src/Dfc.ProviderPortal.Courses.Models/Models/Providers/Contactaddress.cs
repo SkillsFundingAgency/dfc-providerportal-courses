@@ -1,6 +1,12 @@
-﻿namespace Dfc.ProviderPortal.Courses.Models.Models.Providers
+﻿using Dfc.CourseDirectory.Common;
+using Dfc.CourseDirectory.Models.Interfaces.Providers;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Dfc.CourseDirectory.Models.Models.Providers
 {
-    public class Contactaddress
+    public class Contactaddress :  IContactaddress
     {
         public SAON SAON { get; set; }
         public PAON PAON { get; set; }

@@ -1,5 +1,7 @@
 using Microsoft.Extensions.Logging;
-using Dfc.ProviderPortal.Courses.Models.Models.Courses;
+//using Dfc.ProviderPortal.Courses.Models.Models.Courses;
+using Dfc.CourseDirectory.Models.Models.Courses;
+using Dfc.CourseDirectory.Models.Models.Qualifications;
 using Newtonsoft.Json;
 using System;
 using System.Net.Http;
@@ -28,7 +30,7 @@ namespace Dfc.ProviderPortal.Courses.Tests
             _course = new Course
             {
                 ID = Guid.NewGuid(),
-                QuAP = new Models.Models.Qualifications.QuAP()
+                QuAP = new QuAP() //Models.Models.Qualifications.QuAP()
             };
             
             var json = JsonConvert.SerializeObject(_course);
