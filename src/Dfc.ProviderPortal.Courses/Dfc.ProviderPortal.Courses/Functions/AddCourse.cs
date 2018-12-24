@@ -28,18 +28,23 @@ namespace Dfc.ProviderPortal.Courses.Functions
             try
             {
                 // Get passed argument (from query if present, if from JSON posted in body if not)
-                log.LogInformation($"AddVenue starting");
+                log.LogInformation($"AddCourse starting");
                 course = await req.Content.ReadAsAsync<Course>(); //(dynamic)<object>
 
-
                 if (course.ID == null)
-
-                    response = req.CreateResponse(HttpStatusCode.BadRequest, ResponseHelper.ErrorMessage("Missing ADDRESS_1 argument"));
-
+                { 
+                    response = req.CreateResponse(HttpStatusCode.BadRequest, ResponseHelper.ErrorMessage("Missing Course ID argument"));
+                    log.LogInformation($"Missing Course ID argument");
+                }
                 else
                 {
                     // Insert data as new document in collection
                     var results = await new CourseStorage().InsertDocAsync(course, log);
+
+                    // We should check the status of InsertDocAsync operation and act accordingly
+                    // https://docs.microsoft.com/en-us/rest/api/cosmos-db/create-a-document
+                    // 201 - Created - The operation was successful.
+                    //var resultsStatusCode = results.StatusCode;
 
                     // Return results
                     response = req.CreateResponse(HttpStatusCode.OK);
@@ -48,8 +53,11 @@ namespace Dfc.ProviderPortal.Courses.Functions
             }
             catch (Exception ex)
             {
+                log.LogError("Course add service unknown error.", ex);
+                log.LogInformation($"AddCourse ending in error");
                 throw ex;
             }
+            log.LogInformation($"AddCourse ending");
             return response;
         }
     }
