@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Dfc.ProviderPortal.Courses.Models\Dfc.ProviderPortal.Courses.Models.csproj" />
+    <ProjectReference Include="..\Dfc.ProviderPortal.Courses.Models\Dfc.ProviderPortal.Courses.Models.csproj" />
   </ItemGroup>
 
   <ItemGroup>

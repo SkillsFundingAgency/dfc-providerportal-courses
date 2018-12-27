@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.168
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dfc.ProviderPortal.Courses", "Dfc.ProviderPortal.Courses\Dfc.ProviderPortal.Courses.csproj", "{AE8A65F4-3E93-4341-A3CF-ABE9FB939EA4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dfc.ProviderPortal.Courses", "src\Dfc.ProviderPortal.Courses\Dfc.ProviderPortal.Courses.csproj", "{AE8A65F4-3E93-4341-A3CF-ABE9FB939EA4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dfc.ProviderPortal.Courses.API", "..\Dfc.ProviderPortal.Courses.API\Dfc.ProviderPortal.Courses.API.csproj", "{F38E473A-91B6-4535-84CA-FAF799EE46C4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dfc.ProviderPortal.Courses.API", "src\Dfc.ProviderPortal.Courses.API\Dfc.ProviderPortal.Courses.API.csproj", "{F38E473A-91B6-4535-84CA-FAF799EE46C4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dfc.ProviderPortal.Courses.Tests", "..\..\tests\Dfc.ProviderPortal.Courses.Tests\Dfc.ProviderPortal.Courses.Tests.csproj", "{F721438B-B8F9-4091-B962-B474FBD1E9BD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dfc.ProviderPortal.Courses.Tests", "tests\Dfc.ProviderPortal.Courses.Tests\Dfc.ProviderPortal.Courses.Tests.csproj", "{F721438B-B8F9-4091-B962-B474FBD1E9BD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dfc.ProviderPortal.Courses.Models", "..\Dfc.ProviderPortal.Courses.Models\Dfc.ProviderPortal.Courses.Models.csproj", "{7DB4AE13-D9BC-4C30-B98D-9D914236A014}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dfc.ProviderPortal.Courses.Models", "src\\Dfc.ProviderPortal.Courses.Models\Dfc.ProviderPortal.Courses.Models.csproj", "{7DB4AE13-D9BC-4C30-B98D-9D914236A014}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dfc.CourseDirectory.Common", "..\Dfc.CourseDirectory.Common\Dfc.CourseDirectory.Common.csproj", "{70075891-0DE2-402B-B1ED-E87C88FE02D8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dfc.CourseDirectory.Common", "src\Dfc.CourseDirectory.Common\Dfc.CourseDirectory.Common.csproj", "{70075891-0DE2-402B-B1ED-E87C88FE02D8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
