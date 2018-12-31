@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace Dfc.ProviderPortal.Courses
+namespace Dfc.ProviderPortal.Courses.Functions
 {
     public static class Function1
     {
