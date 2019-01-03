@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using Dfc.ProviderPortal.Packages.AzureFunctions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Dfc.ProviderPortal.Courses.Interfaces;
+using Dfc.ProviderPortal.Courses.Models;
 
 namespace Dfc.ProviderPortal.Courses.Functions
 {
@@ -17,22 +18,38 @@ namespace Dfc.ProviderPortal.Courses.Functions
     {
         [FunctionName("AddCourse")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
             ILogger log,
-            [Dfc.ProviderPortal.Packages.AzureFunctions.DependencyInjection.Inject] IConfiguration configuration,
-            [Dfc.ProviderPortal.Packages.AzureFunctions.DependencyInjection.Inject] ICourseService coursesService)
+            [Inject] ICourseService coursesService)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
+            using (var streamReader = new StreamReader(req.Body))
+            {
+                var requestBody = await streamReader.ReadToEndAsync();
 
-            string name = req.Query["name"];
+                Course fromBody = null;
+                Course persisted = null;
 
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
-            name = name ?? data?.name;
+                try
+                {
+                    fromBody = JsonConvert.DeserializeObject<Course>(requestBody);
+                }
+                catch (Exception e)
+                {
+                    return new BadRequestObjectResult(e);
+                }
 
-            return name != null
-                ? (ActionResult)new OkObjectResult($"Hello, {name}")
-                : new BadRequestObjectResult("Please pass a name on the query string or in the request body");
+                try
+                {
+                    persisted = (Course) await coursesService.AddCourse(fromBody);
+                }
+                catch (Exception e)
+                {
+                    return new InternalServerErrorObjectResult(e);
+                }
+
+                return new CreatedResult(persisted.id.ToString(), persisted);
+            }
         }
+
     }
 }

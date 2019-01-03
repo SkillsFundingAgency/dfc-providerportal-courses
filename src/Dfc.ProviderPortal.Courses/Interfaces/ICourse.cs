@@ -6,7 +6,8 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
 {
     public interface ICourse
     {
-        Guid Id { get; }
-        IEnumerable<ICourseRun> Items { get; }
+        Guid id { get; }
+        string Testy { get; }
+        //IEnumerable<ICourseRun> CourseRuns { get; }
     }
 }

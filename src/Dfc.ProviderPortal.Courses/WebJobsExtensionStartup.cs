@@ -1,6 +1,8 @@
 ﻿using Dfc.ProviderPortal.Courses;
+using Dfc.ProviderPortal.Courses.Hekpers;
 using Dfc.ProviderPortal.Courses.Interfaces;
 using Dfc.ProviderPortal.Courses.Services;
+using Dfc.ProviderPortal.Courses.Settings;
 using Dfc.ProviderPortal.Packages.AzureFunctions.DependencyInjection;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Hosting;
@@ -27,6 +29,9 @@ namespace Dfc.ProviderPortal.Courses
                 .Build();
 
             builder.Services.AddSingleton<IConfiguration>(configuration);
+            builder.Services.Configure<CosmosDbSettings>(configuration.GetSection(nameof(CosmosDbSettings)));
+            builder.Services.Configure<CosmosDbCollectionSettings>(configuration.GetSection(nameof(CosmosDbCollectionSettings)));
+            builder.Services.AddScoped<ICosmosDbHelper, CosmosDbHelper>();
             builder.Services.AddScoped<ICourseService, CoursesService>();
         }
     }

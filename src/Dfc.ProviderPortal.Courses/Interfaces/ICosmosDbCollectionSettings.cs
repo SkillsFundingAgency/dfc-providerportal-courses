@@ -4,8 +4,8 @@ using System.Text;
 
 namespace Dfc.ProviderPortal.Courses.Interfaces
 {
-    public interface ICourseRun
+    public interface ICosmosDbCollectionSettings
     {
-        Guid id { get; }
+        string CoursesCollectionId { get; }
     }
 }

@@ -7,6 +7,6 @@ namespace Dfc.ProviderPortal.Courses.Models
 {
     public class CourseRun : ICourseRun
     {
-        public Guid Id => throw new NotImplementedException();
+        public Guid id { get; set; }
     }
 }
