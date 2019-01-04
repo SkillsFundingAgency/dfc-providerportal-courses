@@ -79,11 +79,13 @@ namespace Dfc.ProviderPortal.Courses.Hekpers
             Throw.IfNullOrWhiteSpace(collectionId, nameof(collectionId));
             Throw.IfNull(id, nameof(id));
 
-            var uri = UriFactory.CreateCollectionUri(
+            var uri = UriFactory.CreateDocumentCollectionUri(
                 _settings.DatabaseId,
                 collectionId);
 
-            var doc = client.CreateDocumentQuery(uri, new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 })
+            var options = new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 };
+
+            var doc = client.CreateDocumentQuery(uri, options)
                 .Where(x => x.Id == id.ToString())
                 .AsEnumerable()
                 .FirstOrDefault();
