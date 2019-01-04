@@ -114,19 +114,19 @@
                 "value": "[parameters('storageConnectionString')]"
               },
               {
-                "name": "StorageURI",
+                "name": "CosmosDbSettings__EndpointUri",
                 "value": "[parameters('cosmosDBfqdn')]"
               },
               {
-                "name": "PrimaryKey",
+                "name": "CosmosDbSettings__PrimaryKey",
                 "value": "[parameters('cosmosDBkey')]"
               },
               {
-                "name": "Database",
+                "name": "CosmosDbSettings__DatabaseId",
                 "value": "[parameters('cosmosDBdatabase')]"
               },
               {
-                "name": "Collection",
+                "name": "CosmosDbCollectionSettings__CoursesCollectionId",
                 "value": "[parameters('cosmosDBcollection')]"
               }
             ]
