@@ -5,6 +5,7 @@ using Dfc.ProviderPortal.Packages;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -57,6 +58,17 @@ namespace Dfc.ProviderPortal.Courses.Services
             }
 
             return persisted;
+        }
+
+        public Task<IEnumerable<ICourse>> GetCourseByPRN(int prn)
+        {
+            Throw.IfLessThan(0, prn, nameof(prn));
+
+            var persisted = new List<Course>();
+
+            //TODO: Need to pad this out more...
+
+            return Task.FromResult(persisted.Cast<ICourse>().AsEnumerable());
         }
     }
 }

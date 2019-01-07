@@ -9,5 +9,6 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
     {
         Task<ICourse> AddCourse(ICourse course);
         Task<ICourse> GetCourseById(Guid id);
+        Task<IEnumerable<ICourse>> GetCourseByPRN(int prn);
     }
 }
