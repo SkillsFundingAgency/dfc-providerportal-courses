@@ -5,7 +5,6 @@ using Dfc.ProviderPortal.Packages;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -60,15 +59,18 @@ namespace Dfc.ProviderPortal.Courses.Services
             return persisted;
         }
 
-        public Task<IEnumerable<ICourse>> GetCourseByPRN(int prn)
+        public async Task<IEnumerable<ICourse>> GetCoursesByUKPRN(int UKPRN)
         {
-            Throw.IfLessThan(0, prn, nameof(prn));
+            Throw.IfNull<int>(UKPRN, nameof(UKPRN));
+            Throw.IfLessThan(0, UKPRN, nameof(UKPRN));
 
-            var persisted = new List<Course>();
+            IEnumerable<Course> persisted = null;
+            using (var client = _cosmosDbHelper.GetClient()) {
+                var docs = _cosmosDbHelper.GetDocumentsByUKPRN(client, _settings.CoursesCollectionId, UKPRN);
+                persisted = docs; // _cosmosDbHelper.DocumentsTo<Course>(docs);
+            }
 
-            //TODO: Need to pad this out more...
-
-            return Task.FromResult(persisted.Cast<ICourse>().AsEnumerable());
+            return persisted;
         }
     }
 }

@@ -64,8 +64,13 @@ namespace Dfc.ProviderPortal.Courses.Hekpers
         public T DocumentTo<T>(Document document)
         {
             Throw.IfNull(document, nameof(document));
-
             return (T)(dynamic)document;
+        }
+
+        public IEnumerable<T> DocumentsTo<T>(IEnumerable<Document> documents)
+        {
+            Throw.IfNull(documents, nameof(documents));
+            return (IEnumerable<T>)(IEnumerable<dynamic>)documents;
         }
 
         public DocumentClient GetClient()
@@ -91,6 +96,22 @@ namespace Dfc.ProviderPortal.Courses.Hekpers
                 .FirstOrDefault();
 
             return doc;
+        }
+
+        public List<Models.Course> GetDocumentsByUKPRN(DocumentClient client, string collectionId, int UKPRN)
+        {
+            Throw.IfNull(client, nameof(client));
+            Throw.IfNullOrWhiteSpace(collectionId, nameof(collectionId));
+            Throw.IfNull(UKPRN, nameof(UKPRN));
+
+            Uri uri = UriFactory.CreateDocumentCollectionUri(_settings.DatabaseId, collectionId);
+            FeedOptions options = new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 };
+
+            List<Models.Course> docs = client.CreateDocumentQuery<Models.Course>(uri, options)
+                                             .Where(x => x.ProviderUKPRN == UKPRN)
+                                             .ToList(); // .AsEnumerable();
+
+            return docs;
         }
     }
 }
