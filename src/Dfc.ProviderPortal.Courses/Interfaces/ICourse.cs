@@ -1,32 +1,36 @@
 ﻿using Dfc.ProviderPortal.Courses.Models;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Dfc.ProviderPortal.Courses.Interfaces
 {
     public interface ICourse
     {
-        Guid id { get; }
+        Guid id { get; set; }
+        int? CourseId { get; set; }
+        string QualificationCourseTitle { get; set; } 
+        string LearnAimRef { get; set; } 
+        string NotionalNVQLevelv2 { get; set; } 
+        string AwardOrgCode { get; set; } 
+        string QualificationType { get; set; } 
 
-        string QualificationCourseTitle { get; }
-        string LearnAimRef { get; }
-        string NotionalNVQLevelv2 { get; }
-        string AwardOrgCode { get; }
-        string QualificationType { get; }
+        int ProviderUKPRN { get; set; } 
 
-        int ProviderUKPRN { get; }
+        string CourseDescription { get; set; }
+        string EntryRequirments { get; set; } 
+        string WhatYoullLearn { get; set; }
+        string HowYoullLearn { get; set; }
+        string WhatYoullNeed { get; set; }
+        string HowYoullBeAssessed { get; set; }
+        string WhereNext { get; set; }
 
-        string CourseDescription { get; }
-        string EntryRequirments { get; }
-        string WhatYoullLearn { get; }
-        string HowYoullLearn { get; }
-        string WhatYoullNeed { get; }
-        string HowYoullBeAssessed { get; }
-        string WhereNext { get; }
-
-        bool AdvancedLearnerLoan { get; }
+        bool AdvancedLearnerLoan { get; set; }
 
         IEnumerable<CourseRun> CourseRuns { get; }
+
+        DateTime CreatedDate { get; set; }
+        string CreatedBy { get; set; }
+        DateTime? UpdatedDate { get; set; }
+        string UpdatedBy { get; set; }
     }
 }
