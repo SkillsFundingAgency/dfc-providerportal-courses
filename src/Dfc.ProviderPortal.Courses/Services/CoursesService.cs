@@ -65,7 +65,7 @@ namespace Dfc.ProviderPortal.Courses.Services
 
 
 
-        public async Task<ICourse> UpdateById(ICourse course)
+        public async Task<ICourse> Update(ICourse course)
         {
             Throw.IfNull(course, nameof(course));
          

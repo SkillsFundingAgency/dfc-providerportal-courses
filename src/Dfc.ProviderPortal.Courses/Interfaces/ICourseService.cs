@@ -13,6 +13,6 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         Task<IEnumerable<ICourse>> GetCoursesByUKPRN(int UKPRN);
       
 
-        Task<ICourse> UpdateById(ICourse doc);
+        Task<ICourse> Update(ICourse doc);
     }
 }

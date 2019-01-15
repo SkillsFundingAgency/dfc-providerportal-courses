@@ -15,9 +15,9 @@ using Dfc.ProviderPortal.Courses.Hekpers;
 
 namespace Dfc.ProviderPortal.Courses.Functions
 {
-    public static class UpdateCourseById
+    public static class UpdateCourse
     {
-        [FunctionName("UpdateCourseById")]
+        [FunctionName("UpdateCourse")]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequestMessage req,
             ILogger log,
@@ -29,7 +29,7 @@ namespace Dfc.ProviderPortal.Courses.Functions
 
             try
             {
-                var updatedCourse = (Course)await coursesService.UpdateById(course);
+                var updatedCourse = (Course)await coursesService.Update(course);
 
                 return new OkObjectResult(updatedCourse);
             }
