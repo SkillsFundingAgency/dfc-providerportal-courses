@@ -5,8 +5,12 @@ using Dfc.ProviderPortal.Packages;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Azure.Documents;
 
 namespace Dfc.ProviderPortal.Courses.Services
 {
@@ -59,13 +63,33 @@ namespace Dfc.ProviderPortal.Courses.Services
             return persisted;
         }
 
+
+
+        public async Task<ICourse> Update(ICourse course)
+        {
+            Throw.IfNull(course, nameof(course));
+         
+            Course updated = null;
+
+            using (var client = _cosmosDbHelper.GetClient())
+            {
+                var updatedDocument = await _cosmosDbHelper.UpdateDocumentAsync(client, _settings.CoursesCollectionId, course);
+
+                updated = _cosmosDbHelper.DocumentTo<Course>(updatedDocument);
+            }
+
+            return updated;
+
+        }
+
         public async Task<IEnumerable<ICourse>> GetCoursesByUKPRN(int UKPRN)
         {
             Throw.IfNull<int>(UKPRN, nameof(UKPRN));
             Throw.IfLessThan(0, UKPRN, nameof(UKPRN));
 
             IEnumerable<Course> persisted = null;
-            using (var client = _cosmosDbHelper.GetClient()) {
+            using (var client = _cosmosDbHelper.GetClient())
+            {
                 var docs = _cosmosDbHelper.GetDocumentsByUKPRN(client, _settings.CoursesCollectionId, UKPRN);
                 persisted = docs; // _cosmosDbHelper.DocumentsTo<Course>(docs);
             }

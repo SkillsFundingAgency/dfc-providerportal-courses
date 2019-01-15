@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Azure.Documents;
 
 namespace Dfc.ProviderPortal.Courses.Interfaces
 {
@@ -10,5 +11,8 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         Task<ICourse> AddCourse(ICourse course);
         Task<ICourse> GetCourseById(Guid id);
         Task<IEnumerable<ICourse>> GetCoursesByUKPRN(int UKPRN);
+      
+
+        Task<ICourse> Update(ICourse doc);
     }
 }
