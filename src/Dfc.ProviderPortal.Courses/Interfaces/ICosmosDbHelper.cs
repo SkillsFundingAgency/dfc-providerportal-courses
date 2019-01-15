@@ -17,5 +17,7 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         IEnumerable<T> DocumentsTo<T>(IEnumerable<Document> documents);
         Document GetDocumentById<T>(DocumentClient client, string collectionId, T id);
         List<Models.Course> GetDocumentsByUKPRN(DocumentClient client, string collectionId, int UKPRN);
+
+        Task<Document> UpdateDocumentAsync(DocumentClient client, string collectionId, object document);
     }
 }
