@@ -1,22 +1,22 @@
-﻿using Dfc.ProviderPortal.Courses.Models;
+﻿
 using System;
-using System.Collections.Generic;
 using System.Text;
+using System.Collections.Generic;
+using Dfc.ProviderPortal.Courses.Models;
+
 
 namespace Dfc.ProviderPortal.Courses.Interfaces
 {
     public interface ICourse
     {
         Guid id { get; }
-
+        int? CourseId { get; }
         string QualificationCourseTitle { get; }
         string LearnAimRef { get; }
         string NotionalNVQLevelv2 { get; }
         string AwardOrgCode { get; }
         string QualificationType { get; }
-
         int ProviderUKPRN { get; }
-
         string CourseDescription { get; }
         string EntryRequirments { get; }
         string WhatYoullLearn { get; }
@@ -24,9 +24,11 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         string WhatYoullNeed { get; }
         string HowYoullBeAssessed { get; }
         string WhereNext { get; }
-
         bool AdvancedLearnerLoan { get; }
-
+        DateTime CreatedDate { get; }
+        string CreatedBy { get; }
+        DateTime? UpdatedDate { get; }
+        string UpdatedBy { get; }
         IEnumerable<CourseRun> CourseRuns { get; }
     }
 }

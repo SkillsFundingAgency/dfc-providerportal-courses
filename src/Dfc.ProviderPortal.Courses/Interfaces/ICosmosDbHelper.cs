@@ -1,9 +1,12 @@
-﻿using Microsoft.Azure.Documents;
-using Microsoft.Azure.Documents.Client;
+﻿
 using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using Microsoft.Azure.Documents;
+using Microsoft.Azure.Documents.Client;
+using Dfc.ProviderPortal.Courses.Models;
+
 
 namespace Dfc.ProviderPortal.Courses.Interfaces
 {
@@ -16,6 +19,7 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         T DocumentTo<T>(Document document);
         IEnumerable<T> DocumentsTo<T>(IEnumerable<Document> documents);
         Document GetDocumentById<T>(DocumentClient client, string collectionId, T id);
-        List<Models.Course> GetDocumentsByUKPRN(DocumentClient client, string collectionId, int UKPRN);
+        List<Course> GetDocumentsByUKPRN(DocumentClient client, string collectionId, int UKPRN);
+        //List<Models.Course> GetDocumentsByFACSearchCriteria(DocumentClient client, string collectionId, IFACSearchCriteria criteria);
     }
 }
