@@ -13,7 +13,7 @@ using Dfc.ProviderPortal.Courses.Settings;
 using Dfc.ProviderPortal.Courses.Interfaces;
 
 
-namespace Dfc.ProviderPortal.Courses.Hekpers
+namespace Dfc.ProviderPortal.Courses.Helpers
 {
     public class CosmosDbHelper : ICosmosDbHelper
     {

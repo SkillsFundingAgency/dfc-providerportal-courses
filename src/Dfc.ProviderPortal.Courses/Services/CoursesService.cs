@@ -13,6 +13,8 @@ using Dfc.ProviderPortal.Courses.Models;
 using Dfc.ProviderPortal.Courses.Settings;
 using Dfc.ProviderPortal.Packages;
 
+using System.Net.Http;
+
 
 namespace Dfc.ProviderPortal.Courses.Services
 {
@@ -50,7 +52,29 @@ namespace Dfc.ProviderPortal.Courses.Services
         //    return persisted;
         //}
 
-        public async Task<IEnumerable<ICourse>> FindACourseAzureSearchData(ILogger log)
+
+
+
+
+        private class AzureSearchProviderModel
+        {
+            public Guid? id { get; set; }
+            public int UnitedKingdomProviderReferenceNumber { get; set; }
+            public string ProviderName { get; set; }
+        }
+
+        private class AzureSearchVenueModel
+        {
+            public Guid? id { get; set; }
+            public string VENUE_NAME { get; set; }
+            public string ADDRESS_1 { get; set; }
+            public string ADDRESS_2 { get; set; }
+            public string TOWN { get; set; }
+            public string COUNTY { get; set; }
+            public string POSTCODE { get; set; }
+        }
+
+        public async Task<IEnumerable<IAzureSearchCourse>> FindACourseAzureSearchData(ILogger log)
         {
             try {
                 //// Get all course documents in the collection
@@ -74,7 +98,51 @@ namespace Dfc.ProviderPortal.Courses.Services
                 //log.LogInformation($"Serializing data for {docs.LongCount()} courses");
                 //string json = JsonConvert.SerializeObject(docs);
                 //return JsonConvert.DeserializeObject<IEnumerable<Course>>(json);
-                return await GetAllCourses(log); // List<Course>();
+
+
+                IEnumerable<ICourse> persisted = await GetAllCourses(log);
+
+                HttpClient client = new HttpClient();
+                var criteria1 = new { PRN = "10002815" };
+                var content = new StringContent(JsonConvert.SerializeObject(criteria1), Encoding.UTF8, "application/json");
+                var response = await client.PostAsync("https://dfc-dev-prov-ukrlp-fa.azurewebsites.net/api/GetProviderByPRN?code=40227TuT3vAYSCbHgWXDfPfA8KS6KU1ZV0rMjzGFaWSAAZLoatry8w==", content);
+                var json = await response.Content.ReadAsStringAsync();
+                if (!json.StartsWith("["))
+                    json = "[" + json + "]";
+                var providers = JsonConvert.DeserializeObject<IEnumerable<AzureSearchProviderModel>>(json);
+
+                var criteria2 = new object();
+                content = new StringContent(JsonConvert.SerializeObject(criteria2), Encoding.UTF8, "application/json");
+                response = await client.PostAsync("https://dfc-dev-prov-venue-fa.azurewebsites.net/api/GetAllVenues?code=40227TuT3vAYSCbHgWXDfPfA8KS6KU1ZV0rMjzGFaWSAAZLoatry8w==", content);
+                json = await response.Content.ReadAsStringAsync();
+                if (!json.StartsWith("["))
+                    json = "[" + json + "]";
+                var venues = JsonConvert.DeserializeObject<IEnumerable<AzureSearchVenueModel>>(json);
+
+                IEnumerable<IAzureSearchCourse> results = from ICourse c in persisted
+                                                          from CourseRun cr in c.CourseRuns ?? new List<CourseRun>() //.Where(r => r != null && c.CourseRuns.Count() > 0)
+                                                          join AzureSearchProviderModel p in providers
+                                                          on c.ProviderUKPRN equals p.UnitedKingdomProviderReferenceNumber
+                                                          join AzureSearchVenueModel v in venues
+                                                          on cr.VenueId equals v.id
+                                                          select new AzureSearchCourse()
+                                                          {
+                                                              id = c.id,
+                                                              QualificationCourseTitle = c.QualificationCourseTitle,
+                                                              LearnAimRef = c.LearnAimRef,
+                                                              NotionalNVQLevelv2 = c.NotionalNVQLevelv2,
+                                                              VenueName = (from AzureSearchVenueModel vm in venues
+                                                                           join Guid id in c.CourseRuns.Where(r => r.VenueId.HasValue).Select(r => r.VenueId.Value) on vm.id equals id
+                                                                           select vm.VENUE_NAME).ToArray(),
+                                                              VenueAddress = (from AzureSearchVenueModel vm in venues
+                                                                              join Guid id in c.CourseRuns.Where(r => r.VenueId.HasValue).Select(r => r.VenueId.Value) on vm.id equals id
+                                                                              select vm.ADDRESS_1 + vm.ADDRESS_2 + vm.TOWN + vm.COUNTY + vm.POSTCODE).ToArray(),
+                                                              VenueAttendancePattern = c.CourseRuns.Select(r => r.AttendancePattern).ToArray(),
+                                                              //VenueLattitude = ???,
+                                                              //VenueLongitude = ???,
+                                                              ProviderName = p.ProviderName
+                                                          };
+                return results; // await GetAllCourses(log); // List<Course>();
 
             } catch (Exception ex) {
                 throw ex;
