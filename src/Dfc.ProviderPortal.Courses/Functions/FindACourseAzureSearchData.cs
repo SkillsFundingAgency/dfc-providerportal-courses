@@ -21,17 +21,11 @@ namespace Dfc.ProviderPortal.Courses.Functions
                                                     ILogger log,
                                                     [Inject] ICourseService coursesService)
         {
-            //List<Course> courses = null;
             IEnumerable<IAzureSearchCourse> results = null;
 
             try {
-                //courses = (List<Course>) await coursesService.GetAllCourses(log);
-                //if (courses == null)
-                //    return new NotFoundObjectResult(null);
-
                 results = await coursesService.FindACourseAzureSearchData(log);
-
-                return new OkObjectResult(results); // courses);
+                return new OkObjectResult(results);
 
             } catch (Exception e) {
                 return new InternalServerErrorObjectResult(e);
