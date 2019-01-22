@@ -1,16 +1,19 @@
-﻿using Dfc.ProviderPortal.Courses.Interfaces;
-using Dfc.ProviderPortal.Courses.Settings;
-using Dfc.ProviderPortal.Packages;
+﻿
+using System;
+using System.Linq;
+using System.Text;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Dfc.ProviderPortal.Packages;
+using Dfc.ProviderPortal.Courses.Models;
+using Dfc.ProviderPortal.Courses.Settings;
+using Dfc.ProviderPortal.Courses.Interfaces;
 
-namespace Dfc.ProviderPortal.Courses.Hekpers
+
+namespace Dfc.ProviderPortal.Courses.Helpers
 {
     public class CosmosDbHelper : ICosmosDbHelper
     {
@@ -124,11 +127,34 @@ namespace Dfc.ProviderPortal.Courses.Hekpers
             Uri uri = UriFactory.CreateDocumentCollectionUri(_settings.DatabaseId, collectionId);
             FeedOptions options = new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 };
 
-            List<Models.Course> docs = client.CreateDocumentQuery<Models.Course>(uri, options)
+            List<Models.Course> docs = client.CreateDocumentQuery<Course>(uri, options)
                                              .Where(x => x.ProviderUKPRN == UKPRN)
                                              .ToList(); // .AsEnumerable();
 
             return docs;
         }
+
+        //public List<Course> GetDocumentsByFACSearchCriteria(DocumentClient client, string collectionId, IFACSearchCriteria criteria)
+        //{
+        //    Throw.IfNull(client, nameof(client));
+        //    Throw.IfNullOrWhiteSpace(collectionId, nameof(collectionId));
+        //    Throw.IfNull(criteria, nameof(criteria));
+
+        //    Uri uri = UriFactory.CreateDocumentCollectionUri(_settings.DatabaseId, collectionId);
+        //    FeedOptions options = new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 };
+
+        //    IQueryable<Course> qry = client.CreateDocumentQuery<Course>(uri, options)
+        //                                   .Where(x => x.QualificationCourseTitle == criteria.Keyword);
+
+        //    if (!string.IsNullOrWhiteSpace(criteria.QualificationLevel))
+        //        qry = qry.Where(x => x.NotionalNVQLevelv2 == criteria.QualificationLevel);
+
+        //    //if (!string.IsNullOrWhiteSpace(criteria.LocationPostcode) && criteria.DistanceInMiles > 0)
+        //    //    qry = qry.Where(x => x.CalculateDistance() < criteria.DistanceInMiles);
+
+        //    List<Models.Course> docs = qry.ToList(); // .AsEnumerable();
+
+        //    return docs;
+        //}
     }
 }

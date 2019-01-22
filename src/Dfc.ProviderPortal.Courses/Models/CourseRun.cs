@@ -1,6 +1,8 @@
-﻿using System;
+﻿
+using System;
 using System.ComponentModel;
 using Dfc.ProviderPortal.Courses.Interfaces;
+
 
 namespace Dfc.ProviderPortal.Courses.Models
 {
@@ -73,7 +75,7 @@ namespace Dfc.ProviderPortal.Courses.Models
         public DateTime? StartDate { get; set; }
         public string CourseURL { get; set; }
         public decimal? Cost { get; set; }
-        public string CostDescription { get; set; }       
+        public string CostDescription { get; set; }
         public int DurationUnit { get; set; }
         public int? DurationValue { get; set; }
         public int StudyMode { get; set; }

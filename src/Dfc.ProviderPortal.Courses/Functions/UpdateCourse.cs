@@ -1,3 +1,4 @@
+
 using System;
 using System.IO;
 using System.Net.Http;
@@ -11,7 +12,8 @@ using Newtonsoft.Json;
 using Dfc.ProviderPortal.Courses.Interfaces;
 using Dfc.ProviderPortal.Packages.AzureFunctions.DependencyInjection;
 using Dfc.ProviderPortal.Courses.Models;
-using Dfc.ProviderPortal.Courses.Hekpers;
+using Dfc.ProviderPortal.Courses.Helpers;
+
 
 namespace Dfc.ProviderPortal.Courses.Functions
 {
@@ -21,8 +23,7 @@ namespace Dfc.ProviderPortal.Courses.Functions
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequestMessage req,
             ILogger log,
-                [Inject] ICourseService coursesService
-            )
+            [Inject] ICourseService coursesService)
         {
 
             Course course = await req.Content.ReadAsAsync<Course>();
@@ -30,11 +31,9 @@ namespace Dfc.ProviderPortal.Courses.Functions
             try
             {
                 var updatedCourse = (Course)await coursesService.Update(course);
-
                 return new OkObjectResult(updatedCourse);
-            }
-            catch (Exception e)
-            {
+
+            } catch (Exception e) {
                 return new InternalServerErrorObjectResult(e);
             }
         }
