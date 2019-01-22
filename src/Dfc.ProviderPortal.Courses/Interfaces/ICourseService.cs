@@ -15,7 +15,6 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         Task<ICourse> GetCourseById(Guid id);
         Task<IEnumerable<ICourse>> GetCoursesByUKPRN(int UKPRN);
         Task<IEnumerable<ICourse>> GetAllCourses(ILogger log);
-        //Task<IEnumerable<ICourse>> FindACourse(ILogger log, IFACSearchCriteria criteria);
-        Task<IEnumerable<AzureSearchCourse>> FindACourseAzureSearchData(ILogger log);
+        Task<IEnumerable<IAzureSearchCourse>> FindACourseAzureSearchData(ILogger log);
     }
 }

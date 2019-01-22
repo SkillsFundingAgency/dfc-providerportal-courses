@@ -43,13 +43,12 @@ namespace Dfc.ProviderPortal.Venues.API.Controllers
         /// </summary>
         /// <returns>All courses</returns>
         [HttpGet("PopulateSearch", Name = "PopulateSearch")]
-        public ActionResult<IEnumerable<AzureSearchCourse>> PopulateSearch()
+        public ActionResult<IEnumerable<IAzureSearchCourse>> PopulateSearch()
         {
             try {
-                Task<IEnumerable<AzureSearchCourse>> task = _service.FindACourseAzureSearchData(_log);
+                Task<IEnumerable<IAzureSearchCourse>> task = _service.FindACourseAzureSearchData(_log);
                 task.Wait();
-                //IEnumerable<IAzureSearchCourse> results = (IEnumerable<IAzureSearchCourse>)task.Result;
-                return new ActionResult<IEnumerable<AzureSearchCourse>>(task.Result);
+                return new ActionResult<IEnumerable<IAzureSearchCourse>>(task.Result);
             }
             catch (Exception ex) {
                 throw ex;

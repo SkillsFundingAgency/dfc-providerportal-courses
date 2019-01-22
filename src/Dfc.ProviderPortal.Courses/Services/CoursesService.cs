@@ -42,14 +42,14 @@ namespace Dfc.ProviderPortal.Courses.Services
             _venueServiceSettings = venueServiceSettings.Value;
         }
 
-        public async Task<IEnumerable<AzureSearchCourse>> FindACourseAzureSearchData(ILogger log)
+        public async Task<IEnumerable<IAzureSearchCourse>> FindACourseAzureSearchData(ILogger log)
         {
             try {
                 IEnumerable<ICourse> persisted = await GetAllCourses(log);
                 IEnumerable<AzureSearchProviderModel> providers = new ProviderServiceWrapper(_providerServiceSettings).GetLiveProvidersForAzureSearch();
                 IEnumerable<AzureSearchVenueModel> venues = new VenueServiceWrapper(_venueServiceSettings).GetVenues();
 
-                IEnumerable<AzureSearchCourse> results = from ICourse c in persisted
+                IEnumerable<IAzureSearchCourse> results = from ICourse c in persisted
                                                           from CourseRun cr in c.CourseRuns ?? new List<CourseRun>()
                                                           join AzureSearchProviderModel p in providers
                                                           on c.ProviderUKPRN equals p.UnitedKingdomProviderReferenceNumber
@@ -66,11 +66,17 @@ namespace Dfc.ProviderPortal.Courses.Services
                                                                            select vm.VENUE_NAME).ToArray(),
                                                               VenueAddress = (from AzureSearchVenueModel vm in venues
                                                                               join Guid id in c.CourseRuns.Where(r => r.VenueId.HasValue).Select(r => r.VenueId.Value) on vm.id equals id
-                                                                              select vm.ADDRESS_1 + vm.ADDRESS_2 + vm.TOWN + vm.COUNTY + vm.POSTCODE).ToArray(),
-                                                              VenueAttendancePattern = c.CourseRuns.Select(r => r.AttendancePattern).ToArray(),
+                                                                              select string.Format("{0}{1}{2}{3}{4}",
+                                                                                                   string.IsNullOrWhiteSpace(vm.ADDRESS_1) ? "" : vm.ADDRESS_1 + ", ",
+                                                                                                   string.IsNullOrWhiteSpace(vm.ADDRESS_2) ? "" : vm.ADDRESS_2 + ", ",
+                                                                                                   string.IsNullOrWhiteSpace(vm.TOWN) ? "" : vm.TOWN + ", ",
+                                                                                                   string.IsNullOrWhiteSpace(vm.COUNTY) ? "" : vm.COUNTY + ", ",
+                                                                                                   vm.POSTCODE)).ToArray(),
+                                                              VenueAttendancePattern = c.CourseRuns.Select(r => r.AttendancePattern.ToString()).ToArray(),
                                                               //VenueLattitude = ???,
                                                               //VenueLongitude = ???,
-                                                              ProviderName = p.ProviderName
+                                                              ProviderName = p.ProviderName,
+                                                              UpdatedOn = c.UpdatedDate
                                                           };
                 return results;
 
