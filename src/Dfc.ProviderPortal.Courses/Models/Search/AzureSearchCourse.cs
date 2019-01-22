@@ -10,7 +10,7 @@ namespace Dfc.ProviderPortal.Courses.Models
     public class AzureSearchCourse : IAzureSearchCourse
     {
         public Guid id { get; set; }
-//        public int? CourseId { get; set; }
+        public Guid CourseId { get; set; }
         public string QualificationCourseTitle { get; set; }
         public string LearnAimRef { get; set; }
         public string NotionalNVQLevelv2 { get; set; }
@@ -33,11 +33,11 @@ namespace Dfc.ProviderPortal.Courses.Models
 
         //        public IEnumerable<CourseRun> CourseRuns { get; set; }
 
-        public string[] VenueName { get; set; }
-        public string[] VenueAddress { get; set; }
-        public string[] VenueLattitude { get; set; }
-        public string[] VenueLongitude { get; set; }
-        public string[] VenueAttendancePattern { get; set; }
+        public string VenueName { get; set; }
+        public string VenueAddress { get; set; }
+        public string VenueLattitude { get; set; }
+        public string VenueLongitude { get; set; }
+        public int VenueAttendancePattern { get; set; }
         public string ProviderName { get; set; }
     }
 }

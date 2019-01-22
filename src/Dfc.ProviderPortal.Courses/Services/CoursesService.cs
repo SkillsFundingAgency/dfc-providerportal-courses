@@ -14,11 +14,6 @@ using Dfc.ProviderPortal.Courses.Interfaces;
 using Dfc.ProviderPortal.Courses.Models;
 using Dfc.ProviderPortal.Courses.Settings;
 using Dfc.ProviderPortal.Packages;
-using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 
 namespace Dfc.ProviderPortal.Courses.Services
@@ -58,26 +53,31 @@ namespace Dfc.ProviderPortal.Courses.Services
                                                           from CourseRun cr in c.CourseRuns ?? new List<CourseRun>()
                                                           join AzureSearchProviderModel p in providers
                                                           on c.ProviderUKPRN equals p.UnitedKingdomProviderReferenceNumber
-                                                          join AzureSearchVenueModel v in venues
-                                                          on cr.VenueId equals v.id
+                                                          //join AzureSearchVenueModel v in venues
+                                                          //on cr.VenueId equals v.id
+                                                          from vm in venues.Where(v => cr.VenueId == v.id)       // left outer join on venues for online courses
+                                                                           .DefaultIfEmpty()
                                                           select new AzureSearchCourse()
                                                           {
-                                                              id = c.id,
+                                                              id = cr.id,
+                                                              CourseId = c.id,
                                                               QualificationCourseTitle = c.QualificationCourseTitle,
                                                               LearnAimRef = c.LearnAimRef,
                                                               NotionalNVQLevelv2 = c.NotionalNVQLevelv2,
-                                                              VenueName = (from AzureSearchVenueModel vm in venues
-                                                                           join Guid id in c.CourseRuns.Where(r => r.VenueId.HasValue).Select(r => r.VenueId.Value) on vm.id equals id
-                                                                           select vm.VENUE_NAME).ToArray(),
-                                                              VenueAddress = (from AzureSearchVenueModel vm in venues
-                                                                              join Guid id in c.CourseRuns.Where(r => r.VenueId.HasValue).Select(r => r.VenueId.Value) on vm.id equals id
-                                                                              select string.Format("{0}{1}{2}{3}{4}",
-                                                                                                   string.IsNullOrWhiteSpace(vm.ADDRESS_1) ? "" : vm.ADDRESS_1 + ", ",
-                                                                                                   string.IsNullOrWhiteSpace(vm.ADDRESS_2) ? "" : vm.ADDRESS_2 + ", ",
-                                                                                                   string.IsNullOrWhiteSpace(vm.TOWN) ? "" : vm.TOWN + ", ",
-                                                                                                   string.IsNullOrWhiteSpace(vm.COUNTY) ? "" : vm.COUNTY + ", ",
-                                                                                                   vm.POSTCODE)).ToArray(),
-                                                              VenueAttendancePattern = c.CourseRuns.Select(r => r.AttendancePattern.ToString()).ToArray(),
+                                                              VenueName = //(from AzureSearchVenueModel vm in venues
+                                                                          // join Guid id in c.CourseRuns.Where(r => r.VenueId.HasValue).Select(r => r.VenueId.Value) on vm.id equals id
+                                                                          // select vm.VENUE_NAME).ToArray(),
+                                                                          vm?.VENUE_NAME,
+                                                              VenueAddress = //(from AzureSearchVenueModel vm in venues
+                                                                             // join Guid id in c.CourseRuns.Where(r => r.VenueId.HasValue).Select(r => r.VenueId.Value) on vm.id equals id
+                                                                             // select string.Format("{0}{1}{2}{3}{4}",
+                                                                                       string.Format("{0}{1}{2}{3}{4}",
+                                                                                                   string.IsNullOrWhiteSpace(vm?.ADDRESS_1) ? "" : vm?.ADDRESS_1 + ", ",
+                                                                                                   string.IsNullOrWhiteSpace(vm?.ADDRESS_2) ? "" : vm?.ADDRESS_2 + ", ",
+                                                                                                   string.IsNullOrWhiteSpace(vm?.TOWN) ? "" : vm?.TOWN + ", ",
+                                                                                                   string.IsNullOrWhiteSpace(vm?.COUNTY) ? "" : vm?.COUNTY + ", ",
+                                                                                                   vm?.POSTCODE), //).ToArray(),
+                                                              VenueAttendancePattern = cr.AttendancePattern, //c.CourseRuns.Select(r => r.AttendancePattern.ToString()).ToArray(),
                                                               //VenueLattitude = ???,
                                                               //VenueLongitude = ???,
                                                               ProviderName = p.ProviderName,
