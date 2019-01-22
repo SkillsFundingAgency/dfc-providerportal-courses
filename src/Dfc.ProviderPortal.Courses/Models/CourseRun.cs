@@ -1,7 +1,6 @@
-﻿using Dfc.ProviderPortal.Courses.Interfaces;
+﻿
 using System;
-using System.Text;
-using System.Collections.Generic;
+using System.ComponentModel;
 using Dfc.ProviderPortal.Courses.Interfaces;
 
 

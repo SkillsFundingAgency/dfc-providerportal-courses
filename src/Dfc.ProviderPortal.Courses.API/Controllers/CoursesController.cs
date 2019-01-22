@@ -10,6 +10,7 @@ using Dfc.ProviderPortal.Courses.Services;
 using Dfc.ProviderPortal.Courses.Interfaces;
 using Dfc.ProviderPortal.Packages;
 using Dfc.ProviderPortal.Packages.AzureFunctions.DependencyInjection;
+using Dfc.ProviderPortal.Courses.Functions;
 
 
 namespace Dfc.ProviderPortal.Venues.API.Controllers
@@ -51,7 +52,7 @@ namespace Dfc.ProviderPortal.Venues.API.Controllers
                 return new ActionResult<IEnumerable<IAzureSearchCourse>>(task.Result);
             }
             catch (Exception ex) {
-                throw ex;
+                return new InternalServerErrorObjectResult(ex);
             }
         }
     }
