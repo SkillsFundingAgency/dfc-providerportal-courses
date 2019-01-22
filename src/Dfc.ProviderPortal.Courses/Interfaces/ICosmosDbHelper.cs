@@ -19,7 +19,7 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         T DocumentTo<T>(Document document);
         IEnumerable<T> DocumentsTo<T>(IEnumerable<Document> documents);
         Document GetDocumentById<T>(DocumentClient client, string collectionId, T id);
+        Task<Document> UpdateDocumentAsync(DocumentClient client, string collectionId, object document);
         List<Course> GetDocumentsByUKPRN(DocumentClient client, string collectionId, int UKPRN);
-        //List<Models.Course> GetDocumentsByFACSearchCriteria(DocumentClient client, string collectionId, IFACSearchCriteria criteria);
     }
 }

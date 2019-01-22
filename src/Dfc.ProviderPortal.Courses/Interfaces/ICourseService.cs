@@ -2,10 +2,6 @@
 using System;
 using System.Text;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using Microsoft.Extensions.Logging;
-using Dfc.ProviderPortal.Courses.Models;
-
 
 namespace Dfc.ProviderPortal.Courses.Interfaces
 {
@@ -14,6 +10,7 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         Task<ICourse> AddCourse(ICourse course);
         Task<ICourse> GetCourseById(Guid id);
         Task<IEnumerable<ICourse>> GetCoursesByUKPRN(int UKPRN);
+        Task<ICourse> Update(ICourse doc);
         Task<IEnumerable<ICourse>> GetAllCourses(ILogger log);
         Task<IEnumerable<IAzureSearchCourse>> FindACourseAzureSearchData(ILogger log);
     }

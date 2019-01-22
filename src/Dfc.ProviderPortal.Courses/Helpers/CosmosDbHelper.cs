@@ -101,6 +101,23 @@ namespace Dfc.ProviderPortal.Courses.Helpers
             return doc;
         }
 
+
+        public async Task<Document> UpdateDocumentAsync(
+            DocumentClient client,
+            string collectionId,
+            object document)
+        {
+            Throw.IfNull(client, nameof(client));
+            Throw.IfNullOrWhiteSpace(collectionId, nameof(collectionId));
+            Throw.IfNull(document, nameof(document));
+
+            var uri = UriFactory.CreateDocumentCollectionUri(
+                _settings.DatabaseId,
+                collectionId);
+
+            return await client.UpsertDocumentAsync(uri, document);
+        }
+
         public List<Models.Course> GetDocumentsByUKPRN(DocumentClient client, string collectionId, int UKPRN)
         {
             Throw.IfNull(client, nameof(client));
