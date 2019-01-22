@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
+using Dfc.ProviderPortal.Courses.Models;
 
 
 namespace Dfc.ProviderPortal.Courses.Interfaces
@@ -15,6 +16,6 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         Task<IEnumerable<ICourse>> GetCoursesByUKPRN(int UKPRN);
         Task<IEnumerable<ICourse>> GetAllCourses(ILogger log);
         //Task<IEnumerable<ICourse>> FindACourse(ILogger log, IFACSearchCriteria criteria);
-        Task<IEnumerable<IAzureSearchCourse>> FindACourseAzureSearchData(ILogger log);
+        Task<IEnumerable<AzureSearchCourse>> FindACourseAzureSearchData(ILogger log);
     }
 }

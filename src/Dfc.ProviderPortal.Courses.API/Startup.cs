@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -10,6 +8,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Dfc.ProviderPortal.Courses.Helpers;
+using Dfc.ProviderPortal.Courses.Interfaces;
+using Dfc.ProviderPortal.Courses.Services;
+using Dfc.ProviderPortal.Courses.Settings;
+
 
 namespace Dfc.ProviderPortal.Courses.API
 {
@@ -17,7 +20,12 @@ namespace Dfc.ProviderPortal.Courses.API
     {
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            Configuration = //configuration;
+                new ConfigurationBuilder()
+                .SetBasePath(Environment.CurrentDirectory)
+                .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables()
+                .Build();
         }
 
         public IConfiguration Configuration { get; }
@@ -26,17 +34,22 @@ namespace Dfc.ProviderPortal.Courses.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.Configure<CosmosDbCollectionSettings>(Configuration.GetSection(nameof(CosmosDbCollectionSettings)))
+                    .Configure<CosmosDbSettings>(Configuration.GetSection(nameof(CosmosDbSettings)))
+                    .Configure<ProviderServiceSettings>(Configuration.GetSection(nameof(ProviderServiceSettings)))
+                    .Configure<VenueServiceSettings>(Configuration.GetSection(nameof(VenueServiceSettings)))
+                    .AddScoped<ICourseService, CoursesService>()
+                    .AddScoped<ICosmosDbHelper, CosmosDbHelper>()
+                    .AddScoped<IProviderServiceWrapper, ProviderServiceWrapper>()
+                    .AddScoped<IVenueServiceWrapper, VenueServiceWrapper>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
+            if (env.IsDevelopment()) {
                 app.UseDeveloperExceptionPage();
-            }
-            else
-            {
+            } else {
                 app.UseHsts();
             }
 

@@ -42,14 +42,14 @@ namespace Dfc.ProviderPortal.Courses.Services
             _venueServiceSettings = venueServiceSettings.Value;
         }
 
-        public async Task<IEnumerable<IAzureSearchCourse>> FindACourseAzureSearchData(ILogger log)
+        public async Task<IEnumerable<AzureSearchCourse>> FindACourseAzureSearchData(ILogger log)
         {
             try {
                 IEnumerable<ICourse> persisted = await GetAllCourses(log);
                 IEnumerable<AzureSearchProviderModel> providers = new ProviderServiceWrapper(_providerServiceSettings).GetLiveProvidersForAzureSearch();
                 IEnumerable<AzureSearchVenueModel> venues = new VenueServiceWrapper(_venueServiceSettings).GetVenues();
 
-                IEnumerable<IAzureSearchCourse> results = from ICourse c in persisted
+                IEnumerable<AzureSearchCourse> results = from ICourse c in persisted
                                                           from CourseRun cr in c.CourseRuns ?? new List<CourseRun>()
                                                           join AzureSearchProviderModel p in providers
                                                           on c.ProviderUKPRN equals p.UnitedKingdomProviderReferenceNumber
