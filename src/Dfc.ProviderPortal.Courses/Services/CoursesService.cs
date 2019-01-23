@@ -64,20 +64,14 @@ namespace Dfc.ProviderPortal.Courses.Services
                                                               QualificationCourseTitle = c.QualificationCourseTitle,
                                                               LearnAimRef = c.LearnAimRef,
                                                               NotionalNVQLevelv2 = c.NotionalNVQLevelv2,
-                                                              VenueName = //(from AzureSearchVenueModel vm in venues
-                                                                          // join Guid id in c.CourseRuns.Where(r => r.VenueId.HasValue).Select(r => r.VenueId.Value) on vm.id equals id
-                                                                          // select vm.VENUE_NAME).ToArray(),
-                                                                          vm?.VENUE_NAME,
-                                                              VenueAddress = //(from AzureSearchVenueModel vm in venues
-                                                                             // join Guid id in c.CourseRuns.Where(r => r.VenueId.HasValue).Select(r => r.VenueId.Value) on vm.id equals id
-                                                                             // select string.Format("{0}{1}{2}{3}{4}",
-                                                                                       string.Format("{0}{1}{2}{3}{4}",
-                                                                                                   string.IsNullOrWhiteSpace(vm?.ADDRESS_1) ? "" : vm?.ADDRESS_1 + ", ",
-                                                                                                   string.IsNullOrWhiteSpace(vm?.ADDRESS_2) ? "" : vm?.ADDRESS_2 + ", ",
-                                                                                                   string.IsNullOrWhiteSpace(vm?.TOWN) ? "" : vm?.TOWN + ", ",
-                                                                                                   string.IsNullOrWhiteSpace(vm?.COUNTY) ? "" : vm?.COUNTY + ", ",
-                                                                                                   vm?.POSTCODE), //).ToArray(),
-                                                              VenueAttendancePattern = cr.AttendancePattern, //c.CourseRuns.Select(r => r.AttendancePattern.ToString()).ToArray(),
+                                                              VenueName = vm?.VENUE_NAME,
+                                                              VenueAddress = string.Format("{0}{1}{2}{3}{4}",
+                                                                             string.IsNullOrWhiteSpace(vm?.ADDRESS_1) ? "" : vm?.ADDRESS_1 + ", ",
+                                                                             string.IsNullOrWhiteSpace(vm?.ADDRESS_2) ? "" : vm?.ADDRESS_2 + ", ",
+                                                                             string.IsNullOrWhiteSpace(vm?.TOWN) ? "" : vm?.TOWN + ", ",
+                                                                             string.IsNullOrWhiteSpace(vm?.COUNTY) ? "" : vm?.COUNTY + ", ",
+                                                                             vm?.POSTCODE),
+                                                              VenueAttendancePattern = cr.AttendancePattern,
                                                               //VenueLattitude = ???,
                                                               //VenueLongitude = ???,
                                                               ProviderName = p.ProviderName,
