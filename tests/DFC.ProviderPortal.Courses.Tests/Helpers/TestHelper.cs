@@ -1,11 +1,16 @@
-﻿using Newtonsoft.Json;
+﻿
 using System;
-using System.Collections.Generic;
-using System.Net.Http;
+using System.IO;
 using System.Text;
+using System.Net.Http;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using System.Web.Http;
 using System.Web.Http.Hosting;
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
+using Moq;
+
 
 namespace DFC.ProviderPortal.Courses.Tests.Helpers
 {
@@ -62,7 +67,6 @@ namespace DFC.ProviderPortal.Courses.Tests.Helpers
 
         public static HttpRequestMessage CreateRequest(Uri uri, string json)
         {
-
             HttpRequestMessage request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
@@ -70,6 +74,21 @@ namespace DFC.ProviderPortal.Courses.Tests.Helpers
                 Content = new StringContent(json, Encoding.UTF8, "application/json")
             };
             request.Properties.Add(HttpPropertyKeys.HttpConfigurationKey, new HttpConfiguration());
+            return request;
+        }
+
+        public static Mock<HttpRequest> CreateMockRequest(object body)
+        {
+            MemoryStream ms = new MemoryStream();
+            StreamWriter sw = new StreamWriter(ms);
+
+            string json = JsonConvert.SerializeObject(body);
+            sw.Write(json);
+            sw.Flush();
+            ms.Position = 0;
+
+            Mock<HttpRequest> request = new Mock<HttpRequest>();
+            request.Setup(x => x.Body).Returns(ms);
             return request;
         }
     }

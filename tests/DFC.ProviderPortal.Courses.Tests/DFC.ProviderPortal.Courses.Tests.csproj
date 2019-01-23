@@ -18,4 +18,11 @@
     <ProjectReference Include="..\..\src\Dfc.ProviderPortal.Courses\Dfc.ProviderPortal.Courses.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="local.settings.json">
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
