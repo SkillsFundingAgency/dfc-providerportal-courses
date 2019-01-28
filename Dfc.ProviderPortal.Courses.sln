@@ -5,9 +5,9 @@ VisualStudioVersion = 15.0.28307.136
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dfc.ProviderPortal.Courses", "src\Dfc.ProviderPortal.Courses\Dfc.ProviderPortal.Courses.csproj", "{E18D9853-A1D3-4B94-8E90-4501AEFF983F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DFC.ProviderPortal.Courses.Tests", "tests\DFC.ProviderPortal.Courses.Tests\DFC.ProviderPortal.Courses.Tests.csproj", "{6A48D484-957D-4838-929A-CE5B10A168E8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DFC.ProviderPortal.Courses.Tests", "tests\DFC.ProviderPortal.Courses.Tests\DFC.ProviderPortal.Courses.Tests.csproj", "{6A48D484-957D-4838-929A-CE5B10A168E8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dfc.ProviderPortal.Courses.API", "src\Dfc.ProviderPortal.Courses.API\Dfc.ProviderPortal.Courses.API.csproj", "{DAC31A50-BFE3-4646-BB15-FDEBF27B61A4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dfc.ProviderPortal.Courses.API", "src\Dfc.ProviderPortal.Courses.API\Dfc.ProviderPortal.Courses.API.csproj", "{DAC31A50-BFE3-4646-BB15-FDEBF27B61A4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

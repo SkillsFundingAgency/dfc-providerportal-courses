@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 
@@ -22,6 +23,7 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         int? DurationValue { get; set; }
         int StudyMode { get; set; }
         int AttendancePattern { get; set; }
+        IEnumerable<string> Regions { get; set; }
 
         DateTime CreatedDate { get; set; }
         string CreatedBy { get; set; }
