@@ -2,6 +2,7 @@
 using System;
 using System.Text;
 using System.Collections.Generic;
+using Microsoft.Spatial;
 using Dfc.ProviderPortal.Courses.Interfaces;
 
 
@@ -9,8 +10,8 @@ namespace Dfc.ProviderPortal.Courses.Models
 {
     public class AzureSearchCourse : IAzureSearchCourse
     {
-        public Guid id { get; set; }
-        public Guid CourseId { get; set; }
+        public Guid? id { get; set; }
+        public Guid? CourseId { get; set; }
         public string QualificationCourseTitle { get; set; }
         public string LearnAimRef { get; set; }
         public string NotionalNVQLevelv2 { get; set; }
@@ -35,9 +36,10 @@ namespace Dfc.ProviderPortal.Courses.Models
 
         public string VenueName { get; set; }
         public string VenueAddress { get; set; }
-        public string VenueLattitude { get; set; }
-        public string VenueLongitude { get; set; }
-        public int VenueAttendancePattern { get; set; }
+        //public string VenueLattitude { get; set; }
+        //public string VenueLongitude { get; set; }
+        public GeographyPoint VenueLocation { get; set; }
+        public int? VenueAttendancePattern { get; set; }
         public string ProviderName { get; set; }
     }
 }

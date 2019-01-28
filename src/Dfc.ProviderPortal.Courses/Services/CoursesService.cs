@@ -14,6 +14,7 @@ using Dfc.ProviderPortal.Courses.Interfaces;
 using Dfc.ProviderPortal.Courses.Models;
 using Dfc.ProviderPortal.Courses.Settings;
 using Dfc.ProviderPortal.Packages;
+using Document = Microsoft.Azure.Documents.Document;
 
 
 namespace Dfc.ProviderPortal.Courses.Services
@@ -24,22 +25,32 @@ namespace Dfc.ProviderPortal.Courses.Services
         private readonly ICosmosDbCollectionSettings _settings;
         private readonly IProviderServiceSettings _providerServiceSettings;
         private readonly IVenueServiceSettings _venueServiceSettings;
+        private readonly ISearchServiceSettings _searchServiceSettings;
+        //private readonly ISearchServiceWrapper _searchServiceWrapper;
 
         public CoursesService(
             ICosmosDbHelper cosmosDbHelper,
             IOptions<ProviderServiceSettings> providerServiceSettings,
             IOptions<VenueServiceSettings> venueServiceSettings,
+            IOptions<SearchServiceSettings> searchServiceSettings,
             IOptions<CosmosDbCollectionSettings> settings)
         {
             Throw.IfNull(cosmosDbHelper, nameof(cosmosDbHelper));
             Throw.IfNull(settings, nameof(settings));
             Throw.IfNull(providerServiceSettings, nameof(providerServiceSettings));
             Throw.IfNull(venueServiceSettings, nameof(venueServiceSettings));
+            Throw.IfNull(searchServiceSettings, nameof(searchServiceSettings));
 
             _cosmosDbHelper = cosmosDbHelper;
             _settings = settings.Value;
             _providerServiceSettings = providerServiceSettings.Value;
             _venueServiceSettings = venueServiceSettings.Value;
+            _searchServiceSettings = searchServiceSettings.Value;
+        }
+
+        public async Task<IEnumerable<Document>> UploadCoursesToSearch(ILogger log, IReadOnlyList<Document> documents)
+        {
+            return new SearchServiceWrapper(log, _searchServiceSettings).UploadBatch(documents, out int succeeded);
         }
 
         public async Task<IEnumerable<IAzureSearchCourse>> FindACourseAzureSearchData(ILogger log)
@@ -53,9 +64,7 @@ namespace Dfc.ProviderPortal.Courses.Services
                                                           from CourseRun cr in c.CourseRuns ?? new List<CourseRun>()
                                                           join AzureSearchProviderModel p in providers
                                                           on c.ProviderUKPRN equals p.UnitedKingdomProviderReferenceNumber
-                                                          //join AzureSearchVenueModel v in venues
-                                                          //on cr.VenueId equals v.id
-                                                          from vm in venues.Where(v => cr.VenueId == v.id)       // left outer join on venues for online courses
+                                                          from vm in venues.Where(v => cr.VenueId == v.id)
                                                                            .DefaultIfEmpty()
                                                           select new AzureSearchCourse()
                                                           {
@@ -175,7 +184,7 @@ namespace Dfc.ProviderPortal.Courses.Services
             using (var client = _cosmosDbHelper.GetClient())
             {
                 var docs = _cosmosDbHelper.GetDocumentsByUKPRN(client, _settings.CoursesCollectionId, UKPRN);
-                persisted = docs; // _cosmosDbHelper.DocumentsTo<Course>(docs);
+                persisted = docs;
             }
 
             return persisted;
