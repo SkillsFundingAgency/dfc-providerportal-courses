@@ -9,6 +9,7 @@ namespace Dfc.ProviderPortal.Courses.Settings
     {
         public string SearchService { get; set; }
         public string QueryKey { get; set; }
+        public string AdminKey { get; set; }
         public string Index { get; set; }
     }
 }

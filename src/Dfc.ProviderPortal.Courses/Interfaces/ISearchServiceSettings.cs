@@ -8,6 +8,7 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
     {
         string SearchService { get; }
         string QueryKey { get; }
+        string AdminKey { get; }
         string Index { get; }
     }
 }

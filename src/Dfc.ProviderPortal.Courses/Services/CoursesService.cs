@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.Azure.Documents.Client;
+using Microsoft.Azure.Search.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -30,12 +31,14 @@ namespace Dfc.ProviderPortal.Courses.Services
 
         public CoursesService(
             ICosmosDbHelper cosmosDbHelper,
+            //ISearchServiceWrapper searchServiceWrapper,
             IOptions<ProviderServiceSettings> providerServiceSettings,
             IOptions<VenueServiceSettings> venueServiceSettings,
             IOptions<SearchServiceSettings> searchServiceSettings,
             IOptions<CosmosDbCollectionSettings> settings)
         {
             Throw.IfNull(cosmosDbHelper, nameof(cosmosDbHelper));
+            //Throw.IfNull(searchServiceWrapper, nameof(searchServiceWrapper));
             Throw.IfNull(settings, nameof(settings));
             Throw.IfNull(providerServiceSettings, nameof(providerServiceSettings));
             Throw.IfNull(venueServiceSettings, nameof(venueServiceSettings));
@@ -46,11 +49,26 @@ namespace Dfc.ProviderPortal.Courses.Services
             _providerServiceSettings = providerServiceSettings.Value;
             _venueServiceSettings = venueServiceSettings.Value;
             _searchServiceSettings = searchServiceSettings.Value;
+            //_searchServiceWrapper = searchServiceWrapper;
         }
 
-        public async Task<IEnumerable<Document>> UploadCoursesToSearch(ILogger log, IReadOnlyList<Document> documents)
+        public async Task<IEnumerable<IndexingResult>> UploadCoursesToSearch(ILogger log, IReadOnlyList<Document> documents)
         {
-            return new SearchServiceWrapper(log, _searchServiceSettings).UploadBatch(documents, out int succeeded);
+            if (documents.Any()) {
+
+                log.LogInformation("Getting provider data");
+                IEnumerable<AzureSearchProviderModel> providers = new ProviderServiceWrapper(_providerServiceSettings).GetLiveProvidersForAzureSearch();
+
+                log.LogInformation("Getting venue data");
+                IEnumerable<AzureSearchVenueModel> venues = new VenueServiceWrapper(_venueServiceSettings).GetVenues();
+                
+                //return _searchServiceWrapper.UploadBatch(documents, out int succeeded);
+                return new SearchServiceWrapper(log, _searchServiceSettings)
+                        .UploadBatch(providers, venues, documents, out int succeeded);
+            } else {
+                // Return empty list of failed IndexingResults
+                return new List<IndexingResult>();
+            }
         }
 
         public async Task<IEnumerable<IAzureSearchCourse>> FindACourseAzureSearchData(ILogger log)

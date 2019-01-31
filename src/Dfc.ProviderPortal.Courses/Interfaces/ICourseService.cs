@@ -3,7 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Azure.Documents;
+using Microsoft.Azure.Search.Models;
 using Microsoft.Extensions.Logging;
+using Document = Microsoft.Azure.Documents.Document;
 
 
 namespace Dfc.ProviderPortal.Courses.Interfaces
@@ -16,6 +18,6 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         Task<ICourse> Update(ICourse doc);
         Task<IEnumerable<ICourse>> GetAllCourses(ILogger log);
         Task<IEnumerable<IAzureSearchCourse>> FindACourseAzureSearchData(ILogger log);
-        Task<IEnumerable<Document>> UploadCoursesToSearch(ILogger log, IReadOnlyList<Document> documents);
+        Task<IEnumerable<IndexingResult>> UploadCoursesToSearch(ILogger log, IReadOnlyList<Document> documents);
     }
 }
