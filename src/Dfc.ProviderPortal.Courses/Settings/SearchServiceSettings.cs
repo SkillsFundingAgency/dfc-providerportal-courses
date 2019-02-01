@@ -11,5 +11,6 @@ namespace Dfc.ProviderPortal.Courses.Settings
         public string QueryKey { get; set; }
         public string AdminKey { get; set; }
         public string Index { get; set; }
+        public int DefaultTop { get; set; }
     }
 }

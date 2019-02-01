@@ -71,6 +71,12 @@ namespace Dfc.ProviderPortal.Courses.Services
             }
         }
 
+        public async Task<DocumentSearchResult<AzureSearchCourse>> SearchCourses(ILogger log, string SearchText)
+        {
+            return new SearchServiceWrapper(log, _searchServiceSettings)
+                        .SearchCourses(SearchText);
+        }
+
         public async Task<IEnumerable<IAzureSearchCourse>> FindACourseAzureSearchData(ILogger log)
         {
             try {
