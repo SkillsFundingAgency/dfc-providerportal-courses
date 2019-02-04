@@ -38,6 +38,7 @@ namespace Dfc.ProviderPortal.Courses.API
                     .Configure<CosmosDbSettings>(Configuration.GetSection(nameof(CosmosDbSettings)))
                     .Configure<ProviderServiceSettings>(Configuration.GetSection(nameof(ProviderServiceSettings)))
                     .Configure<VenueServiceSettings>(Configuration.GetSection(nameof(VenueServiceSettings)))
+                    .Configure<SearchServiceSettings>(Configuration.GetSection(nameof(SearchServiceSettings)))
                     .AddScoped<ICourseService, CoursesService>()
                     .AddScoped<ICosmosDbHelper, CosmosDbHelper>()
                     .AddScoped<IProviderServiceWrapper, ProviderServiceWrapper>()

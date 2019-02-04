@@ -13,5 +13,8 @@ namespace Dfc.ProviderPortal.Courses.Models
         public string TOWN { get; set; }
         public string COUNTY { get; set; }
         public string POSTCODE { get; set; }
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; }
+
     }
 }

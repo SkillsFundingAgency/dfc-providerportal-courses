@@ -13,5 +13,6 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
     public interface IVenueServiceWrapper
     {
         IEnumerable<AzureSearchVenueModel> GetVenues();
+        AzureSearchVenueModel GetById(Guid id);
     }
 }

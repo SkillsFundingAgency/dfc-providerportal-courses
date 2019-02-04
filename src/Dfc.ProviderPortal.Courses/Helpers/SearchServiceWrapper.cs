@@ -113,7 +113,7 @@ namespace Dfc.ProviderPortal.Courses.Helpers
                                                        string.IsNullOrWhiteSpace(x.Venue?.COUNTY) ? "" : x.Venue?.COUNTY + ", ",
                                                        x.Venue?.POSTCODE),
                                         VenueAttendancePattern = x.Run?.AttendancePattern,
-                                        //VenueLocation = [to be populated later],
+                                        VenueLocation = GeographyPoint.Create(x.Venue?.Latitude ?? 0, x.Venue?.Longitude ?? 0),
                                         ProviderName = p?.ProviderName,
                                         UpdatedOn = x.Run?.UpdatedDate
                                     };

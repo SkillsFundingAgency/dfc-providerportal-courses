@@ -1,16 +1,19 @@
 ﻿
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Search.Models;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Debug;
 using Dfc.ProviderPortal.Courses.Models;
 using Dfc.ProviderPortal.Courses.Services;
 using Dfc.ProviderPortal.Courses.Interfaces;
 using Dfc.ProviderPortal.Packages;
 using Dfc.ProviderPortal.Packages.AzureFunctions.DependencyInjection;
 using Dfc.ProviderPortal.Courses.Functions;
+using Dfc.ProviderPortal.Courses.Settings;
 
 
 namespace Dfc.ProviderPortal.Venues.API.Controllers
@@ -24,23 +27,49 @@ namespace Dfc.ProviderPortal.Venues.API.Controllers
     {
         private ILogger _log = null;
         private ICourseService _service = null;
+        private readonly ICosmosDbHelper _cosmosDbHelper;
+        private readonly ICosmosDbCollectionSettings _settings;
+        private readonly IProviderServiceSettings _providerServiceSettings;
+        private readonly IVenueServiceSettings _venueServiceSettings;
+        private readonly ISearchServiceSettings _searchServiceSettings;
+        //private readonly ISearchServiceWrapper _searchServiceWrapper;
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="logger"></param>
-        public CoursesController(ILogger<CoursesController> logger, ICourseService service)
+        public CoursesController(
+            ILogger<CoursesController> logger,
+            ICourseService service,
+            ICosmosDbHelper cosmosDbHelper,
+            //ISearchServiceWrapper searchServiceWrapper,
+            IOptions<ProviderServiceSettings> providerServiceSettings,
+            IOptions<VenueServiceSettings> venueServiceSettings,
+            IOptions<SearchServiceSettings> searchServiceSettings,
+            IOptions<CosmosDbCollectionSettings> settings)
         {
             Throw.IfNull<ILogger<CoursesController>>(logger, nameof(logger));
             Throw.IfNull<ICourseService>(service, nameof(service));
+            Throw.IfNull(cosmosDbHelper, nameof(cosmosDbHelper));
+            //Throw.IfNull(searchServiceWrapper, nameof(searchServiceWrapper));
+            Throw.IfNull(settings, nameof(settings));
+            Throw.IfNull(providerServiceSettings, nameof(providerServiceSettings));
+            Throw.IfNull(venueServiceSettings, nameof(venueServiceSettings));
+            Throw.IfNull(searchServiceSettings, nameof(searchServiceSettings));
 
             _log = logger;
             _service = service;
+            _cosmosDbHelper = cosmosDbHelper;
+            _settings = settings.Value;
+            _providerServiceSettings = providerServiceSettings.Value;
+            _venueServiceSettings = venueServiceSettings.Value;
+            _searchServiceSettings = searchServiceSettings.Value;
+            //_searchServiceWrapper = searchServiceWrapper;
         }
 
         /// <summary>
         /// All courses, for example:
-        /// GET api/courses
+        /// GET api/courses/PopulateSearch
         /// </summary>
         /// <returns>All courses</returns>
         [HttpGet("PopulateSearch", Name = "PopulateSearch")]
@@ -50,8 +79,30 @@ namespace Dfc.ProviderPortal.Venues.API.Controllers
                 Task<IEnumerable<IAzureSearchCourse>> task = _service.FindACourseAzureSearchData(_log);
                 task.Wait();
                 return new ActionResult<IEnumerable<IAzureSearchCourse>>(task.Result);
+
+            } catch (Exception ex) {
+                return new InternalServerErrorObjectResult(ex);
             }
-            catch (Exception ex) {
+        }
+
+        /// <summary>
+        /// Search courses (aka Find A Course), for example:
+        /// GET api/courses/search?
+        /// </summary>
+        /// <returns>All courses</returns>
+        [HttpGet("Search", Name = "Search")]
+        public async Task<ActionResult<IEnumerable<AzureSearchCourse>>> Search(string q)
+        {
+            try {
+                Task<DocumentSearchResult<AzureSearchCourse>> task = _service.SearchCourses(_log, q);
+                //task.Wait();
+                return new ActionResult<IEnumerable<AzureSearchCourse>>(
+                    task.Result.Results
+                               .AsEnumerable()
+                               .Select(r => r.Document)
+                );
+
+            } catch (Exception ex) {
                 return new InternalServerErrorObjectResult(ex);
             }
         }

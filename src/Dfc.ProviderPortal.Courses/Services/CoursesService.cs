@@ -9,6 +9,7 @@ using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Search.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
+using Microsoft.Spatial;
 using Newtonsoft.Json;
 using Dfc.ProviderPortal.Courses.Helpers;
 using Dfc.ProviderPortal.Courses.Interfaces;
@@ -52,6 +53,21 @@ namespace Dfc.ProviderPortal.Courses.Services
             //_searchServiceWrapper = searchServiceWrapper;
         }
 
+        private IEnumerable<AzureSearchVenueModel> GetVenues(IEnumerable<CourseRun> runs = null)
+        {
+            IVenueServiceWrapper service = new VenueServiceWrapper(_venueServiceSettings);
+
+            // Get all venues to save time & RUs if there's too many to get by Id
+            if (runs == null || runs.Count() > _searchServiceSettings.ThresholdVenueCount)
+                return service.GetVenues();
+            else {
+                List<AzureSearchVenueModel> venues = new List<AzureSearchVenueModel>();
+                foreach (CourseRun r in runs.Where(x => x.VenueId != null))
+                    venues.Add(service.GetById(r.VenueId.Value));
+                return venues;
+            }
+        }
+
         public async Task<IEnumerable<IndexingResult>> UploadCoursesToSearch(ILogger log, IReadOnlyList<Document> documents)
         {
             if (documents.Any()) {
@@ -60,9 +76,11 @@ namespace Dfc.ProviderPortal.Courses.Services
                 IEnumerable<AzureSearchProviderModel> providers = new ProviderServiceWrapper(_providerServiceSettings).GetLiveProvidersForAzureSearch();
 
                 log.LogInformation("Getting venue data");
-                IEnumerable<AzureSearchVenueModel> venues = new VenueServiceWrapper(_venueServiceSettings).GetVenues();
+                IEnumerable<AzureSearchVenueModel> venues = GetVenues(
+                    documents.Select(d => new Course() { CourseRuns = d.GetPropertyValue<IEnumerable<CourseRun>>("CourseRuns") })
+                             .SelectMany(c => c.CourseRuns)
+                );
                 
-                //return _searchServiceWrapper.UploadBatch(documents, out int succeeded);
                 return new SearchServiceWrapper(log, _searchServiceSettings)
                         .UploadBatch(providers, venues, documents, out int succeeded);
             } else {
@@ -82,7 +100,7 @@ namespace Dfc.ProviderPortal.Courses.Services
             try {
                 IEnumerable<ICourse> persisted = await GetAllCourses(log);
                 IEnumerable<AzureSearchProviderModel> providers = new ProviderServiceWrapper(_providerServiceSettings).GetLiveProvidersForAzureSearch();
-                IEnumerable<AzureSearchVenueModel> venues = new VenueServiceWrapper(_venueServiceSettings).GetVenues();
+                IEnumerable<AzureSearchVenueModel> venues = GetVenues(persisted.SelectMany(p => p.CourseRuns ?? new List<CourseRun>())); //new VenueServiceWrapper(_venueServiceSettings).GetVenues();
 
                 IEnumerable<IAzureSearchCourse> results = from ICourse c in persisted
                                                           from CourseRun cr in c.CourseRuns ?? new List<CourseRun>()
@@ -105,8 +123,7 @@ namespace Dfc.ProviderPortal.Courses.Services
                                                                              string.IsNullOrWhiteSpace(vm?.COUNTY) ? "" : vm?.COUNTY + ", ",
                                                                              vm?.POSTCODE),
                                                               VenueAttendancePattern = cr.AttendancePattern,
-                                                              //VenueLattitude = ???,
-                                                              //VenueLongitude = ???,
+                                                              VenueLocation = GeographyPoint.Create(vm?.Latitude ?? 0, vm?.Longitude ?? 0),
                                                               ProviderName = p.ProviderName,
                                                               UpdatedOn = c.UpdatedDate
                                                           };

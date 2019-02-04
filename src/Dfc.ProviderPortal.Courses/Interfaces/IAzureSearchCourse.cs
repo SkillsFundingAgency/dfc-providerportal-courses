@@ -18,8 +18,8 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         DateTime? UpdatedOn { get; set; }
         string VenueName { get; set; }
         string VenueAddress { get; set; }
-        //string VenueLattitude { get; set; }
-        //string VenueLongitude { get; set; }
+        string VenueLatitude { get; set; }
+        string VenueLongitude { get; set; }
         GeographyPoint VenueLocation { get; set; }
         int? VenueAttendancePattern { get; set; }
         string ProviderName { get; set; }

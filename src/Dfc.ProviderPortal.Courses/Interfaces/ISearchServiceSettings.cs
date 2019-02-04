@@ -11,5 +11,6 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         string AdminKey { get; }
         string Index { get; }
         int DefaultTop { get; }
+        int ThresholdVenueCount { get; }
     }
 }
