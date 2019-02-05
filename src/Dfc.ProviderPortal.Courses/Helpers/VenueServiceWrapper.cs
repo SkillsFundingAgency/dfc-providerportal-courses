@@ -24,7 +24,7 @@ namespace Dfc.ProviderPortal.Courses.Helpers
             _settings = settings;
         }
 
-        public AzureSearchVenueModel GetById(Guid id)
+        public T GetById<T>(Guid id)
         {
             // Call service to get data
             HttpClient client = new HttpClient();
@@ -37,7 +37,7 @@ namespace Dfc.ProviderPortal.Courses.Helpers
             string json = taskJSON.Result;
 
             // Return data as model object
-            return JsonConvert.DeserializeObject<AzureSearchVenueModel>(json);
+            return JsonConvert.DeserializeObject<T>(json);
         }
 
         public IEnumerable<AzureSearchVenueModel> GetVenues()

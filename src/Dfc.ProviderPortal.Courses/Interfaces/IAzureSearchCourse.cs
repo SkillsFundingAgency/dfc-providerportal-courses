@@ -23,5 +23,6 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         GeographyPoint VenueLocation { get; set; }
         int? VenueAttendancePattern { get; set; }
         string ProviderName { get; set; }
+        string Region { get; set; }
     }
 }

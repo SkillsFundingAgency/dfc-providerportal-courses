@@ -7,6 +7,20 @@ using Dfc.ProviderPortal.Courses.Interfaces;
 
 namespace Dfc.ProviderPortal.Courses.Models
 {
+    public enum RecordStatus
+    {
+        [Description("Undefined")]
+        Undefined = 0,
+        [Description("Pending")]
+        Pending = 1,
+        [Description("Live")]
+        Live = 2,
+        [Description("Archived")]
+        Archived = 3,
+        [Description("Deleted")]
+        Deleted = 4
+    }
+
     public enum DeliveryMode
     {
         [Description("Undefined")]
@@ -29,7 +43,9 @@ namespace Dfc.ProviderPortal.Courses.Models
         [Description("Months")]
         Months = 3,
         [Description("Years")]
-        Years = 4
+        Years = 4,
+        [Description("Hours")]
+        Hours = 5,
     }
     public enum StudyMode
     {
@@ -64,25 +80,25 @@ namespace Dfc.ProviderPortal.Courses.Models
         FlexibleStartDate = 2,
     }
 
-    public class CourseRun : ICourseRun 
+    public class CourseRun : ICourseRun
     {
         public Guid id { get; set; }
         public int? CourseInstanceId { get; set; }
         public Guid? VenueId { get; set; }
         public string CourseName { get; set; }
         public string ProviderCourseID { get; set; }
-        public int DeliveryMode { get; set; }
+        public DeliveryMode DeliveryMode { get; set; }
         public bool FlexibleStartDate { get; set; }
         public DateTime? StartDate { get; set; }
         public string CourseURL { get; set; }
         public decimal? Cost { get; set; }
         public string CostDescription { get; set; }
-        public int DurationUnit { get; set; }
+        public DurationUnit DurationUnit { get; set; }
         public int? DurationValue { get; set; }
-        public int StudyMode { get; set; }
-        public int AttendancePattern { get; set; }
+        public StudyMode StudyMode { get; set; }
+        public AttendancePattern AttendancePattern { get; set; }
         public IEnumerable<string> Regions { get; set; }
-
+        public RecordStatus RecordStatus { get; set; }
         public DateTime CreatedDate { get; set; }
         public string CreatedBy { get; set; }
         public DateTime? UpdatedDate { get; set; }

@@ -67,23 +67,23 @@ namespace Dfc.ProviderPortal.Venues.API.Controllers
             //_searchServiceWrapper = searchServiceWrapper;
         }
 
-        /// <summary>
-        /// All courses, for example:
-        /// GET api/courses/PopulateSearch
-        /// </summary>
-        /// <returns>All courses</returns>
-        [HttpGet("PopulateSearch", Name = "PopulateSearch")]
-        public ActionResult<IEnumerable<IAzureSearchCourse>> PopulateSearch()
-        {
-            try {
-                Task<IEnumerable<IAzureSearchCourse>> task = _service.FindACourseAzureSearchData(_log);
-                task.Wait();
-                return new ActionResult<IEnumerable<IAzureSearchCourse>>(task.Result);
+        ///// <summary>
+        ///// All courses, for example:
+        ///// GET api/courses/PopulateSearch
+        ///// </summary>
+        ///// <returns>All courses</returns>
+        //[HttpGet("PopulateSearch", Name = "PopulateSearch")]
+        //public ActionResult<IEnumerable<IAzureSearchCourse>> PopulateSearch()
+        //{
+        //    try {
+        //        Task<IEnumerable<IAzureSearchCourse>> task = _service.FindACourseAzureSearchData(_log);
+        //        task.Wait();
+        //        return new ActionResult<IEnumerable<IAzureSearchCourse>>(task.Result);
 
-            } catch (Exception ex) {
-                return new InternalServerErrorObjectResult(ex);
-            }
-        }
+        //    } catch (Exception ex) {
+        //        return new InternalServerErrorObjectResult(ex);
+        //    }
+        //}
 
         /// <summary>
         /// Search courses (aka Find A Course), for example:

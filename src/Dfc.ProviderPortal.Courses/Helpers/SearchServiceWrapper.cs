@@ -97,7 +97,7 @@ namespace Dfc.ProviderPortal.Courses.Helpers
                     var batchdata = from LINQComboClass x in classroom.Union(nonclassroom)
                                     join AzureSearchProviderModel p in providers
                                     on x.Course?.ProviderUKPRN equals p.UnitedKingdomProviderReferenceNumber
-                                    where (x.Venue != null || x.Region != null)
+                                    where (x.Run?.RecordStatus != RecordStatus.Pending && (x.Venue != null || x.Region != null))
                                     select new AzureSearchCourse()
                                     {
                                         id = x.Run?.id,
@@ -112,19 +112,21 @@ namespace Dfc.ProviderPortal.Courses.Helpers
                                                        string.IsNullOrWhiteSpace(x.Venue?.TOWN) ? "" : x.Venue?.TOWN + ", ",
                                                        string.IsNullOrWhiteSpace(x.Venue?.COUNTY) ? "" : x.Venue?.COUNTY + ", ",
                                                        x.Venue?.POSTCODE),
-                                        VenueAttendancePattern = x.Run?.AttendancePattern,
+                                        VenueAttendancePattern = (int?)x.Run?.AttendancePattern,
                                         VenueLocation = GeographyPoint.Create(x.Venue?.Latitude ?? 0, x.Venue?.Longitude ?? 0),
                                         ProviderName = p?.ProviderName,
+                                        Region = x.Region,
                                         UpdatedOn = x.Run?.UpdatedDate
                                     };
 
+                    if (batchdata.Any()) {
+                        IndexBatch<AzureSearchCourse> batch = IndexBatch.MergeOrUpload(batchdata);
 
-                    IndexBatch< AzureSearchCourse > batch = IndexBatch.MergeOrUpload(batchdata);
-
-                    _log.LogInformation("Merging docs to azure search index: course");
-                    Task<DocumentIndexResult> task = _adminIndex.Documents.IndexAsync(batch);
-                    task.Wait();
-                    succeeded = batchdata.Count();
+                        _log.LogInformation("Merging docs to azure search index: course");
+                        Task<DocumentIndexResult> task = _adminIndex.Documents.IndexAsync(batch);
+                        task.Wait();
+                        succeeded = batchdata.Count();
+                    }
                     _log.LogInformation($"Successfully merged {succeeded} docs to azure search index: course");
                 }
 
