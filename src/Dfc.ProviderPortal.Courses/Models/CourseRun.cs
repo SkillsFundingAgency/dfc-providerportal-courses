@@ -29,7 +29,9 @@ namespace Dfc.ProviderPortal.Courses.Models
         [Description("Months")]
         Months = 3,
         [Description("Years")]
-        Years = 4
+        Years = 4,
+        [Description("Hours")]
+        Hours = 5,
     }
     public enum StudyMode
     {
@@ -82,7 +84,7 @@ namespace Dfc.ProviderPortal.Courses.Models
         public int StudyMode { get; set; }
         public int AttendancePattern { get; set; }
         public IEnumerable<string> Regions { get; set; }
-
+        public RecordStatus RecordStatus { get; set; }
         public DateTime CreatedDate { get; set; }
         public string CreatedBy { get; set; }
         public DateTime? UpdatedDate { get; set; }

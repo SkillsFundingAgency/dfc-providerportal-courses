@@ -1,4 +1,5 @@
 ﻿
+using Dfc.ProviderPortal.Courses.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -24,7 +25,7 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         int StudyMode { get; set; }
         int AttendancePattern { get; set; }
         IEnumerable<string> Regions { get; set; }
-
+        RecordStatus RecordStatus { get; set; }
         DateTime CreatedDate { get; set; }
         string CreatedBy { get; set; }
         DateTime? UpdatedDate { get; set; }
