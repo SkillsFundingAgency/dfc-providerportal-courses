@@ -21,6 +21,6 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         Task<IEnumerable<ICourse>> GetAllCourses(ILogger log);
         //Task<IEnumerable<IAzureSearchCourse>> FindACourseAzureSearchData(ILogger log);
         Task<IEnumerable<IndexingResult>> UploadCoursesToSearch(ILogger log, IReadOnlyList<Document> documents);
-        Task<DocumentSearchResult<AzureSearchCourse>> SearchCourses(ILogger log, string SearchText);
+        Task<FACSearchResult> CourseSearch(ILogger log, SearchCriteriaStructure criteria); // string SearchText)
     }
 }

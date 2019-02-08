@@ -20,6 +20,7 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
             IEnumerable<AzureSearchVenueModel> venues,
             IReadOnlyList<Document> documents,
             out int succeeded);
-        DocumentSearchResult<AzureSearchCourse> SearchCourses(string SearchText);
+        //DocumentSearchResult<AzureSearchCourse> SearchCourses(SearchCriteriaStructure criteria); // string SearchText);
+        FACSearchResult SearchCourses(SearchCriteriaStructure criteria);
     }
 }

@@ -1,5 +1,6 @@
 ﻿
 using System;
+using Dfc.ProviderPortal.Packages;
 
 
 namespace Dfc.ProviderPortal.Courses.Models
@@ -16,10 +17,10 @@ namespace Dfc.ProviderPortal.Courses.Models
         //public string ProviderKeywordField { get; set; }
         //public string[] LDCSField { get; set; }
         //public string[] QualificationTypesField { get; set; }
-        public string[] QualificationLevelsField { get; set; }
-        public string[] StudyModesField { get; set; }
-        public string[] AttendanceModesField { get; set; }
-        public string[] AttendancePatternsField { get; set; }
+        public int[] QualificationLevelsField { get; set; }
+        public int[] StudyModesField { get; set; }
+        public int[] AttendanceModesField { get; set; }
+        public int[] AttendancePatternsField { get; set; }
         //public string[] A10CodesField { get; set; }
         //public string EarliestStartDateField { get; set; }
         //public string TTGFlagField { get; set; }
@@ -34,5 +35,14 @@ namespace Dfc.ProviderPortal.Courses.Models
         //public string SFLFlagField { get; set; }
         //public string ILSFlagField { get; set; }
         public string TownOrPostcode { get; set; }
+
+        public int? TopResults { get; set; }
+
+
+        public SearchCriteriaStructure()
+        {
+            //if (TopResults.HasValue)
+            //    Throw.IfLessThan(1, TopResults.Value, "");
+        }
     }
 }

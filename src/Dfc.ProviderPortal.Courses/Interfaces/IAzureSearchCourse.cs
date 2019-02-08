@@ -24,5 +24,6 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         int? VenueAttendancePattern { get; set; }
         string ProviderName { get; set; }
         string Region { get; set; }
+        int? Status { get; set; }
     }
 }

@@ -17,21 +17,24 @@ using Dfc.ProviderPortal.Courses.Models;
 
 namespace Dfc.ProviderPortal.Courses.Functions
 {
-    public static class SearchCourses
+    public static class CourseSearch
     {
-        [FunctionName("SearchCourses")]
+        [FunctionName("CourseSearch")]
         public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req,
                                                     ILogger log,
                                                     [Inject] ICourseService coursesService)
         {
             string query = req.Query["q"];
-            DocumentSearchResult<AzureSearchCourse> results = null;
+            FACSearchResult results = null;
 
             if (string.IsNullOrWhiteSpace(query))
                 return new BadRequestObjectResult($"Empty or missing search value");
 
             try {
-                results = await coursesService.SearchCourses(log, query);
+                results = await coursesService.CourseSearch(log,
+                    new SearchCriteriaStructure() {
+                        SubjectKeywordField = query
+                    });
                 //if (results == null)
                 //    return new NotFoundObjectResult(query);
 

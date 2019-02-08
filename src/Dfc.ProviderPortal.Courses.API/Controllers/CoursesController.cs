@@ -87,24 +87,73 @@ namespace Dfc.ProviderPortal.Venues.API.Controllers
 
         /// <summary>
         /// Search courses (aka Find A Course), for example:
-        /// GET api/courses/search?
+        /// POST api/courses/coursesearch
         /// </summary>
         /// <returns>All courses</returns>
-        [HttpGet("Search", Name = "Search")]
-        public async Task<ActionResult<IEnumerable<AzureSearchCourse>>> Search(string q)
+        //[HttpGet("CourseSearch", Name = "CourseSearch")]
+        [Route("~/api/coursesearch")]
+        //[HttpPost] //(Name = "CourseSearch")]
+        public async Task<FACSearchResult> Post([FromBody]string q) //SearchCriteriaStructure criteria) //string q, int? TopResults)
         {
             try {
-                Task<DocumentSearchResult<AzureSearchCourse>> task = _service.SearchCourses(_log, q);
+                Task<FACSearchResult> task = _service.CourseSearch(_log,
+                    //criteria);
+                    new SearchCriteriaStructure()
+                    {
+                        SubjectKeywordField = "biol", //criteria.SubjectKeywordField, // q,
+                        TownOrPostcode = "Carlisle",
+                        QualificationLevelsField = new int[] { 1, 5 },
+                        AttendanceModesField = new int[] { },
+                        AttendancePatternsField = new int[] { },
+                        DFE1619FundedField = "",
+                        StudyModesField = new int[] { },
+                        DistanceField = 50,
+                        TopResults = 100 // TopResults
+                    });
                 //task.Wait();
-                return new ActionResult<IEnumerable<AzureSearchCourse>>(
-                    task.Result.Results
-                               .AsEnumerable()
-                               .Select(r => r.Document)
-                );
+                //return new ActionResult<IEnumerable<AzureSearchCourse>>(
+                //    task.Result.Results
+                //               .AsEnumerable()
+                //               .Select(r => r.Document)
+                //);
+
+                return await task;
 
             } catch (Exception ex) {
-                return new InternalServerErrorObjectResult(ex);
+                //return new InternalServerErrorObjectResult(ex);
+                _log.LogError(ex, "Error in CourseSearch");
+                return null;
             }
         }
+
+        [HttpGet("test", Name = "test")]
+        public async Task<FACSearchResult> test(string q)
+        {
+            try {
+                Task<FACSearchResult> task = _service.CourseSearch(_log,
+                    //criteria);
+                    new SearchCriteriaStructure()
+                    {
+                        SubjectKeywordField = "biol", //criteria.SubjectKeywordField, // q,
+                        TownOrPostcode = "Carlisle",
+                        QualificationLevelsField = new int[] { 1,2,3,4,5 },
+                        AttendanceModesField = new int[] { 1,2,3 },
+                        AttendancePatternsField = new int[] { 2,3,4 },
+                        DFE1619FundedField = "",
+                        StudyModesField = new int[ ] { 3,4,5 },
+                        DistanceField = 50,
+                        TopResults = 100 // TopResults
+                    });
+
+                return await task;
+
+            } catch (Exception ex) {
+                //return new InternalServerErrorObjectResult(ex);
+                _log.LogError(ex, "Error in CourseSearch");
+                return null;
+            }
+
+        }
     }
+
 }

@@ -18,7 +18,9 @@ namespace Dfc.ProviderPortal.Courses.Models
         [Description("Archived")]
         Archived = 3,
         [Description("Deleted")]
-        Deleted = 4
+        Deleted = 4,
+        [Description("Ready To Go Live")]
+        ReadyToGoLive = 5
     }
 
     public enum DeliveryMode

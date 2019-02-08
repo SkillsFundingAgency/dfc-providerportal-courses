@@ -42,5 +42,6 @@ namespace Dfc.ProviderPortal.Courses.Models
         public int? VenueAttendancePattern { get; set; }
         public string ProviderName { get; set; }
         public string Region { get; set; }
+        public int? Status { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using System.Text;
 using System.Collections.Generic;
+using System.Net.Http;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -40,6 +41,7 @@ namespace Dfc.ProviderPortal.Courses
             builder.Services.AddScoped<ICosmosDbHelper, CosmosDbHelper>();
             builder.Services.AddScoped<ISearchServiceWrapper, SearchServiceWrapper>();
             builder.Services.AddScoped<ICourseService, CoursesService>();
+            builder.Services.AddTransient((provider) => new HttpClient());
         }
     }
 }
