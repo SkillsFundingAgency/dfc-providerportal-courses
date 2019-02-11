@@ -31,5 +31,6 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         DateTime? UpdatedDate { get; }
         string UpdatedBy { get; }
         IEnumerable<CourseRun> CourseRuns { get; }
+        RecordStatus RecordStatus { get; set; }
     }
 }
