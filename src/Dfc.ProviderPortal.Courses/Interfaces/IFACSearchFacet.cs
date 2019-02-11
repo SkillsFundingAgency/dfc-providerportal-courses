@@ -7,7 +7,7 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
 {
     public interface IFACSearchFacet
     {
-        int? Count { get; }
-        string Value { get; }
+        int? count { get; }
+        dynamic value { get; }
     }
 }

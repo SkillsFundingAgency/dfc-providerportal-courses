@@ -8,7 +8,7 @@ namespace Dfc.ProviderPortal.Courses.Models
 {
     public class FACSearchFacet : IFACSearchFacet
     {
-        public int? Count { get; }
-        public string Value { get; }
+        public int? count { get; }
+        public dynamic value { get; }
     }
 }

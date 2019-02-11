@@ -8,19 +8,19 @@ namespace Dfc.ProviderPortal.Courses.Models
     public class SearchCriteriaStructure
     {
         //public string APIKeyField { get; set; }
-        public string SubjectKeywordField { get; set; }
-        public string DFE1619FundedField { get; set; }
+        public string SubjectKeyword { get; set; }
+        public string DFE1619Funded { get; set; }
         //public string LocationField { get; set; }
-        public float DistanceField { get; set; }
+        public float? Distance { get; set; }
         //public bool DistanceFieldSpecified { get; set; }
         //public string ProviderIDField { get; set; }
         //public string ProviderKeywordField { get; set; }
         //public string[] LDCSField { get; set; }
         //public string[] QualificationTypesField { get; set; }
-        public int[] QualificationLevelsField { get; set; }
-        public int[] StudyModesField { get; set; }
-        public int[] AttendanceModesField { get; set; }
-        public int[] AttendancePatternsField { get; set; }
+        public string[] QualificationLevels { get; set; }
+        public string[] StudyModes { get; set; }
+        public string[] AttendanceModes { get; set; }
+        public string[] AttendancePatterns { get; set; }
         //public string[] A10CodesField { get; set; }
         //public string EarliestStartDateField { get; set; }
         //public string TTGFlagField { get; set; }

@@ -40,6 +40,7 @@ namespace Dfc.ProviderPortal.Courses.Helpers
         private static SearchServiceClient _adminService;
         private static ISearchIndexClient _queryIndex;
         private static ISearchIndexClient _adminIndex;
+        private static ISearchIndexClient _onspdIndex;
         private HttpClient _httpClient;
         private readonly Uri _uri;
 
@@ -65,6 +66,7 @@ namespace Dfc.ProviderPortal.Courses.Helpers
             _adminService = new SearchServiceClient(settings.SearchService, new SearchCredentials(settings.AdminKey));
             _queryIndex = _queryService?.Indexes?.GetClient(settings.Index);
             _adminIndex = _adminService?.Indexes?.GetClient(settings.Index);
+            _onspdIndex = _queryService?.Indexes?.GetClient(settings.onspdIndex);
 
             _httpClient = new HttpClient(); //httpClient;
             //_httpClient.DefaultRequestHeaders.Accept.Clear();
@@ -131,7 +133,7 @@ namespace Dfc.ProviderPortal.Courses.Helpers
                                                        string.IsNullOrWhiteSpace(x.Venue?.TOWN) ? "" : x.Venue?.TOWN + ", ",
                                                        string.IsNullOrWhiteSpace(x.Venue?.COUNTY) ? "" : x.Venue?.COUNTY + ", ",
                                                        x.Venue?.POSTCODE),
-                                        VenueAttendancePattern = (int?)x.Run?.AttendancePattern,
+                                        VenueAttendancePattern = ((int)x.Run?.AttendancePattern).ToString(),
                                         VenueLocation = GeographyPoint.Create(x.Venue?.Latitude ?? 0, x.Venue?.Longitude ?? 0),
                                         ProviderName = p?.ProviderName,
                                         Region = x.Region,
@@ -166,7 +168,7 @@ namespace Dfc.ProviderPortal.Courses.Helpers
             return new List<IndexingResult>();
         }
 
-        //public DocumentSearchResult<AzureSearchCourse> SearchCourses(SearchCriteriaStructure criteria) //string SearchText)
+
         public FACSearchResult SearchCourses(SearchCriteriaStructure criteria)
         {
             //try {
@@ -195,32 +197,54 @@ namespace Dfc.ProviderPortal.Courses.Helpers
                 _log.LogInformation("FAC search criteria.", criteria);
                 _log.LogInformation("FAC search uri.", _uri.ToString());
 
+                // Create filter string
+                // Use a pipe char to delimit; default commas and spaces can't be used as may be in facet values
                 List<KeyValuePair<string, string>> list = new List<KeyValuePair<string, string>>();
-                //list.Add(new KeyValuePair<string, string>("AttendanceMode", string.Join(",", criteria.AttendanceModesField)));
-                list.Add(new KeyValuePair<string, string>("VenueAttendancePattern", string.Join(",", criteria.AttendancePatternsField)));
-                //list.Add(new KeyValuePair<string, string>("DFE1619FundedField", string.Join(",", criteria.DFE1619FundedField)));
-                list.Add(new KeyValuePair<string, string>("NotionalNVQLevelv2", string.Join(",", criteria.QualificationLevelsField)));
-                //list.Add(new KeyValuePair<string, string>("StudyModesField", string.Join(",", criteria.StudyModesField)));
+                //list.Add(new KeyValuePair<string, string>("AttendanceMode", string.Join("|", criteria.AttendanceModes)));
+                list.Add(new KeyValuePair<string, string>("VenueAttendancePattern", string.Join("|", criteria.AttendancePatterns)));
+                //list.Add(new KeyValuePair<string, string>("DFE1619FundedField", string.Join("|", criteria.DFE1619Funded)));
+                list.Add(new KeyValuePair<string, string>("NotionalNVQLevelv2", string.Join("|", criteria.QualificationLevels)));
+                //list.Add(new KeyValuePair<string, string>("StudyModesField", string.Join("|", criteria.StudyModes)));
                 string filter = string.Join(" and ", list.Where(x => !string.IsNullOrWhiteSpace(x.Value))
-                                                         .Select(x => "search.in(" + x.Key + ", '" + x.Value + "')"));
+                                                         .Select(x => "search.in(" + x.Key + ", '" + x.Value + "', '|')"));
 
+                // Add geo distance clause if required
+                if (criteria.Distance.GetValueOrDefault(0) > 0 && !string.IsNullOrWhiteSpace(criteria.TownOrPostcode)) {
+                    _log.LogInformation($"FAC getting lat/long for location {criteria.TownOrPostcode}");
+
+                    SearchParameters parameters = new SearchParameters {
+                        Select = new[] { "pcds", "lat", "long" },
+                        SearchMode = SearchMode.All,
+                        Top = 1,
+                        QueryType = QueryType.Full
+                    };
+                    DocumentSearchResult<dynamic> results = _onspdIndex.Documents.Search<dynamic>(criteria.TownOrPostcode, parameters);
+                    float? longitude = (float?)results?.Results?.FirstOrDefault()?.Document?.@long;
+                    float? latitude = (float?)results?.Results?.FirstOrDefault()?.Document?.lat;
+
+                    if (latitude.HasValue && longitude.HasValue)
+                        filter += $" and geo.distance(VenueLocation, geography'POINT({longitude.Value} {latitude.Value})') le {criteria.Distance}"; //-122.121513 47.673988)') le {criteria.Distance}";
+                }
+
+                // Create a search criteria object for azure search service
                 IFACSearchCriteria facCriteria = new FACSearchCriteria()
                 {
-                    search = $"{criteria.SubjectKeywordField}* {(string.IsNullOrWhiteSpace(criteria.TownOrPostcode) ? "" : criteria.TownOrPostcode)}",
+                    search = $"{criteria.SubjectKeyword}*", //}* {(string.IsNullOrWhiteSpace(criteria.TownOrPostcode) ? "" : criteria.TownOrPostcode)}".Trim(),
                     searchMode = "all",
                     top = criteria.TopResults ?? _settings.DefaultTop,
-                    filter = "ProviderName eq 'CUMBRIA COUNTY COUNCIL' and NotionalNVQLevelv2 eq '5'",
-                    facets = new string[] { "NotionalNVQLevelv2", "ProviderName", "Region" },
+                    filter = filter,
+                    facets = new string[] { "NotionalNVQLevelv2", "VenueAttendancePattern", "ProviderName", "Region" },
                     count = true
                 };
 
-
+                // Create json ready for posting
                 JsonSerializerSettings settings = new JsonSerializerSettings {
                     //ContractResolver = new FACSearchCriteriaContractResolver()
                 };
                 settings.Converters.Add(new StringEnumConverter() { CamelCaseText = false });
                 StringContent content = new StringContent(JsonConvert.SerializeObject(facCriteria, settings), Encoding.UTF8, "application/json");
 
+                // Do the search
                 Task<HttpResponseMessage> task = _httpClient.PostAsync(_uri, content);
                 //https://dfc-dev-prov-sch.search.windows.net/indexes/course/docs?api-version=2017-11-11&queryType=full&$count=true&search=VenueAddress:evergreen AND QualificationCourseTitle:biology AND bell
                 //Task<HttpResponseMessage> task = _httpClient.GetAsync($"{_settings.ApiUrl}?api-version={_settings.ApiVersion}&queryType=full&$count={facCriteria.Count.ToString()}&search=VenueAddress:evergreen AND QualificationCourseTitle:biology AND {criteria.SubjectKeywordField}*");
@@ -230,6 +254,7 @@ namespace Dfc.ProviderPortal.Courses.Helpers
 
                 _log.LogInformation("FAC search service http response.", response);
 
+                // Handle response and deserialize results
                 if (response.IsSuccessStatusCode) {
                     //var json = await response.Content.ReadAsStringAsync();
                     var json = response.Content.ReadAsStringAsync().Result;
@@ -238,11 +263,14 @@ namespace Dfc.ProviderPortal.Courses.Helpers
                     settings = new JsonSerializerSettings {
                         ContractResolver = new FACSearchResultContractResolver()
                     };
+                    settings.Converters.Add(new StringEnumConverter() { CamelCaseText = false });
+
                     FACSearchResult searchResult = JsonConvert.DeserializeObject<FACSearchResult>(json, settings);
                     //return Result.Ok<IFACSearchResult>(searchResult);
                     return searchResult;
 
                 } else {
+                    _log.LogWarning($"FAC unexpected response: {response.StatusCode}", response);
                     //return Result.Fail<IFACSearchResult>("FAC search service unsuccessfull http response.");
                     return null;
                 }
