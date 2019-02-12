@@ -7,22 +7,6 @@ using Dfc.ProviderPortal.Courses.Interfaces;
 
 namespace Dfc.ProviderPortal.Courses.Models
 {
-    public enum RecordStatus
-    {
-        [Description("Undefined")]
-        Undefined = 0,
-        [Description("Pending")]
-        Pending = 1,
-        [Description("Live")]
-        Live = 2,
-        [Description("Archived")]
-        Archived = 3,
-        [Description("Deleted")]
-        Deleted = 4,
-        [Description("Ready To Go Live")]
-        ReadyToGoLive = 5
-    }
-
     public enum DeliveryMode
     {
         [Description("Undefined")]

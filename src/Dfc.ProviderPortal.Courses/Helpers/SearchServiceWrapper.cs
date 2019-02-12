@@ -12,6 +12,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Spatial;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Dfc.GeoCoordinate;
 using Dfc.ProviderPortal.Packages;
 using Dfc.ProviderPortal.Courses.Models;
 using Dfc.ProviderPortal.Courses.Settings;
@@ -209,7 +210,10 @@ namespace Dfc.ProviderPortal.Courses.Helpers
                                                          .Select(x => "search.in(" + x.Key + ", '" + x.Value + "', '|')"));
 
                 // Add geo distance clause if required
-                if (criteria.Distance.GetValueOrDefault(0) > 0 && !string.IsNullOrWhiteSpace(criteria.TownOrPostcode)) {
+                float? latitude = null;
+                float? longitude = null;
+                bool geoSearchRequired = (criteria.Distance.GetValueOrDefault(0) > 0 && !string.IsNullOrWhiteSpace(criteria.TownOrPostcode));
+                if (geoSearchRequired) {
                     _log.LogInformation($"FAC getting lat/long for location {criteria.TownOrPostcode}");
 
                     SearchParameters parameters = new SearchParameters {
@@ -219,8 +223,8 @@ namespace Dfc.ProviderPortal.Courses.Helpers
                         QueryType = QueryType.Full
                     };
                     DocumentSearchResult<dynamic> results = _onspdIndex.Documents.Search<dynamic>(criteria.TownOrPostcode, parameters);
-                    float? longitude = (float?)results?.Results?.FirstOrDefault()?.Document?.@long;
-                    float? latitude = (float?)results?.Results?.FirstOrDefault()?.Document?.lat;
+                    latitude = (float?)results?.Results?.FirstOrDefault()?.Document?.lat;
+                    longitude = (float?)results?.Results?.FirstOrDefault()?.Document?.@long;
 
                     if (latitude.HasValue && longitude.HasValue)
                         filter += $" and geo.distance(VenueLocation, geography'POINT({longitude.Value} {latitude.Value})') le {criteria.Distance}"; //-122.121513 47.673988)') le {criteria.Distance}";
@@ -267,6 +271,20 @@ namespace Dfc.ProviderPortal.Courses.Helpers
 
                     FACSearchResult searchResult = JsonConvert.DeserializeObject<FACSearchResult>(json, settings);
                     //return Result.Ok<IFACSearchResult>(searchResult);
+
+                    if (geoSearchRequired) {
+                        foreach (FACSearchResultItem ri in searchResult.Value) {
+                            if (ri.VenueLocation != null && ri?.VenueLocation["coordinates"][0] != 0 && ri?.VenueLocation["coordinates"][1] != 0)
+                                ri.GeoSearchDistance = Math.Round(
+                                    GeoHelper.DistanceTo(
+                                        new GeoHelper.Coordinates() { Latitude = latitude.Value,
+                                                                      Longitude = longitude.Value },
+                                        new GeoHelper.Coordinates() { Latitude = ri?.VenueLocation["coordinates"][1],
+                                                                      Longitude = ri?.VenueLocation["coordinates"][0] }),
+                                2);
+                        }
+                    }
+
                     return searchResult;
 
                 } else {

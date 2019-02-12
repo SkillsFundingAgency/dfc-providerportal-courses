@@ -10,7 +10,7 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
     {
         string ODataContext { get; set; }
         int? ODataCount { get; set; }
-        FACSearchFacets SearchFacets { get; set; }
+        dynamic SearchFacets { get; set; } //FACSearchFacets SearchFacets { get; set; }
         IEnumerable<FACSearchResultItem> Value { get; set; }
     }
 }
