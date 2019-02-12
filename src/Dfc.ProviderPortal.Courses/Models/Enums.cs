@@ -1,7 +1,9 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
+
 
 namespace Dfc.ProviderPortal.Courses.Models
 {
@@ -61,9 +63,5 @@ namespace Dfc.ProviderPortal.Courses.Models
         PreProd = 4,
         [Description("Prod")]
         Prod = 5
-    }
-
-    public class Enums
-    {
     }
 }

@@ -1,19 +1,17 @@
 ﻿
-//using System;
-//using System.Text;
-//using System.Threading.Tasks;
-//using System.Collections.Generic;
-//using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
 
 
-//namespace Dfc.ProviderPortal.Courses.Interfaces
-//{
-//    public interface IFACSearchCriteria
-//    {
-//        string Keyword { get; }
-//        string LocationPostcode { get; }
-//        int DistanceInMiles { get; }
-//        string QualificationLevel { get; }
-//    }
-
-//}
+namespace Dfc.ProviderPortal.Courses.Interfaces
+{
+    public interface IFACSearchCriteria
+    {
+        string search { get; }
+        string searchMode { get; }
+        int? top { get; }
+        string filter { get; }
+        IEnumerable<string> facets { get; }
+        bool count { get; }
+    }
+}

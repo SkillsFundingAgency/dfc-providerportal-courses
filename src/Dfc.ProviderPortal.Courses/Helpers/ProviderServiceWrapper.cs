@@ -24,6 +24,22 @@ namespace Dfc.ProviderPortal.Courses.Helpers
             _settings = settings;
         }
 
+        public dynamic GetByPRN(int PRN)
+        {
+            // Call service to get data
+            HttpClient client = new HttpClient();
+            var criteria = new { PRN };
+            StringContent content = new StringContent(JsonConvert.SerializeObject(criteria), Encoding.UTF8, "application/json");
+            Task<HttpResponseMessage> taskResponse = client.PostAsync($"{_settings.ApiUrl}GetProviderByPRN?code={_settings.ApiKey}", content);
+            taskResponse.Wait();
+            Task<string> taskJSON = taskResponse.Result.Content.ReadAsStringAsync();
+            taskJSON.Wait();
+            string json = taskJSON.Result;
+
+            // Return data as model object
+            return JsonConvert.DeserializeObject<dynamic>(json);
+        }
+
         public IEnumerable<AzureSearchProviderModel> GetLiveProvidersForAzureSearch()
         {
             // Call service to get data

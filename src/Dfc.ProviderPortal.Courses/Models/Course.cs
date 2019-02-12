@@ -18,18 +18,15 @@ namespace Dfc.ProviderPortal.Courses.Models
         public string QualificationType { get; set; }
         public int ProviderUKPRN { get; set; }
         public string CourseDescription { get; set; }
-        public string EntryRequirments { get; set; }
+        public string EntryRequirements { get; set; }
         public string WhatYoullLearn { get; set; }
         public string HowYoullLearn { get; set; }
         public string WhatYoullNeed { get; set; }
         public string HowYoullBeAssessed { get; set; }
         public string WhereNext { get; set; }
         public bool AdvancedLearnerLoan { get; set; }
-      
         public IEnumerable<CourseRun> CourseRuns { get; set; }
-
         public RecordStatus RecordStatus { get; set; }
-
         public DateTime CreatedDate { get; set; }
         public string CreatedBy { get; set; }
         public DateTime? UpdatedDate { get; set; }

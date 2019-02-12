@@ -36,10 +36,10 @@ namespace Dfc.ProviderPortal.Courses.Models
 
         public string VenueName { get; set; }
         public string VenueAddress { get; set; }
-        //public string VenueLattitude { get; set; }
-        //public string VenueLongitude { get; set; }
         public GeographyPoint VenueLocation { get; set; }
-        public int? VenueAttendancePattern { get; set; }
+        public string VenueAttendancePattern { get; set; }
         public string ProviderName { get; set; }
+        public string Region { get; set; }
+        public int? Status { get; set; }
     }
 }
