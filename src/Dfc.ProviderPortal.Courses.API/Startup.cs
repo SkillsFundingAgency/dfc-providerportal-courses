@@ -12,6 +12,7 @@ using Dfc.ProviderPortal.Courses.Helpers;
 using Dfc.ProviderPortal.Courses.Interfaces;
 using Dfc.ProviderPortal.Courses.Services;
 using Dfc.ProviderPortal.Courses.Settings;
+using Swashbuckle.AspNetCore.Swagger;
 
 
 namespace Dfc.ProviderPortal.Courses.API
@@ -34,6 +35,9 @@ namespace Dfc.ProviderPortal.Courses.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new Info { Title = "Courses API", Version = "v1" }); });
+
             services.Configure<CosmosDbCollectionSettings>(Configuration.GetSection(nameof(CosmosDbCollectionSettings)))
                     .Configure<CosmosDbSettings>(Configuration.GetSection(nameof(CosmosDbSettings)))
                     .Configure<ProviderServiceSettings>(Configuration.GetSection(nameof(ProviderServiceSettings)))
@@ -56,6 +60,9 @@ namespace Dfc.ProviderPortal.Courses.API
 
             app.UseHttpsRedirection();
             app.UseMvc();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Courses API v1"); });
         }
     }
 }
