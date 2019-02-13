@@ -67,7 +67,8 @@ namespace Dfc.ProviderPortal.Courses.Services
             else {
                 List<AzureSearchVenueModel> venues = new List<AzureSearchVenueModel>();
                 foreach (CourseRun r in runs.Where(x => x.VenueId != null))
-                    venues.Add(service.GetById<AzureSearchVenueModel>(r.VenueId.Value));
+                    if (!venues.Any(x => x.id == r.VenueId.Value))
+                        venues.Add(service.GetById<AzureSearchVenueModel>(r.VenueId.Value));
                 return venues;
             }
         }
