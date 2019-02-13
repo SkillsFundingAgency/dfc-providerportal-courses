@@ -201,11 +201,11 @@ namespace Dfc.ProviderPortal.Courses.Helpers
                 // Create filter string
                 // Use a pipe char to delimit; default commas and spaces can't be used as may be in facet values
                 List<KeyValuePair<string, string>> list = new List<KeyValuePair<string, string>>();
-                //list.Add(new KeyValuePair<string, string>("AttendanceMode", string.Join("|", criteria.AttendanceModes)));
-                list.Add(new KeyValuePair<string, string>("VenueAttendancePattern", string.Join("|", criteria.AttendancePatterns)));
-                //list.Add(new KeyValuePair<string, string>("DFE1619FundedField", string.Join("|", criteria.DFE1619Funded)));
-                list.Add(new KeyValuePair<string, string>("NotionalNVQLevelv2", string.Join("|", criteria.QualificationLevels)));
-                //list.Add(new KeyValuePair<string, string>("StudyModesField", string.Join("|", criteria.StudyModes)));
+                //list.Add(new KeyValuePair<string, string>("AttendanceMode", string.Join("|", criteria.AttendanceModes ?? new string[] { } )));
+                list.Add(new KeyValuePair<string, string>("VenueAttendancePattern", string.Join("|", criteria.AttendancePatterns ?? new string[] { } )));
+                //list.Add(new KeyValuePair<string, string>("DFE1619FundedField", string.Join("|", criteria.DFE1619Funded ?? new string[] { } )));
+                list.Add(new KeyValuePair<string, string>("NotionalNVQLevelv2", string.Join("|", criteria.QualificationLevels ?? new string[] { })));
+                //list.Add(new KeyValuePair<string, string>("StudyModesField", string.Join("|", criteria.StudyModes ?? new string[] { } )));
                 string filter = string.Join(" and ", list.Where(x => !string.IsNullOrWhiteSpace(x.Value))
                                                          .Select(x => "search.in(" + x.Key + ", '" + x.Value + "', '|')"));
 
