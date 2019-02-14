@@ -109,12 +109,14 @@ namespace Dfc.ProviderPortal.Courses.Helpers
                                                                from AzureSearchVenueModel v in venues.Where(x => r.VenueId == x.id)
                                                                                                      .DefaultIfEmpty()
                                                                select new LINQComboClass() { Course = c, Run = r, Region = (string)null, Venue = v };
+                    _log.LogInformation($"{classroom.Count()} classroom courses (with VenueId and no regions)");
 
                     // Courses run elsewhere have regions instead (online, work-based, ...)
                     IEnumerable<LINQComboClass> nonclassroom = from Course c in courses
                                                                from CourseRun r in c.CourseRuns ?? new List<CourseRun>()
                                                                from string region in r.Regions?.DefaultIfEmpty() ?? new List<string>()
                                                                select new LINQComboClass() { Course = c, Run = r, Region = region, Venue = (AzureSearchVenueModel)null };
+                    _log.LogInformation($"{nonclassroom.Count()} other courses (with regions but no VenueId)");
 
                     var batchdata = from LINQComboClass x in classroom.Union(nonclassroom)
                                     join AzureSearchProviderModel p in providers
@@ -150,7 +152,7 @@ namespace Dfc.ProviderPortal.Courses.Helpers
                         task.Wait();
                         succeeded = batchdata.Count();
                     }
-                    _log.LogInformation($"Successfully merged {succeeded} docs to azure search index: course");
+                    _log.LogInformation($"Successfully merged {succeeded} docs into Azure search index: course");
                 }
 
             } catch (IndexBatchException ex) {

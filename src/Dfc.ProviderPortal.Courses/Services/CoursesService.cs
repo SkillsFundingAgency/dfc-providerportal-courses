@@ -23,6 +23,7 @@ namespace Dfc.ProviderPortal.Courses.Services
 {
     public class CoursesService : ICourseService
     {
+        //private readonly ILogger _log;
         private readonly ICosmosDbHelper _cosmosDbHelper;
         private readonly ICosmosDbCollectionSettings _settings;
         private readonly IProviderServiceSettings _providerServiceSettings;
@@ -32,6 +33,7 @@ namespace Dfc.ProviderPortal.Courses.Services
         //private readonly ISearchServiceWrapper _searchServiceWrapper;
 
         public CoursesService(
+            //ILogger log,
             ICosmosDbHelper cosmosDbHelper,
             //ISearchServiceWrapper searchServiceWrapper,
             IOptions<ProviderServiceSettings> providerServiceSettings,
@@ -40,6 +42,7 @@ namespace Dfc.ProviderPortal.Courses.Services
             IOptions<QualificationServiceSettings> qualServiceSettings,
             IOptions<CosmosDbCollectionSettings> settings)
         {
+            //Throw.IfNull(log, nameof(log));
             Throw.IfNull(cosmosDbHelper, nameof(cosmosDbHelper));
             //Throw.IfNull(searchServiceWrapper, nameof(searchServiceWrapper));
             Throw.IfNull(settings, nameof(settings));
@@ -48,6 +51,7 @@ namespace Dfc.ProviderPortal.Courses.Services
             Throw.IfNull(qualServiceSettings, nameof(qualServiceSettings));
             Throw.IfNull(searchServiceSettings, nameof(searchServiceSettings));
 
+            //_log = log;
             _cosmosDbHelper = cosmosDbHelper;
             _settings = settings.Value;
             _providerServiceSettings = providerServiceSettings.Value;
@@ -57,18 +61,24 @@ namespace Dfc.ProviderPortal.Courses.Services
             //_searchServiceWrapper = searchServiceWrapper;
         }
 
-        private IEnumerable<AzureSearchVenueModel> GetVenues(IEnumerable<CourseRun> runs = null)
+        private IEnumerable<AzureSearchVenueModel> GetVenues(ILogger log, IEnumerable<CourseRun> runs = null)
         {
             IVenueServiceWrapper service = new VenueServiceWrapper(_venueServiceSettings);
+            IEnumerable<CourseRun> venueruns = runs?.Where(x => x.VenueId != null);
+            log.LogInformation($"Getting data for { venueruns?.Count().ToString() ?? "all" } venues");
 
             // Get all venues to save time & RUs if there's too many to get by Id
-            if (runs == null || runs.Count() > _searchServiceSettings.ThresholdVenueCount)
+            if (venueruns == null || venueruns.Count() > _searchServiceSettings.ThresholdVenueCount)
                 return service.GetVenues();
             else {
                 List<AzureSearchVenueModel> venues = new List<AzureSearchVenueModel>();
-                foreach (CourseRun r in runs.Where(x => x.VenueId != null))
-                    if (!venues.Any(x => x.id == r.VenueId.Value))
-                        venues.Add(service.GetById<AzureSearchVenueModel>(r.VenueId.Value));
+                foreach (CourseRun r in venueruns)
+                    if (!venues.Any(x => x.id == r.VenueId.Value)) {
+                        AzureSearchVenueModel venue = service.GetById<AzureSearchVenueModel>(r.VenueId.Value);
+                        if (venue != null)
+                            venues.Add(venue);
+                    }
+                log.LogInformation($"Successfully retrieved data for {venues.Count()} venues");
                 return venues;
             }
         }
@@ -85,8 +95,8 @@ namespace Dfc.ProviderPortal.Courses.Services
                 log.LogInformation("Getting provider data");
                 IEnumerable<AzureSearchProviderModel> providers = new ProviderServiceWrapper(_providerServiceSettings).GetLiveProvidersForAzureSearch();
 
-                log.LogInformation("Getting venue data");
                 IEnumerable<AzureSearchVenueModel> venues = GetVenues(
+                    log,
                     documents.Select(d => new Course() { CourseRuns = d.GetPropertyValue<IEnumerable<CourseRun>>("CourseRuns") })
                              .SelectMany(c => c.CourseRuns)
                 );
