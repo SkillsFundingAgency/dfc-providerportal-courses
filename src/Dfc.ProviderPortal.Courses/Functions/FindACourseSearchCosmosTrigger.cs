@@ -40,6 +40,7 @@ namespace Dfc.ProviderPortal.Courses.Functions
 
             try {
                 log.LogInformation("Entered FindACourseSearchCosmosTrigger");
+                log.LogInformation($"Processing {documents.Count} documents for indexing to Azure search");
                 IEnumerable<IndexingResult> results = await courseService.UploadCoursesToSearch(log, documents);
             } catch (Exception e) {
                 log.LogError(e, "Indexing error in FindACourseSearchCosmosTrigger");
