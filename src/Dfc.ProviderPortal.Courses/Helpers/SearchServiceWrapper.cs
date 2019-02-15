@@ -152,7 +152,7 @@ namespace Dfc.ProviderPortal.Courses.Helpers
                         task.Wait();
                         succeeded = batchdata.Count();
                     }
-                    _log.LogInformation($"Successfully merged {succeeded} docs into Azure search index: course");
+                    _log.LogInformation($"*** Successfully merged {succeeded} docs into Azure search index: course");
                 }
 
             } catch (IndexBatchException ex) {

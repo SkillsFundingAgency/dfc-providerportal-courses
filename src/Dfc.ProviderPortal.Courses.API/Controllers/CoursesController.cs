@@ -94,30 +94,11 @@ namespace Dfc.ProviderPortal.Venues.API.Controllers
         /// </summary>
         /// <returns>Search results</returns>
         [Route("~/api/courses/coursesearch")]
-        [HttpPost] //(Name = "CourseSearch")]
+        [HttpPost]
         public async Task<FACSearchResult> CourseSearch([FromBody]SearchCriteriaStructure criteria)
         {
             try {
                 Task<FACSearchResult> task = _service.CourseSearch(_log, criteria);
-                    //new SearchCriteriaStructure()
-                    //{
-                    //    SubjectKeywordField = "biol",
-                    //    TownOrPostcode = "Carlisle",
-                    //    QualificationLevelsField = new int[] { 1, 5 },
-                    //    AttendanceModesField = new int[] { },
-                    //    AttendancePatternsField = new int[] { },
-                    //    DFE1619FundedField = "",
-                    //    StudyModesField = new int[] { },
-                    //    DistanceField = 50,
-                    //    TopResults = 100 // TopResults
-                    //});
-                //task.Wait();
-                //return new ActionResult<IEnumerable<AzureSearchCourse>>(
-                //    task.Result.Results
-                //               .AsEnumerable()
-                //               .Select(r => r.Document)
-                //);
-
                 return await task;
 
             } catch (Exception ex) {
@@ -127,34 +108,5 @@ namespace Dfc.ProviderPortal.Venues.API.Controllers
             }
         }
 
-        //[HttpGet("test", Name = "test")]
-        //public async Task<FACSearchResult> test(string q)
-        //{
-        //    try {
-        //        Task<FACSearchResult> task = _service.CourseSearch(_log,
-        //            //criteria);
-        //            new SearchCriteriaStructure()
-        //            {
-        //                SubjectKeywordField = "biol", //criteria.SubjectKeywordField, // q,
-        //                TownOrPostcode = "Carlisle",
-        //                QualificationLevelsField = new int[] { 1,2,3,4,5 },
-        //                AttendanceModesField = new int[] { 1,2,3 },
-        //                AttendancePatternsField = new int[] { 2,3,4 },
-        //                DFE1619FundedField = "",
-        //                StudyModesField = new int[ ] { 3,4,5 },
-        //                DistanceField = 50,
-        //                TopResults = 100 // TopResults
-        //            });
-
-        //        return await task;
-
-        //    } catch (Exception ex) {
-        //        //return new InternalServerErrorObjectResult(ex);
-        //        _log.LogError(ex, "Error in CourseSearch");
-        //        return null;
-        //    }
-
-        //}
     }
-
 }
