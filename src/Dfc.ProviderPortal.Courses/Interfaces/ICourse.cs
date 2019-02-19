@@ -25,6 +25,7 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         string HowYoullBeAssessed { get; }
         string WhereNext { get; }
         bool AdvancedLearnerLoan { get; }
+        bool AdultEducationBudget { get; }
         RecordStatus RecordStatus { get; }
         DateTime CreatedDate { get; }
         string CreatedBy { get; }
