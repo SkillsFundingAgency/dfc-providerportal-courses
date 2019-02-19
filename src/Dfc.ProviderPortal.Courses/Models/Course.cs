@@ -25,6 +25,7 @@ namespace Dfc.ProviderPortal.Courses.Models
         public string HowYoullBeAssessed { get; set; }
         public string WhereNext { get; set; }
         public bool AdvancedLearnerLoan { get; set; }
+        public bool AdultEducationBudget { get; set; }
         public IEnumerable<CourseRun> CourseRuns { get; set; }
         public RecordStatus RecordStatus { get; set; }
         public DateTime CreatedDate { get; set; }
