@@ -170,6 +170,7 @@ namespace Dfc.ProviderPortal.Courses.Helpers
 
         //public List<Course> GetDocumentsByFACSearchCriteria(DocumentClient client, string collectionId, IFACSearchCriteria criteria)
         //{
+        //
         //    Throw.IfNull(client, nameof(client));
         //    Throw.IfNullOrWhiteSpace(collectionId, nameof(collectionId));
         //    Throw.IfNull(criteria, nameof(criteria));
