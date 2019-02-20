@@ -11,7 +11,7 @@ using Dfc.ProviderPortal.Packages;
 using Dfc.ProviderPortal.Courses.Models;
 using Dfc.ProviderPortal.Courses.Settings;
 using Dfc.ProviderPortal.Courses.Interfaces;
-
+using System.Net;
 
 namespace Dfc.ProviderPortal.Courses.Helpers
 {
@@ -132,6 +132,40 @@ namespace Dfc.ProviderPortal.Courses.Helpers
                                              .ToList(); // .AsEnumerable();
 
             return docs;
+        }
+
+        public async Task<List<string>> DeleteDocumentsByUKPRN(DocumentClient client, string collectionId, int UKPRN)
+        {
+            Throw.IfNull(client, nameof(client));
+            Throw.IfNullOrWhiteSpace(collectionId, nameof(collectionId));
+            Throw.IfNull(UKPRN, nameof(UKPRN));
+
+            Uri uri = UriFactory.CreateDocumentCollectionUri(_settings.DatabaseId, collectionId);
+            FeedOptions options = new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 };
+
+            List<Models.Course> docs = client.CreateDocumentQuery<Course>(uri, options)
+                                             .Where(x => x.ProviderUKPRN == UKPRN)
+                                             .ToList(); 
+
+            var responseList = new List<string>();
+
+            foreach (var doc in docs)
+            {
+                Uri docUri = UriFactory.CreateDocumentUri(_settings.DatabaseId, collectionId, doc.id.ToString());
+                var result = await client.DeleteDocumentAsync(docUri, new RequestOptions() { PartitionKey = new PartitionKey(doc.ProviderUKPRN) });
+
+                if(result.StatusCode == HttpStatusCode.NoContent)
+                {
+                    responseList.Add($"Course with LARS ( { doc.LearnAimRef } ) and Title ( { doc.QualificationCourseTitle } ) was deleted.");
+                }
+                else
+                {
+                    responseList.Add($"Course with LARS ( { doc.LearnAimRef } ) and Title ( { doc.QualificationCourseTitle } ) wasn't deleted. StatusCode: ( { result.StatusCode } )");
+                }
+                
+            }
+
+            return responseList;
         }
 
         //public List<Course> GetDocumentsByFACSearchCriteria(DocumentClient client, string collectionId, IFACSearchCriteria criteria)
