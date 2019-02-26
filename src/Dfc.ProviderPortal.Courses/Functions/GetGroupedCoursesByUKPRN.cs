@@ -48,6 +48,7 @@ namespace Dfc.ProviderPortal.Courses.Functions
                 return new OkObjectResult(grouped); // persisted);
 
             } catch (Exception e) {
+
                 return new InternalServerErrorObjectResult(e);
             }
         }
