@@ -24,13 +24,16 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         string WhatYoullNeed { get; }
         string HowYoullBeAssessed { get; }
         string WhereNext { get; }
-        bool AdultEducationBudget { get; set; }
+        bool AdultEducationBudget { get; }
         bool AdvancedLearnerLoan { get; }
-        RecordStatus RecordStatus { get; }
+       
+        RecordStatus CourseStatus { get; }
         DateTime CreatedDate { get; }
         string CreatedBy { get; }
         DateTime? UpdatedDate { get; }
         string UpdatedBy { get; }
+
+        bool IsValid { get; }
         IEnumerable<CourseRun> CourseRuns { get; }
     }
 }
