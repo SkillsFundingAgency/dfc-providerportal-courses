@@ -11,16 +11,28 @@ namespace Dfc.ProviderPortal.Courses.Models
     {
         [Description("Undefined")]
         Undefined = 0,
-        [Description("Pending")]
-        Pending = 1,
         [Description("Live")]
-        Live = 2,
+        Live = 1,
+        [Description("Pending")]
+        Pending = 2,
         [Description("Archived")]
-        Archived = 3,
+        Archived = 4,
         [Description("Deleted")]
-        Deleted = 4,
-        [Description("Ready To Go Live")]
-        ReadyToGoLive = 5
+        Deleted = 8,
+        [Description("BulkUload Pending")]
+        BulkUloadPending = 16,
+        [Description("BulkUpload Ready To Go Live")]
+        BulkUploadReadyToGoLive = 32,
+        [Description("API Pending")]
+        APIPending = 64,
+        [Description("API Ready To Go Live")]
+        APIReadyToGoLive = 128,
+        [Description("Migration Pending")]
+        MigrationPending = 256,
+        [Description("Migration Ready To Go Live")]
+        MigrationReadyToGoLive = 512,
+        [Description("Migration Deleted")]
+        MigrationDeleted = 1024,
     }
 
     public enum TransferMethod

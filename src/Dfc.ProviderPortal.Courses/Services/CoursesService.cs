@@ -287,5 +287,19 @@ namespace Dfc.ProviderPortal.Courses.Services
 
             return persisted;
         }
+
+        public async Task<List<string>> DeleteCoursesByUKPRN(int UKPRN)
+        {
+            Throw.IfNull<int>(UKPRN, nameof(UKPRN));
+            Throw.IfLessThan(0, UKPRN, nameof(UKPRN));
+
+            List<string> results = null;
+            using (var client = _cosmosDbHelper.GetClient())
+            {
+               results = await _cosmosDbHelper.DeleteDocumentsByUKPRN(client, _settings.CoursesCollectionId, UKPRN);
+            }
+
+            return results;
+        }
     }
 }

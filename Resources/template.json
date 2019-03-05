@@ -49,6 +49,66 @@
       "metadata": {
         "description": "Cosmos DB collection name for app settings"
       }
+    },
+    "venueApiUrl": {
+      "type": "string",
+      "metadata": {
+        "description": "API URL for the venue search"
+      }
+    },
+    "venueApiKey": {
+      "type": "securestring",
+      "metadata": {
+        "description": "API host key (code) needed to access the venues function app (REST API)"
+      }
+    },
+    "providerApiUrl": {
+      "type": "string",
+      "metadata": {
+        "description": "API URL for the provider (ukrlp) search"
+      }
+    },
+    "providerApiKey": {
+      "type": "securestring",
+      "metadata": {
+        "description": "API host key (code) needed to access the provider (ukrlp) function app (REST API)"
+      }
+    },
+    "searchName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of search resource"
+      }
+    },
+    "qualIndex": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of qualification index"
+      }
+    },
+    "searchIndex": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of search index"
+      }
+    },
+    "onspdIndex": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of ONS postcode index"
+      }
+    },
+    "searchAdminKey": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Admin key for updating search"
+      }
+    },
+    "searchQueryKey": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Query key for accessing search"
+      }
     }
   },
   "variables": {
@@ -131,6 +191,78 @@
               {
                 "name": "CosmosDbCollectionSettings__CoursesCollectionId",
                 "value": "[parameters('cosmosDBcollection')]"
+              },
+              {
+                "name": "VenueServiceSettings__ApiUrl",
+                "value": "[parameters('venueApiUrl')]"
+              },
+              {
+                "name": "VenueServiceSettings__ApiKey",
+                "value": "[parameters('venueApiKey')]"
+              },
+              {
+                "name": "ProviderServiceSettings__ApiUrl",
+                "value": "[parameters('providerApiUrl')]"
+              },
+              {
+                "name": "ProviderServiceSettings__ApiKey",
+                "value": "[parameters('providerApiKey')]"
+              },
+              {
+                "name": "QualificationServiceSettings__SearchService",
+                "value": "[parameters('searchName')]"
+              },
+              {
+                "name": "QualificationServiceSettings__QueryKey",
+                "value": "[parameters('searchQueryKey')]"
+              },
+              {
+                "name": "QualificationServiceSettings__Index",
+                "value": "[parameters('qualIndex')]"
+              },
+              {
+                "name": "QualificationServiceSettings__DefaultTop",
+                "value": "10"
+              },
+              {
+                "name": "SearchServiceSettings__SearchService",
+                "value": "[parameters('searchName')]"
+              },
+              {
+                "name": "SearchServiceSettings__ApiUrl",
+                "value": "[concat('https://', parameters('searchName'), '.windows.net/indexes/', parameters('searchIndex'), '/docs/search')]"
+              },
+              {
+                "name": "SearchServiceSettings__ApiVersion",
+                "value": "11/11/2017"
+              },
+              {
+                "name": "SearchServiceSettings__QueryKey",
+                "value": "[parameters('searchQueryKey')]"
+              },
+              {
+                "name": "SearchServiceSettings__AdminKey",
+                "value": "[parameters('searchAdminKey')]"
+              },
+              {
+                "name": "SearchServiceSettings__Index",
+                "value": "[parameters('searchIndex')]"
+              },
+              {
+                "name": "SearchServiceSettings__onspdIndex",
+                "value": "[parameters('onspdIndex')]"
+              },
+              {
+                "name": "SearchServiceSettings__DefaultTop",
+                "value": "10"
+              },
+              {
+                "name": "SearchServiceSettings__CoursesConnectionString",
+                "value": "[concat('AccountEndpoint=', parameters('cosmosDBfqdn'), ';AccountKey=', parameters('cosmosDBkey'), ';Database=', parameters('cosmosDBdatabase'), ';')]"
+              },
+              {
+                "name": "SearchServiceSettings__ThresholdVenueCount",
+                "value": "100"
               }
             ]
           },
