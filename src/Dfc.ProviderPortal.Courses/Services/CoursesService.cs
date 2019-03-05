@@ -301,5 +301,20 @@ namespace Dfc.ProviderPortal.Courses.Services
 
             return results;
         }
+
+        public async Task<List<string>> ArchiveProvidersLiveCourses(int UKPRN)
+        {
+            Throw.IfNull<int>(UKPRN, nameof(UKPRN));
+            Throw.IfLessThan(0, UKPRN, nameof(UKPRN));
+
+            List<string> results = null;
+            using (var client = _cosmosDbHelper.GetClient())
+            {
+                results = await _cosmosDbHelper.ArchiveProvidersLiveCourses(client, _settings.CoursesCollectionId, UKPRN);
+            }
+
+            return results;
+
+        }
     }
 }
