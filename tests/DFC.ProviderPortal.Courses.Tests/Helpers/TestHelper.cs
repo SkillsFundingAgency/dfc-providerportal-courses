@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 using Moq;
 
 
-namespace DFC.ProviderPortal.Courses.Tests.Helpers
+namespace Dfc.ProviderPortal.Courses.Tests.Helpers
 {
     public static class TestHelper
     {
