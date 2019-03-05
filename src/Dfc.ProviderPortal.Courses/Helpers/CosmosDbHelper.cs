@@ -168,6 +168,39 @@ namespace Dfc.ProviderPortal.Courses.Helpers
             return responseList;
         }
 
+        public async Task<List<string>> ArchiveProvidersLiveCourses(DocumentClient client, string collectionId, int UKPRN)
+        {
+            Throw.IfNull(client, nameof(client));
+            Throw.IfNullOrWhiteSpace(collectionId, nameof(collectionId));
+            Throw.IfNull(UKPRN, nameof(UKPRN));
+
+            Uri uri = UriFactory.CreateDocumentCollectionUri(_settings.DatabaseId, collectionId);
+            FeedOptions options = new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 };
+
+            List<Models.Course> docs = client.CreateDocumentQuery<Course>(uri, options)
+                                             .Where(x => x.ProviderUKPRN == UKPRN)
+                                             .Where(x => x.CourseStatus == RecordStatus.Live)
+                                             .ToList();
+
+            var responseList = new List<string>();
+
+            foreach (var doc in docs)
+            {
+                foreach(var courseRun in doc.CourseRuns)
+                {
+                    courseRun.RecordStatus = RecordStatus.Archived;
+                }
+                var result = await UpdateDocumentAsync(client, collectionId, doc);
+
+                if (result != null)
+                {
+                    responseList.Add("Course " + result.Id + " has been archived");
+                }
+            }
+
+            return responseList;
+        }
+
         //public List<Course> GetDocumentsByFACSearchCriteria(DocumentClient client, string collectionId, IFACSearchCriteria criteria)
         //{
         //
