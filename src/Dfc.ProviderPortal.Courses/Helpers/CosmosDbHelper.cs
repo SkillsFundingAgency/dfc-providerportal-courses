@@ -188,6 +188,7 @@ namespace Dfc.ProviderPortal.Courses.Helpers
             {
                 foreach(var courseRun in doc.CourseRuns)
                 {
+                    if (courseRun.RecordStatus == RecordStatus.Live)
                     courseRun.RecordStatus = RecordStatus.Archived;
                 }
                 var result = await UpdateDocumentAsync(client, collectionId, doc);
