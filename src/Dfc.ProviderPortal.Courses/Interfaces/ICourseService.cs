@@ -7,7 +7,7 @@ using Microsoft.Azure.Search.Models;
 using Microsoft.Extensions.Logging;
 using Dfc.ProviderPortal.Courses.Models;
 using Document = Microsoft.Azure.Documents.Document;
-
+using System.Net.Http;
 
 namespace Dfc.ProviderPortal.Courses.Interfaces
 {
@@ -24,5 +24,6 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         Task<IEnumerable<IndexingResult>> UploadCoursesToSearch(ILogger log, IReadOnlyList<Document> documents);
         Task<FACSearchResult> CourseSearch(ILogger log, SearchCriteriaStructure criteria); // string SearchText)
         Task<List<string>> ArchiveProvidersLiveCourses(int UKPRN);
+        Task<HttpResponseMessage> UpdateStatus(Guid courseId, Guid courseRunId, int status);
     }
 }

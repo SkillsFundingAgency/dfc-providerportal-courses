@@ -17,7 +17,8 @@ using Dfc.ProviderPortal.Courses.Models;
 using Dfc.ProviderPortal.Courses.Settings;
 using Dfc.ProviderPortal.Packages;
 using Document = Microsoft.Azure.Documents.Document;
-
+using Microsoft.AspNetCore.Http;
+using System.Net;
 
 namespace Dfc.ProviderPortal.Courses.Services
 {
@@ -314,6 +315,39 @@ namespace Dfc.ProviderPortal.Courses.Services
             }
 
             return results;
+
+        }
+        public async Task<HttpResponseMessage> UpdateStatus(Guid courseId, Guid courseRunId, int status)
+        {
+            Throw.IfNull(courseId, nameof(courseId));
+            Throw.IfGreaterThan(Enum.GetValues(typeof(RecordStatus)).Cast<int>().Max(), status, nameof(status));
+            Throw.IfLessThan(0, status, nameof(status));
+
+            var course = GetCourseById(courseId).Result;
+
+            if(course != null)
+            {
+                foreach(var courseRun in course.CourseRuns)
+                {
+                    if(courseRun.id == courseRunId)
+                    {
+                        courseRun.RecordStatus = (RecordStatus)status;
+                    }
+                }
+
+                var result = await Update(course);
+                if (result != null)
+                {
+                    return new HttpResponseMessage(HttpStatusCode.OK);
+                }
+                else
+                {
+                    return new HttpResponseMessage(HttpStatusCode.NotModified);
+                }
+                
+            }
+
+            return new HttpResponseMessage(HttpStatusCode.NotFound);
 
         }
     }
