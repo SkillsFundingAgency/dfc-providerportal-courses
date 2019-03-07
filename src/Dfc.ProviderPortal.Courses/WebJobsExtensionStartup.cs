@@ -41,6 +41,7 @@ namespace Dfc.ProviderPortal.Courses
             builder.Services.AddScoped<ICosmosDbHelper, CosmosDbHelper>();
             builder.Services.AddScoped<ISearchServiceWrapper, SearchServiceWrapper>();
             builder.Services.AddScoped<ICourseService, CoursesService>();
+            builder.Services.AddScoped<ICosmosDbSettings, CosmosDbSettings>();
             builder.Services.AddTransient((provider) => new HttpClient());
         }
     }
