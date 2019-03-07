@@ -24,5 +24,6 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         Task<IEnumerable<IndexingResult>> UploadCoursesToSearch(ILogger log, IReadOnlyList<Document> documents);
         Task<FACSearchResult> CourseSearch(ILogger log, SearchCriteriaStructure criteria); // string SearchText)
         Task<List<string>> ArchiveProvidersLiveCourses(int UKPRN);
+        Task<ICourseAudit> Audit(ILogger log, Document doc);
     }
 }

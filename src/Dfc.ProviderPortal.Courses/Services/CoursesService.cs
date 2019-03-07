@@ -61,6 +61,39 @@ namespace Dfc.ProviderPortal.Courses.Services
             //_searchServiceWrapper = searchServiceWrapper;
         }
 
+        public async Task<ICourseAudit> Audit(ILogger log, Document auditee)
+        {
+            Throw.IfNull(auditee, nameof(auditee));
+            Throw.IfNull(auditee.GetPropertyValue<Guid>("id"), "Document id");
+            CourseAudit persisted;
+
+            Guid id = auditee.GetPropertyValue<Guid>("id");
+
+            try {
+
+                log.LogInformation($"Writing audit for course { id }");
+                using (var client = _cosmosDbHelper.GetClient())
+                {
+                    await _cosmosDbHelper.CreateDatabaseIfNotExistsAsync(client);
+                    await _cosmosDbHelper.CreateDocumentCollectionIfNotExistsAsync(client, _settings.AuditCollectionId);
+                    Document doc = await _cosmosDbHelper.CreateDocumentAsync(client, _settings.AuditCollectionId,
+                        new CourseAudit() {
+                            id = Guid.NewGuid(),
+                            Collection = _settings.CoursesCollectionId,
+                            DocumentId = id.ToString(),
+                            UpdatedBy = auditee.GetPropertyValue<string>("UpdatedBy") ?? auditee.GetPropertyValue<string>("CreatedBy"),
+                            UpdatedDate = auditee.GetPropertyValue<DateTime?>("UpdatedDate") ?? DateTime.Now,
+                            Document = auditee
+                        });
+                    persisted = _cosmosDbHelper.DocumentTo<CourseAudit>(doc);
+                }
+                return persisted;
+
+            } catch (Exception ex) {
+                throw ex;
+            }
+        }
+
         private IEnumerable<AzureSearchVenueModel> GetVenues(ILogger log, IEnumerable<CourseRun> runs = null)
         {
             IVenueServiceWrapper service = new VenueServiceWrapper(_venueServiceSettings);
