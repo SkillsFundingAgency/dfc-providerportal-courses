@@ -336,25 +336,73 @@ namespace Dfc.ProviderPortal.Courses.Services
             return results;
         }
 
-        public async Task<List<string>> ArchiveProvidersLiveCourses(int UKPRN)
+        public async Task<HttpResponseMessage> ArchiveProvidersLiveCourses(int UKPRN, int UIMode)
         {
             Throw.IfNull<int>(UKPRN, nameof(UKPRN));
             Throw.IfLessThan(0, UKPRN, nameof(UKPRN));
+            Throw.IfNull(UIMode, nameof(UIMode));
+            Throw.IfLessThan(0, UIMode, nameof(UIMode));
+            Throw.IfGreaterThan(Enum.GetValues(typeof(RecordStatus)).Cast<int>().Max(), UIMode, nameof(UIMode));
 
-            List<string> results = null;
-            using (var client = _cosmosDbHelper.GetClient())
+            var status = RecordStatus.Undefined;
+
+            switch((UIMode)UIMode)
             {
-                results = await _cosmosDbHelper.ArchiveProvidersLiveCourses(client, _settings.CoursesCollectionId, UKPRN);
+                case Models.UIMode.BulkUpload:
+                    {
+                        status = RecordStatus.BulkUploadReadyToGoLive;
+                        break;
+                    }
+                case Models.UIMode.Migration:
+                    {
+                        status = RecordStatus.MigrationReadyToGoLive;
+                        break;
+                    }
+
+            }
+            
+            var allCourses = GetCoursesByUKPRN(UKPRN).Result;
+            var coursesToArchive = allCourses.Where(x => x.CourseStatus == RecordStatus.Live).ToList();
+            var coursesToMakeLive = allCourses.Where(x => x.CourseStatus == status).ToList();
+
+            try
+            {
+                foreach (var course in coursesToArchive)
+                {
+                    foreach (var courseRun in course.CourseRuns)
+                    {
+                        if (courseRun.RecordStatus == RecordStatus.Live)
+                            courseRun.RecordStatus = RecordStatus.Archived;
+                    }
+                    var result = Update(course);
+                }
+
+                foreach (var course in coursesToMakeLive)
+                {
+                    foreach (var courseRun in course.CourseRuns)
+                    {
+                        if (courseRun.RecordStatus == status)
+                            courseRun.RecordStatus = RecordStatus.Live;
+                    }
+                    var result = Update(course);
+                }
+
+                return new HttpResponseMessage(HttpStatusCode.OK);
+            }
+            catch(Exception ex)
+            {
+                return new HttpResponseMessage(HttpStatusCode.ExpectationFailed);
             }
 
-            return results;
 
         }
-        public async Task<HttpResponseMessage> UpdateStatus(Guid courseId, Guid courseRunId, int status)
+        public async Task<HttpResponseMessage> UpdateStatus(Guid courseId, Guid courseRunId, int currentStatus, int statusUpdate)
         {
             Throw.IfNull(courseId, nameof(courseId));
-            Throw.IfGreaterThan(Enum.GetValues(typeof(RecordStatus)).Cast<int>().Max(), status, nameof(status));
-            Throw.IfLessThan(0, status, nameof(status));
+            Throw.IfGreaterThan(Enum.GetValues(typeof(RecordStatus)).Cast<int>().Max(), currentStatus, nameof(currentStatus));
+            Throw.IfLessThan(0, currentStatus, nameof(currentStatus));
+            Throw.IfGreaterThan(Enum.GetValues(typeof(RecordStatus)).Cast<int>().Max(), statusUpdate, nameof(statusUpdate));
+            Throw.IfLessThan(0, statusUpdate, nameof(statusUpdate));
 
             var course = GetCourseById(courseId).Result;
 
@@ -364,7 +412,15 @@ namespace Dfc.ProviderPortal.Courses.Services
                 {
                     if(courseRun.id == courseRunId)
                     {
-                        courseRun.RecordStatus = (RecordStatus)status;
+                        if (courseRun.RecordStatus == (RecordStatus)currentStatus)
+                        {
+                            courseRun.RecordStatus = (RecordStatus)statusUpdate;
+                        }
+                        else
+                        {
+                            return new HttpResponseMessage(HttpStatusCode.PreconditionFailed);
+                        }
+                        
                     }
                 }
 

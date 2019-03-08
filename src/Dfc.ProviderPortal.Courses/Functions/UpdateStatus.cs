@@ -24,32 +24,37 @@ namespace Dfc.ProviderPortal.Courses.Functions
         {
             string qryCourseId = req.Query["CourseId"];
             string qryCourseRunId = req.Query["CourseRunId"];
-            string qryStatus = req.Query["Status"];
+            string qryCurrentStatus = req.Query["CurrentStatus"];
+            string qryStatusUpdate = req.Query["StatusUpdate"];
 
             //Validation
             if (string.IsNullOrWhiteSpace(qryCourseId))
                 return new BadRequestObjectResult($"Empty or missing CourseId value.");
             if (string.IsNullOrWhiteSpace(qryCourseRunId))
                 return new BadRequestObjectResult($"Empty or missing CourseRunId value.");
-            if (string.IsNullOrWhiteSpace(qryStatus))
+            if (string.IsNullOrWhiteSpace(qryCurrentStatus))
+                return new BadRequestObjectResult($"Empty or missing Status value.");
+            if (string.IsNullOrWhiteSpace(qryStatusUpdate))
                 return new BadRequestObjectResult($"Empty or missing Status value.");
 
             if (!Guid.TryParse(qryCourseId, out Guid courseId))
                 return new BadRequestObjectResult($"Invalid CourseId value. Expected a non-empty valid {nameof(Guid)}");
             if (!Guid.TryParse(qryCourseRunId, out Guid courseRunId))
                 return new BadRequestObjectResult($"Invalid CourseRunId value. Expected a non-empty valid {nameof(Guid)}");
-            if (!int.TryParse(qryStatus, out int status))
+            if (!int.TryParse(qryCurrentStatus, out int currentStatus))
+                return new BadRequestObjectResult($"Invalid status value. Expected a non-empty valid {nameof(Int32)}");
+            if (!int.TryParse(qryStatusUpdate, out int statusUpdate))
                 return new BadRequestObjectResult($"Invalid status value. Expected a non-empty valid {nameof(Int32)}");
             
             
-            if(!Enum.IsDefined(typeof(RecordStatus), status))
+            if((!Enum.IsDefined(typeof(RecordStatus), currentStatus)) || (!Enum.IsDefined(typeof(RecordStatus), statusUpdate)))
             {
                 return new BadRequestObjectResult($"Invalid status value. Expected a valid status");
             }
 
             try
             {
-                var updatedCourse = await coursesService.UpdateStatus(courseId, courseRunId, status);
+                var updatedCourse = await coursesService.UpdateStatus(courseId, courseRunId, currentStatus, statusUpdate);
                 return new OkObjectResult(StatusCodes.Status204NoContent);
 
             }

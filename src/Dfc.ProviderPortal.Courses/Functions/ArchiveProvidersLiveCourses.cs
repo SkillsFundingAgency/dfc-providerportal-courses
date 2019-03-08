@@ -21,20 +21,27 @@ namespace Dfc.ProviderPortal.Courses.Functions
                                                     ILogger log,
                                                     [Inject] ICourseService coursesService)
         {
-            string fromQuery = req.Query["UKPRN"];
+            string qryUKPRN = req.Query["UKPRN"];
+            string qryUIMode = req.Query["Mode"];
+
             List<string> persisted = null;
 
-            if (string.IsNullOrWhiteSpace(fromQuery))
+            if (string.IsNullOrWhiteSpace(qryUKPRN))
                 return new BadRequestObjectResult($"Empty or missing UKPRN value.");
 
-            if (!int.TryParse(fromQuery, out int UKPRN))
+            if (!int.TryParse(qryUKPRN, out int UKPRN))
                 return new BadRequestObjectResult($"Invalid UKPRN value, expected a valid integer");
+
+            if (string.IsNullOrWhiteSpace(qryUIMode))
+                return new BadRequestObjectResult($"Empty or missing UKPRN value.");
+
+            if (!int.TryParse(qryUIMode, out int UIMode))
+                return new BadRequestObjectResult($"Invalid UKPRN value, expected a valid integer");
+
 
             try
             {
-                persisted = (List<string>)await coursesService.ArchiveProvidersLiveCourses(UKPRN);
-                if (persisted == null)
-                    return new NotFoundObjectResult(UKPRN);
+                var returnCode = await coursesService.ArchiveProvidersLiveCourses(UKPRN, UIMode);
 
                 return new OkObjectResult(persisted);
 
