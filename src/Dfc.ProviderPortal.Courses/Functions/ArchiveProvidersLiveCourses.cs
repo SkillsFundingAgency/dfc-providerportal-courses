@@ -33,10 +33,10 @@ namespace Dfc.ProviderPortal.Courses.Functions
                 return new BadRequestObjectResult($"Invalid UKPRN value, expected a valid integer");
 
             if (string.IsNullOrWhiteSpace(qryUIMode))
-                return new BadRequestObjectResult($"Empty or missing UKPRN value.");
+                return new BadRequestObjectResult($"Empty or missing UIMode value.");
 
             if (!int.TryParse(qryUIMode, out int UIMode))
-                return new BadRequestObjectResult($"Invalid UKPRN value, expected a valid integer");
+                return new BadRequestObjectResult($"Invalid UIMode value, expected a valid integer");
 
 
             try
