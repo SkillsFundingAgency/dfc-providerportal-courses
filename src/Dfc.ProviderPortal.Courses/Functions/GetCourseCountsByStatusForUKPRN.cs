@@ -37,12 +37,17 @@ namespace Dfc.ProviderPortal.Courses.Functions
                 if (persisted == null)
                     return new NotFoundObjectResult(UKPRN);
 
+                // Get all statuses and count of course runs with matching status
                 var grouped = from RecordStatus rs in Enum.GetValues(typeof(RecordStatus))
                               from CourseRun r in persisted.SelectMany(c => c.CourseRuns)
                                                            .Where(s => s.RecordStatus == rs)
                                                            .DefaultIfEmpty(new CourseRun() { id = Guid.Empty })
                               group r by rs into runsbystatus
-                              select new { Status = runsbystatus.Key, Count = runsbystatus.LongCount(r => r.id != Guid.Empty) };
+                              select new {
+                                  Status = runsbystatus.Key,
+                                  Description = Enum.GetName(typeof(RecordStatus), runsbystatus.Key),
+                                  Count = runsbystatus.LongCount(r => r.id != Guid.Empty)
+                              };
                 return new OkObjectResult(grouped);
 
             } catch (Exception e) {
