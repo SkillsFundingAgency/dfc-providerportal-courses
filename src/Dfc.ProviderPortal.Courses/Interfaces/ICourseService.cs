@@ -23,8 +23,8 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         //Task<IEnumerable<IAzureSearchCourse>> FindACourseAzureSearchData(ILogger log);
         Task<IEnumerable<IndexingResult>> UploadCoursesToSearch(ILogger log, IReadOnlyList<Document> documents);
         Task<FACSearchResult> CourseSearch(ILogger log, SearchCriteriaStructure criteria); // string SearchText)
-        Task<List<string>> ArchiveProvidersLiveCourses(int UKPRN);
+        Task<HttpResponseMessage> ArchiveProvidersLiveCourses(int UKPRN, int UIMode);
         Task<ICourseAudit> Audit(ILogger log, Document doc);
-        Task<HttpResponseMessage> UpdateStatus(Guid courseId, Guid courseRunId, int status);
+        Task<HttpResponseMessage> UpdateStatus(Guid courseId, Guid courseRunId, int currentStatus, int statusUpdate);
     }
 }

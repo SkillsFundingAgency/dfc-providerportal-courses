@@ -76,4 +76,14 @@ namespace Dfc.ProviderPortal.Courses.Models
         [Description("Prod")]
         Prod = 5
     }
+    public enum UIMode
+    {
+        Undefined = 0,
+        BulkUpload = 1,
+        Migration = 2,
+        YourCoursesLive = 3,
+        YourCoursesArchived = 4,
+        YourCoursesPending = 5,
+        YourCoursesDeleted = 6
+    }
 }
