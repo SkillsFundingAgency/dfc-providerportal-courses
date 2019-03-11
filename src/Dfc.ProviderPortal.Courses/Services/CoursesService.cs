@@ -70,7 +70,8 @@ namespace Dfc.ProviderPortal.Courses.Services
 
             Guid id = auditee.GetPropertyValue<Guid>("id");
 
-            try {
+            try
+            {
 
                 log.LogInformation($"Writing audit for course { id }");
                 using (var client = _cosmosDbHelper.GetClient())
@@ -78,7 +79,8 @@ namespace Dfc.ProviderPortal.Courses.Services
                     await _cosmosDbHelper.CreateDatabaseIfNotExistsAsync(client);
                     await _cosmosDbHelper.CreateDocumentCollectionIfNotExistsAsync(client, _settings.AuditCollectionId);
                     Document doc = await _cosmosDbHelper.CreateDocumentAsync(client, _settings.AuditCollectionId,
-                        new CourseAudit() {
+                        new CourseAudit()
+                        {
                             id = Guid.NewGuid(),
                             Collection = _settings.CoursesCollectionId,
                             DocumentId = id.ToString(),
@@ -90,7 +92,9 @@ namespace Dfc.ProviderPortal.Courses.Services
                 }
                 return persisted;
 
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 throw ex;
             }
         }
@@ -104,10 +108,12 @@ namespace Dfc.ProviderPortal.Courses.Services
             // Get all venues to save time & RUs if there's too many to get by Id
             if (venueruns == null || venueruns.Count() > _searchServiceSettings.ThresholdVenueCount)
                 return service.GetVenues();
-            else {
+            else
+            {
                 List<AzureSearchVenueModel> venues = new List<AzureSearchVenueModel>();
                 foreach (CourseRun r in venueruns)
-                    if (!venues.Any(x => x.id == r.VenueId.Value)) {
+                    if (!venues.Any(x => x.id == r.VenueId.Value))
+                    {
                         AzureSearchVenueModel venue = service.GetById<AzureSearchVenueModel>(r.VenueId.Value);
                         if (venue != null)
                             venues.Add(venue);
@@ -124,7 +130,8 @@ namespace Dfc.ProviderPortal.Courses.Services
 
         public async Task<IEnumerable<IndexingResult>> UploadCoursesToSearch(ILogger log, IReadOnlyList<Document> documents)
         {
-            if (documents.Any()) {
+            if (documents.Any())
+            {
 
                 log.LogInformation("Getting provider data");
                 IEnumerable<AzureSearchProviderModel> providers = new ProviderServiceWrapper(_providerServiceSettings).GetLiveProvidersForAzureSearch();
@@ -134,10 +141,12 @@ namespace Dfc.ProviderPortal.Courses.Services
                     documents.Select(d => new Course() { CourseRuns = d.GetPropertyValue<IEnumerable<CourseRun>>("CourseRuns") })
                              .SelectMany(c => c.CourseRuns)
                 );
-                
+
                 return new SearchServiceWrapper(log, _searchServiceSettings)
                         .UploadBatch(providers, venues, documents, out int succeeded);
-            } else {
+            }
+            else
+            {
                 // Return empty list of failed IndexingResults
                 return new List<IndexingResult>();
             }
@@ -190,7 +199,8 @@ namespace Dfc.ProviderPortal.Courses.Services
 
         public async Task<IEnumerable<ICourse>> GetAllCourses(ILogger log)
         {
-            try {
+            try
+            {
                 // Get all course documents in the collection
                 string token = null;
                 Task<FeedResponse<dynamic>> task = null;
@@ -198,8 +208,10 @@ namespace Dfc.ProviderPortal.Courses.Services
                 log.LogInformation("Getting all courses from collection");
 
                 // Read documents in batches, using continuation token to make sure we get them all
-                using (DocumentClient client = _cosmosDbHelper.GetClient()) {
-                    do {
+                using (DocumentClient client = _cosmosDbHelper.GetClient())
+                {
+                    do
+                    {
                         task = client.ReadDocumentFeedAsync(UriFactory.CreateDocumentCollectionUri("providerportal", _settings.CoursesCollectionId),
                                                             new FeedOptions { MaxItemCount = -1, RequestContinuation = token });
                         token = task.Result.ResponseContinuation;
@@ -213,7 +225,9 @@ namespace Dfc.ProviderPortal.Courses.Services
                 string json = JsonConvert.SerializeObject(docs);
                 return JsonConvert.DeserializeObject<IEnumerable<Course>>(json);
 
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 throw ex;
             }
         }
@@ -261,7 +275,8 @@ namespace Dfc.ProviderPortal.Courses.Services
             Course course = null;
             dynamic venue = null;
 
-            using (var client = _cosmosDbHelper.GetClient()) {
+            using (var client = _cosmosDbHelper.GetClient())
+            {
                 var doc = _cosmosDbHelper.GetDocumentById(client, _settings.CoursesCollectionId, CourseId);
                 course = _cosmosDbHelper.DocumentTo<Course>(doc);
             }
@@ -293,7 +308,7 @@ namespace Dfc.ProviderPortal.Courses.Services
         public async Task<ICourse> Update(ICourse course)
         {
             Throw.IfNull(course, nameof(course));
-         
+
             Course updated = null;
 
             using (var client = _cosmosDbHelper.GetClient())
@@ -330,7 +345,7 @@ namespace Dfc.ProviderPortal.Courses.Services
             List<string> results = null;
             using (var client = _cosmosDbHelper.GetClient())
             {
-               results = await _cosmosDbHelper.DeleteDocumentsByUKPRN(client, _settings.CoursesCollectionId, UKPRN);
+                results = await _cosmosDbHelper.DeleteDocumentsByUKPRN(client, _settings.CoursesCollectionId, UKPRN);
             }
 
             return results;
@@ -346,7 +361,7 @@ namespace Dfc.ProviderPortal.Courses.Services
 
             var status = RecordStatus.Undefined;
 
-            switch((UIMode)UIMode)
+            switch ((UIMode)UIMode)
             {
                 case Models.UIMode.BulkUpload:
                     {
@@ -360,7 +375,7 @@ namespace Dfc.ProviderPortal.Courses.Services
                     }
 
             }
-            
+
             var allCourses = GetCoursesByUKPRN(UKPRN).Result;
             var coursesToArchive = allCourses.Where(x => x.CourseStatus == RecordStatus.Live).ToList();
             var coursesToMakeLive = allCourses.Where(x => x.CourseStatus == status).ToList();
@@ -389,7 +404,7 @@ namespace Dfc.ProviderPortal.Courses.Services
 
                 return new HttpResponseMessage(HttpStatusCode.OK);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return new HttpResponseMessage(HttpStatusCode.ExpectationFailed);
             }
@@ -425,7 +440,8 @@ namespace Dfc.ProviderPortal.Courses.Services
             }
         }
 
-        public async Task<HttpResponseMessage> UpdateStatus(Guid courseId, Guid courseRunId, int currentStatus, int statusUpdate)
+
+        public async Task<HttpResponseMessage> UpdateStatus(Guid courseId, Guid courseRunId, int status)
         {
             Throw.IfNull(courseId, nameof(courseId));
             Throw.IfGreaterThan(Enum.GetValues(typeof(RecordStatus)).Cast<int>().Max(), status, nameof(status));
