@@ -396,31 +396,21 @@ namespace Dfc.ProviderPortal.Courses.Services
 
 
         }
-        public async Task<HttpResponseMessage> UpdateStatus(Guid courseId, Guid courseRunId, int currentStatus, int statusUpdate)
+        public async Task<HttpResponseMessage> UpdateStatus(Guid courseId, Guid courseRunId, int status)
         {
             Throw.IfNull(courseId, nameof(courseId));
-            Throw.IfGreaterThan(Enum.GetValues(typeof(RecordStatus)).Cast<int>().Max(), currentStatus, nameof(currentStatus));
-            Throw.IfLessThan(0, currentStatus, nameof(currentStatus));
-            Throw.IfGreaterThan(Enum.GetValues(typeof(RecordStatus)).Cast<int>().Max(), statusUpdate, nameof(statusUpdate));
-            Throw.IfLessThan(0, statusUpdate, nameof(statusUpdate));
+            Throw.IfGreaterThan(Enum.GetValues(typeof(RecordStatus)).Cast<int>().Max(), status, nameof(status));
+            Throw.IfLessThan(0, status, nameof(status));
 
             var course = GetCourseById(courseId).Result;
 
-            if(course != null)
+            if (course != null)
             {
-                foreach(var courseRun in course.CourseRuns)
+                foreach (var courseRun in course.CourseRuns)
                 {
-                    if(courseRun.id == courseRunId)
+                    if (courseRun.id == courseRunId)
                     {
-                        if (courseRun.RecordStatus == (RecordStatus)currentStatus)
-                        {
-                            courseRun.RecordStatus = (RecordStatus)statusUpdate;
-                        }
-                        else
-                        {
-                            return new HttpResponseMessage(HttpStatusCode.PreconditionFailed);
-                        }
-                        
+                        courseRun.RecordStatus = (RecordStatus)status;
                     }
                 }
 
@@ -433,7 +423,7 @@ namespace Dfc.ProviderPortal.Courses.Services
                 {
                     return new HttpResponseMessage(HttpStatusCode.NotModified);
                 }
-                
+
             }
 
             return new HttpResponseMessage(HttpStatusCode.NotFound);
