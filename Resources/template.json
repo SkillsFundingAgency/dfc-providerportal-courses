@@ -263,6 +263,14 @@
               {
                 "name": "SearchServiceSettings__ThresholdVenueCount",
                 "value": "100"
+              },
+              {
+                "name": "CosmosDbCollectionSettings__AuditCollectionId",
+                "value": "audit"
+              },
+              {
+                "name": "CosmosDbSettings__RecentCount",
+                "value": "3"
               }
             ]
           },

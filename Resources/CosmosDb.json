@@ -30,6 +30,36 @@
 				"excludedPaths": [
 				]
 			}
+		},
+		{
+			"CollectionName": "audit",
+			"OfferThroughput": 400,
+			"PartitionKey": "/Collection",
+			"IndexingPolicy": {
+				"indexingMode": "consistent",
+				"automatic": true,
+				"includedPaths": [
+					{
+						"path": "/DocumentId",
+						"indexes": [
+							{
+								"kind": "Range",
+								"dataType": "Number",
+								"precision": -1
+							}, {
+								"kind": "Range",
+								"dataType": "String",
+								"precision": -1
+							}, {
+								"kind": "Spatial",
+								"dataType": "Point"
+							}
+						]
+					}
+				],
+				"excludedPaths": [
+				]
+			}
 		}
 	]
 }
