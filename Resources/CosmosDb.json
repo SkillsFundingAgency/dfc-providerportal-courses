@@ -40,7 +40,7 @@
 				"automatic": true,
 				"includedPaths": [
 					{
-						"path": "/DocumentId",
+						"path": "/*",
 						"indexes": [
 							{
 								"kind": "Range",
