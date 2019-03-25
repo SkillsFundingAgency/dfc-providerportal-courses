@@ -39,7 +39,8 @@ namespace Dfc.ProviderPortal.Courses.Functions
 
                 // Get all statuses and count of course runs with matching status
                 var grouped = from RecordStatus rs in Enum.GetValues(typeof(RecordStatus))
-                              from CourseRun r in persisted.SelectMany(c => c.CourseRuns)
+                              from CourseRun r in persisted.Where(c => c.IsValid)
+                                                           .SelectMany(c => c.CourseRuns)
                                                            .Where(s => s.RecordStatus == rs)
                                                            .DefaultIfEmpty(new CourseRun() { id = Guid.Empty })
                               group r by rs into runsbystatus
