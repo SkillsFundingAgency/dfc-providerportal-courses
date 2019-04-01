@@ -31,5 +31,8 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         string CreatedBy { get; set; }
         DateTime? UpdatedDate { get; set; }
         string UpdatedBy { get; set; }
+        decimal? Latitude { get; set; }
+        decimal? Longitude { get; set; }
+        string RegionCode { get; set; }
     }
 }
