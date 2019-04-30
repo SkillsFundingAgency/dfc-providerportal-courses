@@ -14,6 +14,9 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         string Index { get; }
         string onspdIndex { get; }
         int DefaultTop { get; }
+        decimal? RegionSearchBoost { get; }
+        decimal? SubRegionSearchBoost { get; }
+        //string RegionBoostScoringProfile { get; }
         int ThresholdVenueCount { get; }
     }
 }
