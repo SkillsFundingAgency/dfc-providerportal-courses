@@ -8,6 +8,7 @@ namespace Dfc.ProviderPortal.Courses.Models
 {
     public class FACSearchCriteria : IFACSearchCriteria
     {
+        public string scoringProfile { get; set; }
         public string search { get; set; }
         public string searchMode { get; set; }
         public int? top { get; set; }

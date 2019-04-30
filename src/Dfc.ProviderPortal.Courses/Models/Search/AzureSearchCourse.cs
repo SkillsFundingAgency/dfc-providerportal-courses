@@ -12,6 +12,7 @@ namespace Dfc.ProviderPortal.Courses.Models
     {
         public Guid? id { get; set; }
         public Guid? CourseId { get; set; }
+        public Guid? CourseRunId { get; set; }
         public string QualificationCourseTitle { get; set; }
         public string LearnAimRef { get; set; }
         public string NotionalNVQLevelv2 { get; set; }
@@ -40,6 +41,8 @@ namespace Dfc.ProviderPortal.Courses.Models
         public string VenueAttendancePattern { get; set; }
         public string ProviderName { get; set; }
         public string Region { get; set; }
+        //public string Weighting { get; set; }
+        public decimal ScoreBoost { get; set; }
         public int? Status { get; set; }
     }
 }

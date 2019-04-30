@@ -15,6 +15,9 @@ namespace Dfc.ProviderPortal.Courses.Settings
         public string Index { get; set; }
         public string onspdIndex { get; set; }
         public int DefaultTop { get; set; }
+        public decimal? RegionSearchBoost { get; set; }
+        public decimal? SubRegionSearchBoost { get; set; }
+        //public string RegionBoostScoringProfile { get; set; }
         public int ThresholdVenueCount { get; set; }
     }
 }
