@@ -271,6 +271,14 @@
               {
                 "name": "CosmosDbSettings__RecentCount",
                 "value": "3"
+              },
+              {
+                "name": "SearchServiceSettings__RegionSearchBoost",
+                "value": "2.3"
+              },
+              {
+                "name": "SearchServiceSettings__SubRegionSearchBoost",
+                "value": "4.5"
               }
             ]
           },
