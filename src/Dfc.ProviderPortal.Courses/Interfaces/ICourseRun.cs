@@ -22,6 +22,7 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         int? DurationValue { get; set; }
         StudyMode StudyMode { get; set; }
         AttendancePattern AttendancePattern { get; set; }
+        public bool National { get; set; }
         IEnumerable<string> Regions { get; set; }
         RecordStatus RecordStatus { get; set; }
         DateTime CreatedDate { get; set; }
