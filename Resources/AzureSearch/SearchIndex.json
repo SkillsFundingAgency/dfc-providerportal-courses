@@ -1,0 +1,20 @@
+[
+  {
+    "name": "coursetest",
+    "fields": [
+      {"name": "id", "type": "Edm.String", "key": true, "sortable": false, "facetable": false, "searchable": false},
+      {"name": "CourseId", "type": "Edm.String", "sortable": false, "facetable": false},
+      {"name": "QualificationCourseTitle", "type": "Edm.String", "sortable": false, "facetable": false},
+      {"name": "LearnAimRef", "type": "Edm.String", "sortable": false, "facetable": false},
+      {"name": "NotionalNVQLevelv2", "type": "Edm.String", "sortable": false, "searchable": false},
+      {"name": "Status", "type": "Edm.Int32", "sortable": false, "facetable": false},
+      {"name": "VenueName", "type": "Edm.String", "sortable": false, "facetable": false},
+      {"name": "VenueAddress", "type": "Edm.String", "sortable": false, "facetable": false},
+      {"name": "VenueLocation", "type": "Edm.GeographyPoint"},
+      {"name": "VenueAttendancePattern", "type": "Edm.String", "sortable": false},
+      {"name": "ProviderName", "type": "Edm.String", "sortable": false, "searchable": false},
+      {"name": "Region", "type": "Edm.String", "sortable": false},
+      {"name": "UpdatedOn", "type": "Edm.DateTimeOffset", "sortable": false, "facetable": false}
+    ]
+  }
+]
