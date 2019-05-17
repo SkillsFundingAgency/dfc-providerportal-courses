@@ -1,6 +1,6 @@
 [
   {
-    "name": "coursetest",
+    "name": "course",
     "fields": [
       {"name": "id", "type": "Edm.String", "key": true, "sortable": false, "facetable": false, "searchable": false},
       {"name": "CourseId", "type": "Edm.String", "sortable": false, "facetable": false},
