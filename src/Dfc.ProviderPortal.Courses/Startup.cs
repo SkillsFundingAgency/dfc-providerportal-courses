@@ -27,7 +27,7 @@ namespace Dfc.ProviderPortal.Courses
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Apprenticeships API", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Course Directory Couese API", Version = "v1" });
             });
         }
 
@@ -38,7 +38,7 @@ namespace Dfc.ProviderPortal.Courses
 
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Apprenticeships API");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Course Directory Couese API");
             });
 
             app.UseMvc();
