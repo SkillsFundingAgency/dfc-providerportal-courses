@@ -1,19 +1,15 @@
-﻿
-using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Net.Http;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Dfc.ProviderPortal.Courses;
+﻿using Dfc.ProviderPortal.Courses;
 using Dfc.ProviderPortal.Courses.Helpers;
 using Dfc.ProviderPortal.Courses.Interfaces;
 using Dfc.ProviderPortal.Courses.Services;
 using Dfc.ProviderPortal.Courses.Settings;
 using Dfc.ProviderPortal.Packages.AzureFunctions.DependencyInjection;
-
+using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Net.Http;
 
 [assembly: WebJobsStartup(typeof(WebJobsExtensionStartup), "Web Jobs Extension Startup")]
 
