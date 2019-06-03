@@ -9,5 +9,6 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         string EndpointUri { get; }
         string PrimaryKey { get; }
         string DatabaseId { get; }
+        int RecentCount { get; }
     }
 }

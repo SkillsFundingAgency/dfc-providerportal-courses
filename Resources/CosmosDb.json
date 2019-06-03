@@ -1,0 +1,65 @@
+﻿{
+	"DatabaseName": "providerportal",
+	"Collections": [
+		{
+			"CollectionName": "courses",
+			"OfferThroughput": 400,
+			"PartitionKey": "/ProviderUKPRN",
+			"IndexingPolicy": {
+				"indexingMode": "consistent",
+				"automatic": true,
+				"includedPaths": [
+					{
+						"path": "/*",
+						"indexes": [
+							{
+								"kind": "Range",
+								"dataType": "Number",
+								"precision": -1
+							}, {
+								"kind": "Range",
+								"dataType": "String",
+								"precision": -1
+							}, {
+								"kind": "Spatial",
+								"dataType": "Point"
+							}
+						]
+					}
+				],
+				"excludedPaths": [
+				]
+			}
+		},
+		{
+			"CollectionName": "audit",
+			"OfferThroughput": 400,
+			"PartitionKey": "/Collection",
+			"IndexingPolicy": {
+				"indexingMode": "consistent",
+				"automatic": true,
+				"includedPaths": [
+					{
+						"path": "/*",
+						"indexes": [
+							{
+								"kind": "Range",
+								"dataType": "Number",
+								"precision": -1
+							}, {
+								"kind": "Range",
+								"dataType": "String",
+								"precision": -1
+							}, {
+								"kind": "Spatial",
+								"dataType": "Point"
+							}
+						]
+					}
+				],
+				"excludedPaths": [
+				]
+			}
+		}
+	]
+}

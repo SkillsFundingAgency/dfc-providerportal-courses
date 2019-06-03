@@ -168,6 +168,7 @@ namespace Dfc.ProviderPortal.Courses.Helpers
             return responseList;
         }
 
+
         //public List<Course> GetDocumentsByFACSearchCriteria(DocumentClient client, string collectionId, IFACSearchCriteria criteria)
         //{
         //

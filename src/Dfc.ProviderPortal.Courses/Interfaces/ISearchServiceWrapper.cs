@@ -21,6 +21,6 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
             IReadOnlyList<Document> documents,
             out int succeeded);
         //DocumentSearchResult<AzureSearchCourse> SearchCourses(SearchCriteriaStructure criteria); // string SearchText);
-        FACSearchResult SearchCourses(SearchCriteriaStructure criteria);
+        //FACSearchResult SearchCourses(SearchCriteriaStructure criteria);
     }
 }

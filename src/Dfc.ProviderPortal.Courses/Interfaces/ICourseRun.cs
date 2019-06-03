@@ -1,9 +1,6 @@
-﻿
-using Dfc.ProviderPortal.Courses.Models;
+﻿using Dfc.ProviderPortal.Courses.Models;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using Dfc.ProviderPortal.Courses.Models;
 
 
 namespace Dfc.ProviderPortal.Courses.Interfaces
@@ -25,11 +22,13 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         int? DurationValue { get; set; }
         StudyMode StudyMode { get; set; }
         AttendancePattern AttendancePattern { get; set; }
+        bool National { get; set; }
         IEnumerable<string> Regions { get; set; }
         RecordStatus RecordStatus { get; set; }
         DateTime CreatedDate { get; set; }
         string CreatedBy { get; set; }
         DateTime? UpdatedDate { get; set; }
         string UpdatedBy { get; set; }
+        IEnumerable<SubRegionItemModel> SubRegions { get; set; }
     }
 }

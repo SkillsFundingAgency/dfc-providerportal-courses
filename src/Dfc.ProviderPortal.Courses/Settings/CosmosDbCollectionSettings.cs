@@ -8,5 +8,6 @@ namespace Dfc.ProviderPortal.Courses.Settings
     public class CosmosDbCollectionSettings : ICosmosDbCollectionSettings
     {
         public string CoursesCollectionId { get; set; }
+        public string AuditCollectionId { get; set; }
     }
 }
