@@ -22,5 +22,6 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         Task<Document> UpdateDocumentAsync(DocumentClient client, string collectionId, object document);
         List<Course> GetDocumentsByUKPRN(DocumentClient client, string collectionId, int UKPRN);
         Task<List<string>> DeleteDocumentsByUKPRN(DocumentClient client, string collectionId, int UKPRN);
+        Task<List<string>> DeleteBulkUploadCourses(DocumentClient client, string collectionId, int UKPRN);
     }
 }
