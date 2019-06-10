@@ -44,7 +44,16 @@ namespace Dfc.ProviderPortal.Courses.Controllers
         {
             return Ok();
         }
-
+        [Route("DeleteBulkUploadCourses")]
+        [HttpGet]
+        [ProducesResponseType(typeof(DeleteBulkUploadCourses), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult DeleteBulkUploadCourses(int UKPRN, [Required]string code)
+        {
+            return Ok();
+        }
         [Route("GetCourseById")]
         [HttpGet]
         [ProducesResponseType(typeof(Course), StatusCodes.Status200OK)]

@@ -152,51 +152,6 @@ namespace Dfc.ProviderPortal.Courses.Services
             }
         }
 
-        //public async Task<FACSearchResult> CourseSearch(ILogger log, SearchCriteriaStructure criteria) // string SearchText)
-        //{
-        //    return new SearchServiceWrapper(log, _searchServiceSettings)
-        //                .SearchCourses(criteria); // SearchText);
-        //}
-
-        //public async Task<IEnumerable<IAzureSearchCourse>> FindACourseAzureSearchData(ILogger log)
-        //{
-        //    try {
-        //        IEnumerable<ICourse> persisted = await GetAllCourses(log);
-        //        IEnumerable<AzureSearchProviderModel> providers = new ProviderServiceWrapper(_providerServiceSettings).GetLiveProvidersForAzureSearch();
-        //        IEnumerable<AzureSearchVenueModel> venues = GetVenues(persisted.SelectMany(p => p.CourseRuns ?? new List<CourseRun>())); //new VenueServiceWrapper(_venueServiceSettings).GetVenues();
-
-        //        IEnumerable<IAzureSearchCourse> results = from ICourse c in persisted
-        //                                                  from CourseRun cr in c.CourseRuns ?? new List<CourseRun>()
-        //                                                  join AzureSearchProviderModel p in providers
-        //                                                  on c.ProviderUKPRN equals p.UnitedKingdomProviderReferenceNumber
-        //                                                  from vm in venues.Where(v => cr.VenueId == v.id)
-        //                                                                   .DefaultIfEmpty()
-        //                                                  select new AzureSearchCourse()
-        //                                                  {
-        //                                                      id = cr.id,
-        //                                                      CourseId = c.id,
-        //                                                      QualificationCourseTitle = c.QualificationCourseTitle,
-        //                                                      LearnAimRef = c.LearnAimRef,
-        //                                                      NotionalNVQLevelv2 = c.NotionalNVQLevelv2,
-        //                                                      VenueName = vm?.VENUE_NAME,
-        //                                                      VenueAddress = string.Format("{0}{1}{2}{3}{4}",
-        //                                                                     string.IsNullOrWhiteSpace(vm?.ADDRESS_1) ? "" : vm?.ADDRESS_1 + ", ",
-        //                                                                     string.IsNullOrWhiteSpace(vm?.ADDRESS_2) ? "" : vm?.ADDRESS_2 + ", ",
-        //                                                                     string.IsNullOrWhiteSpace(vm?.TOWN) ? "" : vm?.TOWN + ", ",
-        //                                                                     string.IsNullOrWhiteSpace(vm?.COUNTY) ? "" : vm?.COUNTY + ", ",
-        //                                                                     vm?.POSTCODE),
-        //                                                      VenueAttendancePattern = cr.AttendancePattern,
-        //                                                      VenueLocation = GeographyPoint.Create(vm?.Latitude ?? 0, vm?.Longitude ?? 0),
-        //                                                      ProviderName = p.ProviderName,
-        //                                                      UpdatedOn = c.UpdatedDate
-        //                                                  };
-        //        return results;
-
-        //    } catch (Exception ex) {
-        //        throw ex;
-        //    }
-        //}
-
         public async Task<IEnumerable<ICourse>> GetAllCourses(ILogger log)
         {
             try
@@ -350,7 +305,19 @@ namespace Dfc.ProviderPortal.Courses.Services
 
             return results;
         }
+        public async Task<List<string>> DeleteBulkUploadCourses(int UKPRN)
+        {
+            Throw.IfNull<int>(UKPRN, nameof(UKPRN));
+            Throw.IfLessThan(0, UKPRN, nameof(UKPRN));
 
+            List<string> results = null;
+            using (var client = _cosmosDbHelper.GetClient())
+            {
+                results = await _cosmosDbHelper.DeleteBulkUploadCourses(client, _settings.CoursesCollectionId, UKPRN);
+            }
+
+            return results;
+        }
         public async Task<HttpResponseMessage> ArchiveProvidersLiveCourses(int UKPRN, int UIMode)
         {
             Throw.IfNull<int>(UKPRN, nameof(UKPRN));

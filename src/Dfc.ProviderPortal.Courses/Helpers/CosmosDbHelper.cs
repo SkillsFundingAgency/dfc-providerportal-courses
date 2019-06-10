@@ -168,29 +168,40 @@ namespace Dfc.ProviderPortal.Courses.Helpers
             return responseList;
         }
 
+        public async Task<List<string>> DeleteBulkUploadCourses(DocumentClient client, string collectionId, int UKPRN)
+        {
+            Throw.IfNull(client, nameof(client));
+            Throw.IfNullOrWhiteSpace(collectionId, nameof(collectionId));
+            Throw.IfNull(UKPRN, nameof(UKPRN));
 
-        //public List<Course> GetDocumentsByFACSearchCriteria(DocumentClient client, string collectionId, IFACSearchCriteria criteria)
-        //{
-        //
-        //    Throw.IfNull(client, nameof(client));
-        //    Throw.IfNullOrWhiteSpace(collectionId, nameof(collectionId));
-        //    Throw.IfNull(criteria, nameof(criteria));
+            Uri uri = UriFactory.CreateDocumentCollectionUri(_settings.DatabaseId, collectionId);
+            FeedOptions options = new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 };
 
-        //    Uri uri = UriFactory.CreateDocumentCollectionUri(_settings.DatabaseId, collectionId);
-        //    FeedOptions options = new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 };
+            List<Models.Course> docs = client.CreateDocumentQuery<Course>(uri, options)
+                                             .Where(x => x.ProviderUKPRN == UKPRN)
+                                             .Where(y => y.CourseStatus == RecordStatus.BulkUloadPending || y.CourseStatus == RecordStatus.BulkUploadReadyToGoLive)
+                                             .ToList();
 
-        //    IQueryable<Course> qry = client.CreateDocumentQuery<Course>(uri, options)
-        //                                   .Where(x => x.QualificationCourseTitle == criteria.Keyword);
+            var responseList = new List<string>();
 
-        //    if (!string.IsNullOrWhiteSpace(criteria.QualificationLevel))
-        //        qry = qry.Where(x => x.NotionalNVQLevelv2 == criteria.QualificationLevel);
+            foreach (var doc in docs)
+            {
+                Uri docUri = UriFactory.CreateDocumentUri(_settings.DatabaseId, collectionId, doc.id.ToString());
+                var result = await client.DeleteDocumentAsync(docUri, new RequestOptions() { PartitionKey = new PartitionKey(doc.ProviderUKPRN) });
 
-        //    //if (!string.IsNullOrWhiteSpace(criteria.LocationPostcode) && criteria.DistanceInMiles > 0)
-        //    //    qry = qry.Where(x => x.CalculateDistance() < criteria.DistanceInMiles);
+                if (result.StatusCode == HttpStatusCode.NoContent)
+                {
+                    responseList.Add($"Course with LARS ( { doc.LearnAimRef } ) and Title ( { doc.QualificationCourseTitle } ) was deleted.");
+                }
+                else
+                {
+                    responseList.Add($"Course with LARS ( { doc.LearnAimRef } ) and Title ( { doc.QualificationCourseTitle } ) wasn't deleted. StatusCode: ( { result.StatusCode } )");
+                }
 
-        //    List<Models.Course> docs = qry.ToList(); // .AsEnumerable();
+            }
 
-        //    return docs;
-        //}
+            return responseList;
+        }
+
     }
 }

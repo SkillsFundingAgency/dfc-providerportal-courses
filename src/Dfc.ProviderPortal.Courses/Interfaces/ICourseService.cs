@@ -18,6 +18,7 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         Task<AzureSearchCourseDetail> GetCourseSearchDataById(Guid CourseId, Guid RunId);
         Task<IEnumerable<ICourse>> GetCoursesByUKPRN(int UKPRN);
         Task<List<string>> DeleteCoursesByUKPRN(int UKPRN);
+        Task<List<string>> DeleteBulkUploadCourses(int UKPRN);
         Task<ICourse> Update(ICourse doc);
         Task<IEnumerable<ICourse>> GetAllCourses(ILogger log);
         //Task<IEnumerable<IAzureSearchCourse>> FindACourseAzureSearchData(ILogger log);
