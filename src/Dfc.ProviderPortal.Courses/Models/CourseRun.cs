@@ -91,5 +91,6 @@ namespace Dfc.ProviderPortal.Courses.Models
         public DateTime? UpdatedDate { get; set; }
         public string UpdatedBy { get; set; }
         public IEnumerable<SubRegionItemModel> SubRegions { get; set; }
+        public IEnumerable<BulkUploadError> BulkUploadErrors { get; set; }
     }
 }
