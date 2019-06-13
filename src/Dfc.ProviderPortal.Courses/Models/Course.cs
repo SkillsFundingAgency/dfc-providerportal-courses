@@ -42,7 +42,7 @@ namespace Dfc.ProviderPortal.Courses.Models
 
         public bool IsValid { get; set; }
         public string UpdatedBy { get; set; }
-
+        public IEnumerable<BulkUploadError> BulkUploadErrors { get; set; }
         public string _self { get; set; }
         public string _rid { get; set; }
         internal static RecordStatus GetBitMaskState(IEnumerable<CourseRun> courseRuns)

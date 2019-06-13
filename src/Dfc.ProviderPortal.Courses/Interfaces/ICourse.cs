@@ -35,5 +35,6 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
 
         bool IsValid { get; }
         IEnumerable<CourseRun> CourseRuns { get; }
+        IEnumerable<BulkUploadError> BulkUploadErrors { get; set; }
     }
 }
