@@ -30,5 +30,6 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         DateTime? UpdatedDate { get; set; }
         string UpdatedBy { get; set; }
         IEnumerable<SubRegionItemModel> SubRegions { get; set; }
+        IEnumerable<BulkUploadError> BulkUploadErrors { get; set; }
     }
 }
