@@ -179,7 +179,7 @@ namespace Dfc.ProviderPortal.Courses.Helpers
 
             List<Models.Course> docs = client.CreateDocumentQuery<Course>(uri, options)
                                              .Where(x => x.ProviderUKPRN == UKPRN)
-                                             .Where(y => y.CourseStatus == RecordStatus.BulkUloadPending || y.CourseStatus == RecordStatus.BulkUploadReadyToGoLive)
+                                             .Where(y => ((int)y.CourseStatus & (int)RecordStatus.BulkUloadPending) > 0)
                                              .ToList();
 
             var responseList = new List<string>();
