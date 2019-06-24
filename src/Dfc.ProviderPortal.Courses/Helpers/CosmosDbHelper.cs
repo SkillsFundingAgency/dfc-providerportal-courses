@@ -152,7 +152,7 @@ namespace Dfc.ProviderPortal.Courses.Helpers
             foreach (var doc in docs)
             {
                 Uri docUri = UriFactory.CreateDocumentUri(_settings.DatabaseId, collectionId, doc.id.ToString());
-                var result = await client.DeleteDocumentAsync(docUri, new RequestOptions() { PartitionKey = new PartitionKey(doc.ProviderUKPRN) });
+                var result = await client.DeleteDocumentAsync(docUri);
 
                 if(result.StatusCode == HttpStatusCode.NoContent)
                 {
@@ -187,7 +187,7 @@ namespace Dfc.ProviderPortal.Courses.Helpers
             foreach (var doc in docs)
             {
                 Uri docUri = UriFactory.CreateDocumentUri(_settings.DatabaseId, collectionId, doc.id.ToString());
-                var result = await client.DeleteDocumentAsync(docUri, new RequestOptions() { PartitionKey = new PartitionKey(doc.ProviderUKPRN) });
+                var result = await client.DeleteDocumentAsync(docUri);
 
                 if (result.StatusCode == HttpStatusCode.NoContent)
                 {
