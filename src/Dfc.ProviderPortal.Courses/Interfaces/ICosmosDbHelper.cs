@@ -1,7 +1,4 @@
-﻿
-using System;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
@@ -23,5 +20,6 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         List<Course> GetDocumentsByUKPRN(DocumentClient client, string collectionId, int UKPRN);
         Task<List<string>> DeleteDocumentsByUKPRN(DocumentClient client, string collectionId, int UKPRN);
         Task<List<string>> DeleteBulkUploadCourses(DocumentClient client, string collectionId, int UKPRN);
+        IList<T> GetDocumentsByUKPRN<T>(DocumentClient client, string collectionId, int UKPRN);
     }
 }
