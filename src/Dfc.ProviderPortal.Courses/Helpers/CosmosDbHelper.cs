@@ -134,6 +134,21 @@ namespace Dfc.ProviderPortal.Courses.Helpers
             return docs;
         }
 
+        public IList<T> GetDocumentsByUKPRN<T>(DocumentClient client, string collectionId, int UKPRN)
+        {
+            Throw.IfNull(client, nameof(client));
+            Throw.IfNullOrWhiteSpace(collectionId, nameof(collectionId));
+            Throw.IfNull(UKPRN, nameof(UKPRN));
+
+            Uri uri = UriFactory.CreateDocumentCollectionUri(_settings.DatabaseId, collectionId);
+            FeedOptions options = new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 };
+
+            
+            var docs = client.CreateDocumentQuery<T>(uri, $"SELECT * FROM c WHERE c.ProviderUKPRN = {UKPRN}");
+
+            return docs == null ? new List<T>() : docs.ToList();
+        }
+
         public async Task<List<string>> DeleteDocumentsByUKPRN(DocumentClient client, string collectionId, int UKPRN)
         {
             Throw.IfNull(client, nameof(client));
@@ -179,7 +194,7 @@ namespace Dfc.ProviderPortal.Courses.Helpers
 
             List<Models.Course> docs = client.CreateDocumentQuery<Course>(uri, options)
                                              .Where(x => x.ProviderUKPRN == UKPRN)
-                                             .Where((y => ((int)y.CourseStatus & (int)RecordStatus.BulkUloadPending) > 0 || ((int)y.CourseStatus & (int)RecordStatus.BulkUploadReadyToGoLive) > 0))
+                                             //.Where((y => ((int)y.CourseStatus & (int)RecordStatus.BulkUloadPending) > 0 || ((int)y.CourseStatus & (int)RecordStatus.BulkUploadReadyToGoLive) > 0))
                                              .ToList();
 
             var responseList = new List<string>();
