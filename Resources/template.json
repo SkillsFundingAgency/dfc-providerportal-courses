@@ -47,7 +47,13 @@
     "cosmosDBcollection": {
       "type": "string",
       "metadata": {
-        "description": "Cosmos DB collection name for app settings"
+        "description": "Base Cosmos DB collection name for app settings"
+      }
+    },
+    "cosmosDBcollectionMigrationReport": {
+      "type": "string",
+      "metadata": {
+        "description": "Migration report Cosmos DB collection name for app settings"
       }
     },
     "venueApiUrl": {
@@ -191,6 +197,10 @@
               {
                 "name": "CosmosDbCollectionSettings__CoursesCollectionId",
                 "value": "[parameters('cosmosDBcollection')]"
+              },
+              {
+                "name": "CosmosDbCollectionSettings__CoursesMigrationReportCollectionId",
+                "value": "[parameters('cosmosDBcollectionMigrationReport')]"
               },
               {
                 "name": "VenueServiceSettings__ApiUrl",
