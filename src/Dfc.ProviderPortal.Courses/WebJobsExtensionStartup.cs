@@ -41,8 +41,8 @@ namespace Dfc.ProviderPortal.Courses
             builder.Services.AddScoped<ICosmosDbSettings, CosmosDbSettings>();
             builder.Services.AddTransient((provider) => new HttpClient());
 
-        //    var serviceProvider = builder.Services.BuildServiceProvider();
-        //    serviceProvider.GetService<ICourseMigrationReportService>().Initialise().Wait();
+            var serviceProvider = builder.Services.BuildServiceProvider();
+            serviceProvider.GetService<ICourseMigrationReportService>().Initialise().Wait();
         }
     }
 }
