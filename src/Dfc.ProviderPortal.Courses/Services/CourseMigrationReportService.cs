@@ -46,8 +46,10 @@ namespace Dfc.ProviderPortal.Courses.Services
 
                     if (result.Any())
                     {
+                        courseReport.Id = result.FirstOrDefault().Id;
+
                         await _cosmosDbHelper.UpdateDocumentAsync(client, _settings.CoursesMigrationReportCollectionId,
-                            result.FirstOrDefault());
+                            courseReport);
                     }
                     else
                     {
