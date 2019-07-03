@@ -8,6 +8,36 @@
         "description": "Prefix for the function app resources, in the form dfc-env-proj-fnapp"
       }
     },
+    "apimResourceGroup": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the shared resources Resource Group"
+      }
+    },
+    "apimServiceName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the shared APIM service"
+      }
+    },
+    "apiName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the API"
+      }
+    },
+    "apiProductDisplayName": {
+      "type": "string",
+      "metadata": {
+        "description": "The display name for the projects APIM product"
+      }
+    },
+    "apiSuffix": {
+      "type": "string",
+      "metadata": {
+        "description": "Section of URL path that will preceed the path defined in code"
+      }
+    },
     "appServicePlanName": {
       "type": "string",
       "metadata": {
@@ -294,6 +324,60 @@
           },
           "deployStagingSlot": {
             "value": false
+          }
+        }
+      }
+    },
+    {
+      "name": "ppcoursesApimProduct",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2017-05-10",
+      "resourceGroup": "[parameters('apimResourceGroup')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'), 'APIM/apim-product.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "allowAnonymousAccess": {
+            "value": true
+          },
+          "apimServiceName": {
+            "value": "[parameters('apimServiceName')]"
+          },
+          "productDisplayName": {
+            "value": "[parameters('apiProductDisplayName')]"
+          }
+        }
+      }
+    },
+    {
+      "name": "ppcoursesApimApi",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2017-05-10",
+      "resourceGroup": "[parameters('apimResourceGroup')]",
+      "dependsOn": [
+        "ppcoursesApimProduct"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'), 'APIM/apim-api.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "apimProductInstanceName": {
+            "value": "[reference('pprefdataApimProduct').outputs.ApimProductInstanceName.value]"
+          },
+          "apimServiceName": {
+            "value": "[parameters('apimServiceName')]"
+          },
+          "apiName": {
+            "value": "[parameters('apiName')]"
+          },
+          "apiSuffix": {
+            "value": "[parameters('apiSuffix')]"
           }
         }
       }
