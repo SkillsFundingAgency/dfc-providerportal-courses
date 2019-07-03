@@ -368,7 +368,7 @@
         },
         "parameters": {
           "apimProductInstanceName": {
-            "value": "[reference('pprefdataApimProduct').outputs.ApimProductInstanceName.value]"
+            "value": "[reference('ppcoursesApimProduct').outputs.ApimProductInstanceName.value]"
           },
           "apimServiceName": {
             "value": "[parameters('apimServiceName')]"
