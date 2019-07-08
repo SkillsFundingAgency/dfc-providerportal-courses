@@ -8,5 +8,6 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
     {
         string CoursesCollectionId { get; }
         string AuditCollectionId { get; }
+        string CoursesMigrationReportCollectionId { get; }
     }
 }
