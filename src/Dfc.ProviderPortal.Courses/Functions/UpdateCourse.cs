@@ -21,7 +21,7 @@ namespace Dfc.ProviderPortal.Courses.Functions
     {
         [FunctionName("UpdateCourse")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequestMessage req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequestMessage req,
             ILogger log,
             [Inject] ICourseService coursesService)
         {
