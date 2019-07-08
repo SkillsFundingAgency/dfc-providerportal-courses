@@ -18,7 +18,7 @@ namespace Dfc.ProviderPortal.Courses.Controllers
         [ProducesResponseType(typeof(Course), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult AddCourse(Course course, [Required]string code)
+        public IActionResult AddCourse(Course course)
         {
             return Ok();
         }
@@ -29,7 +29,7 @@ namespace Dfc.ProviderPortal.Courses.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult CourseDetail(Guid CourseId, Guid RunId, [Required]string code)
+        public IActionResult CourseDetail(Guid CourseId, Guid RunId)
         {
             return Ok();
         }
@@ -40,7 +40,7 @@ namespace Dfc.ProviderPortal.Courses.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult DeleteCoursesByUKPRN(int UKPRN, [Required]string code)
+        public IActionResult DeleteCoursesByUKPRN(int UKPRN)
         {
             return Ok();
         }
@@ -50,7 +50,7 @@ namespace Dfc.ProviderPortal.Courses.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult DeleteBulkUploadCourses(int UKPRN, [Required]string code)
+        public IActionResult DeleteBulkUploadCourses(int UKPRN)
         {
             return Ok();
         }
@@ -60,7 +60,7 @@ namespace Dfc.ProviderPortal.Courses.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult DeleteCoursesByUKPRN(Guid id, [Required]string code)
+        public IActionResult DeleteCoursesByUKPRN(Guid id)
         {
             return Ok();
         }
@@ -71,7 +71,7 @@ namespace Dfc.ProviderPortal.Courses.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult GetCoursesByLevelForUKPRN(int UKPRN, [Required]string code)
+        public IActionResult GetCoursesByLevelForUKPRN(int UKPRN)
         {
             return Ok();
         }
@@ -82,7 +82,7 @@ namespace Dfc.ProviderPortal.Courses.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult GetCoursesByUKPRN(int UKPRN, [Required]string code)
+        public IActionResult GetCoursesByUKPRN(int UKPRN)
         {
             return Ok();
         }
@@ -93,7 +93,7 @@ namespace Dfc.ProviderPortal.Courses.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult GetGroupedCoursesByUKPRN(int UKPRN, [Required]string code)
+        public IActionResult GetGroupedCoursesByUKPRN(int UKPRN)
         {
             return Ok();
         }
@@ -103,7 +103,7 @@ namespace Dfc.ProviderPortal.Courses.Controllers
         [ProducesResponseType(typeof(Course), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult UpdateCourse(Course course, [Required]string code)
+        public IActionResult UpdateCourse(Course course)
         {
             return Ok();
         }
