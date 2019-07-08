@@ -11,6 +11,7 @@ using Dfc.ProviderPortal.Packages.AzureFunctions.DependencyInjection;
 using Dfc.ProviderPortal.Courses.Interfaces;
 using System.Net.Http;
 using System.Collections.Generic;
+using Dfc.ProviderPortal.Courses.Models;
 
 namespace Dfc.ProviderPortal.Courses.Functions
 {
@@ -37,6 +38,13 @@ namespace Dfc.ProviderPortal.Courses.Functions
             try
             {
                 messagesList = await coursesService.DeleteBulkUploadCourses(UKPRN);
+
+                await coursesService.ChangeCourseRunStatusesForUKPRNSelection(UKPRN, RecordStatus.MigrationPending,
+                    RecordStatus.Archived);
+
+                await coursesService.ChangeCourseRunStatusesForUKPRNSelection(UKPRN,
+                    RecordStatus.MigrationReadyToGoLive, RecordStatus.Archived);
+
                 if (messagesList == null)
                     return new NotFoundObjectResult(UKPRN);
 
