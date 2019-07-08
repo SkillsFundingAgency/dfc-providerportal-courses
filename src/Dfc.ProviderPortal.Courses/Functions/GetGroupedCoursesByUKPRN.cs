@@ -20,7 +20,7 @@ namespace Dfc.ProviderPortal.Courses.Functions
     public static class GetGroupedCoursesByUKPRN
     {
         [FunctionName("GetGroupedCoursesByUKPRN")]
-        public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req,
+        public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
                                                     ILogger log,
                                                     [Inject] ICourseService coursesService)
         {

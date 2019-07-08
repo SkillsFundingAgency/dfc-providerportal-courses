@@ -17,7 +17,7 @@ namespace Dfc.ProviderPortal.Courses.Functions
     public class DeleteCoursesByUKPRN
     {
         [FunctionName("DeleteCoursesByUKPRN")]
-        public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequestMessage req,
+        public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequestMessage req,
                                             ILogger log,
                                             [Inject] ICourseService coursesService)
         {
