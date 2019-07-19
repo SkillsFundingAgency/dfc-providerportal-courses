@@ -1,7 +1,4 @@
 ﻿using Dfc.ProviderPortal.Courses.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Dfc.ProviderPortal.Courses.Settings
 {
@@ -10,5 +7,6 @@ namespace Dfc.ProviderPortal.Courses.Settings
         public string CoursesCollectionId { get; set; }
         public string AuditCollectionId { get; set; }
         public string CoursesMigrationReportCollectionId { get; set; }
+        public string DfcReportCollectionId { get; set; }
     }
 }

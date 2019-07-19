@@ -12,6 +12,7 @@ using Dfc.ProviderPortal.Courses.Models;
 using Dfc.ProviderPortal.Courses.Settings;
 using Dfc.ProviderPortal.Courses.Interfaces;
 using System.Net;
+using Microsoft.Azure.Documents.Linq;
 
 namespace Dfc.ProviderPortal.Courses.Helpers
 {
@@ -218,5 +219,25 @@ namespace Dfc.ProviderPortal.Courses.Helpers
             return responseList;
         }
 
+        public async Task<List<DfcMigrationReport>> GetAllDfcMigrationReports(DocumentClient client, string collectionId)
+        {
+            var reports = new List<DfcMigrationReport>();
+
+            Uri uri = UriFactory.CreateDocumentCollectionUri(_settings.DatabaseId, collectionId);
+            FeedOptions options = new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 };
+
+            using (var queryable = client.CreateDocumentQuery<DfcMigrationReport>(uri, options).AsDocumentQuery())
+            {
+                while (queryable.HasMoreResults)
+                {
+                    foreach (DfcMigrationReport report in await queryable.ExecuteNextAsync<DfcMigrationReport>())
+                    {
+                        reports.Add(report);
+                    }
+                }
+            }
+
+            return reports;
+        }
     }
 }

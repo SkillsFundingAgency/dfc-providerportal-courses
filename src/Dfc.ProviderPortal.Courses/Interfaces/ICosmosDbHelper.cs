@@ -21,5 +21,6 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         Task<List<string>> DeleteDocumentsByUKPRN(DocumentClient client, string collectionId, int UKPRN);
         Task<List<string>> DeleteBulkUploadCourses(DocumentClient client, string collectionId, int UKPRN);
         IList<T> GetDocumentsByUKPRN<T>(DocumentClient client, string collectionId, int UKPRN);
+        Task<List<DfcMigrationReport>> GetAllDfcMigrationReports(DocumentClient client, string collectionId);
     }
 }
