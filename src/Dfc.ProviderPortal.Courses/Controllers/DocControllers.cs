@@ -127,5 +127,15 @@ namespace Dfc.ProviderPortal.Courses.Controllers
         {
             return Ok();
         }
+        [Route("GetAllDfcReports")]
+        [HttpGet]
+        [ProducesResponseType(typeof(Course), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult GetAllDfcReports([Required]string code)
+        {
+            return Ok();
+        }
+        
     }
 }

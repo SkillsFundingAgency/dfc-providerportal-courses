@@ -38,11 +38,13 @@ namespace Dfc.ProviderPortal.Courses
             builder.Services.AddScoped<ISearchServiceWrapper, SearchServiceWrapper>();
             builder.Services.AddScoped<ICourseService, CoursesService>();
             builder.Services.AddScoped<ICourseMigrationReportService, CourseMigrationReportService>();
+            builder.Services.AddScoped<IDfcReportService, DfcReportService>();
             builder.Services.AddScoped<ICosmosDbSettings, CosmosDbSettings>();
             builder.Services.AddTransient((provider) => new HttpClient());
 
             var serviceProvider = builder.Services.BuildServiceProvider();
             serviceProvider.GetService<ICourseMigrationReportService>().Initialise().Wait();
+            serviceProvider.GetService<IDfcReportService>().Initialise().Wait();
         }
     }
 }
