@@ -319,6 +319,10 @@
               {
                 "name": "SearchServiceSettings__SubRegionSearchBoost",
                 "value": "4.5"
+              },
+              {
+                "name": "CosmosDbCollectionSettings__DfcReportCollectionId",
+                "value": "DfcReport"
               }
             ]
           },
