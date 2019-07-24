@@ -147,6 +147,15 @@ namespace Dfc.ProviderPortal.Courses.Controllers
         {
             return Ok();
         }
+        [Route("GetCourseCountsByStatusForUKPRN")]
+        [HttpGet]
+        [ProducesResponseType(typeof(Course), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult GetCourseCountsByStatusForUKPRN(int UKPRN, [Required]string code)
+        {
+            return Ok();
+        }
 
     }
 }
