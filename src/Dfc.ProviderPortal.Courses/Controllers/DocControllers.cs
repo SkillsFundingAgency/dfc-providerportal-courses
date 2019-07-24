@@ -136,6 +136,17 @@ namespace Dfc.ProviderPortal.Courses.Controllers
         {
             return Ok();
         }
-        
+
+
+        [Route("UpdateStatus")]
+        [HttpPost]
+        [ProducesResponseType(typeof(Course), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult UpdateStatus([Required]string CourseId, [Required]string CourseRunId, [Required]string Status)
+        {
+            return Ok();
+        }
+
     }
 }
