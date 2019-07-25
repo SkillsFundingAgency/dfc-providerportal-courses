@@ -156,5 +156,16 @@ namespace Dfc.ProviderPortal.Courses.Controllers
         {
             return Ok();
         }
+
+        [Route("ChangeCourseRunStatusesForUKPRNSelection")]
+        [HttpGet]
+        [ProducesResponseType(typeof(ChangeCourseRunStatusesForUKPRNSelection), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult ChangeCourseRunStatusesForUKPRNSelection([Required]string UKPRN, [Required]string CurrentStatus, [Required]string StatusToBeChangedTo)
+        {
+            return Ok();
+        }
+        
     }
 }
