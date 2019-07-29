@@ -44,9 +44,10 @@ namespace Dfc.ProviderPortal.Courses.Helpers
         {
             // Call service to get data
             HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Add("api-key", _settings.ApiKey);
             var criteria = new object();
             StringContent content = new StringContent(JsonConvert.SerializeObject(criteria), Encoding.UTF8, "application/json");
-            Task<HttpResponseMessage> taskResponse = client.PostAsync($"{_settings.ApiUrl}GetAllVenues?code={_settings.ApiKey}", content);
+            Task<HttpResponseMessage> taskResponse = client.PostAsync($"{_settings.ApiUrl}GetAllVenues", content);
             taskResponse.Wait();
             Task<string> taskJSON = taskResponse.Result.Content.ReadAsStringAsync();
             taskJSON.Wait();
