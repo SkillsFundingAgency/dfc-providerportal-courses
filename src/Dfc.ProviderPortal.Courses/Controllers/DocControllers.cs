@@ -167,12 +167,5 @@ namespace Dfc.ProviderPortal.Courses.Controllers
             return Ok();
         }
 
-        [Route("GetLiveProvidersForAzureSearch")]
-        [HttpPost]
-        [ProducesResponseType(typeof(IEnumerable<object>), StatusCodes.Status200OK)]
-        public IActionResult GetLiveProvidersForAzureSearch()
-        {
-            return Ok();
-        }
     }
 }
