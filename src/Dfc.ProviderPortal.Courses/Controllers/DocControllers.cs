@@ -166,6 +166,6 @@ namespace Dfc.ProviderPortal.Courses.Controllers
         {
             return Ok();
         }
-        
+
     }
 }
