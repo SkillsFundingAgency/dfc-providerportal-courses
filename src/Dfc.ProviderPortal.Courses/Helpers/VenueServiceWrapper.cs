@@ -28,6 +28,7 @@ namespace Dfc.ProviderPortal.Courses.Helpers
         {
             // Call service to get data
             HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _settings.ApiKey);
             var criteria = new { id };
             StringContent content = new StringContent(JsonConvert.SerializeObject(criteria), Encoding.UTF8, "application/json");
             Task<HttpResponseMessage> taskResponse = client.PostAsync($"{_settings.ApiUrl}GetVenueById?code={_settings.ApiKey}", content);
