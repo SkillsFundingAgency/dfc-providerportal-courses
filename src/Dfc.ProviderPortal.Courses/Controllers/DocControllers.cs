@@ -113,7 +113,7 @@ namespace Dfc.ProviderPortal.Courses.Controllers
         [ProducesResponseType(typeof(Course), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult UpdateCourseMigrationReport(CourseMigrationReport courseMigrationReport, [Required]string code)
+        public IActionResult UpdateCourseMigrationReport(CourseMigrationReport courseMigrationReport)
         {
             return Ok();
         }
@@ -123,7 +123,7 @@ namespace Dfc.ProviderPortal.Courses.Controllers
         [ProducesResponseType(typeof(Course), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult GetCourseMigrationReportByUKPRN(int UKPRN)
+        public IActionResult GetCourseMigrationReportByUKPRN([Required]int UKPRN)
         {
             return Ok();
         }
