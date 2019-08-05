@@ -123,7 +123,7 @@ namespace Dfc.ProviderPortal.Courses.Controllers
         [ProducesResponseType(typeof(Course), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult GetCourseMigrationReportByUKPRN(int UKPRN, [Required]string code)
+        public IActionResult GetCourseMigrationReportByUKPRN(int UKPRN)
         {
             return Ok();
         }
