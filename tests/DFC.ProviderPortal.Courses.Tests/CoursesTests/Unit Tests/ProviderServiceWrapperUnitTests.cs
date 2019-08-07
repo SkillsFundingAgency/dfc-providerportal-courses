@@ -25,14 +25,14 @@ namespace DFC.ProviderPortal.Courses.Tests.CoursesTests.Unit
 
                 IProviderServiceSettings settings = new ProviderServiceSettings()
                 {
-                    ApiKey = "3b5ef63d1ba84346a05b25e880119399",
+                    ApiKey = "",
                     ApiUrl = "https://dev.api.nationalcareersservice.org.uk/coursedirectory/ukrlp/api/",
                 };
              
                 var mockHttpMessageHandler = new MockHttpMessageHandler();
                 mockHttpMessageHandler.When(HttpMethod.Post, "https://dev.api.nationalcareersservice.org.uk/coursedirectory/ukrlp/api/GetLiveProvidersForAzureSearch")
-                                        .Respond("application/json", 
-                                        "[{\"id\":\"b8b08904-662d-47af-a4e6-61822bb34e7e\",\"UnitedKingdomProviderReferenceNumber\":10000055,\"ProviderName\":\"ABINGDON AND WITNEY COLLEGE\",\"Status\":1,\"ProviderStatus\":\"Active\",\"CourseDirectoryName\":\"ABBO AND WIT\",\"TradingName\":null,\"ProviderAlias\":\"Mark Paddock College - Alias\"}]"
+                                        .Respond("application/json",
+                                        "[{\"id\":\"00000000-0000-0000-0000-000000000000\",\"UnitedKingdomProviderReferenceNumber\":123456,\"ProviderName\":\"DANDELION AND BURDOCK COLLEGE\",\"Status\":1,\"ProviderStatus\":\"Active\",\"CourseDirectoryName\":\"D&B\",\"TradingName\":null,\"ProviderAlias\":\"D&B - Alias\"}]"
                                         ); 
                 var httpclient = new HttpClient(mockHttpMessageHandler);
                 var service = new ProviderServiceWrapper(settings, httpclient);
@@ -49,7 +49,7 @@ namespace DFC.ProviderPortal.Courses.Tests.CoursesTests.Unit
 
                 searchResults.Should().NotBeNull();
                 searchResults.Should().HaveCount(1);
-                searchResults.First().ProviderName.Should().Be("ABBO AND WIT", "CourseDirectoryName is set to 'ABBO AND WIT'");
+                searchResults.First().ProviderName.Should().Be("D&B", "CourseDirectoryName is set to 'D&B'");
             }
 
             [Fact]  // COUR-1491
@@ -61,14 +61,14 @@ namespace DFC.ProviderPortal.Courses.Tests.CoursesTests.Unit
 
                 IProviderServiceSettings settings = new ProviderServiceSettings()
                 {
-                    ApiKey = "3b5ef63d1ba84346a05b25e880119399",
+                    ApiKey = "",
                     ApiUrl = "https://dev.api.nationalcareersservice.org.uk/coursedirectory/ukrlp/api/",
                 };
 
                 var mockHttpMessageHandler = new MockHttpMessageHandler();
                 mockHttpMessageHandler.When(HttpMethod.Post, "https://dev.api.nationalcareersservice.org.uk/coursedirectory/ukrlp/api/GetLiveProvidersForAzureSearch")
                                         .Respond("application/json",
-                                        "[{\"id\":\"b8b08904-662d-47af-a4e6-61822bb34e7e\",\"UnitedKingdomProviderReferenceNumber\":10000055,\"ProviderName\":\"ABINGDON AND WITNEY COLLEGE\",\"Status\":1,\"ProviderStatus\":\"Active\",\"CourseDirectoryName\":null,\"TradingName\":null,\"ProviderAlias\":\"Mark Paddock College - Alias\"}]"
+                                        "[{\"id\":\"00000000-0000-0000-0000-000000000000\",\"UnitedKingdomProviderReferenceNumber\":123456,\"ProviderName\":\"DANDELION AND BURDOCK COLLEGE\",\"Status\":1,\"ProviderStatus\":\"Active\",\"CourseDirectoryName\":null,\"TradingName\":null,\"ProviderAlias\":\"D&B - Alias\"}]"
                                         );
                 var httpclient = new HttpClient(mockHttpMessageHandler);
                 var service = new ProviderServiceWrapper(settings, httpclient);
@@ -85,7 +85,7 @@ namespace DFC.ProviderPortal.Courses.Tests.CoursesTests.Unit
 
                 searchResults.Should().NotBeNull();
                 searchResults.Should().HaveCount(1);
-                searchResults.First().ProviderName.Should().Be("ABINGDON AND WITNEY COLLEGE", "CourseDirectoryName is null so use existing ProviderName value");
+                searchResults.First().ProviderName.Should().Be("DANDELION AND BURDOCK COLLEGE", "CourseDirectoryName is null so use existing ProviderName value");
             }
         }
     }
