@@ -134,7 +134,7 @@ namespace Dfc.ProviderPortal.Courses.Services
             {
 
                 log.LogInformation("Getting provider data");
-                IEnumerable<AzureSearchProviderModel> providers = new ProviderServiceWrapper(_providerServiceSettings).GetLiveProvidersForAzureSearch();
+                IEnumerable<AzureSearchProviderModel> providers = new ProviderServiceWrapper(_providerServiceSettings, new HttpClient()).GetLiveProvidersForAzureSearch();
 
                 IEnumerable<AzureSearchVenueModel> venues = GetVenues(
                     log,
@@ -243,7 +243,7 @@ namespace Dfc.ProviderPortal.Courses.Services
                                   ?.VenueId;
             if (venueid.HasValue)
                 venue = (dynamic)new VenueServiceWrapper(_venueServiceSettings).GetById<dynamic>(venueid.Value);
-            var provider = new ProviderServiceWrapper(_providerServiceSettings).GetByPRN(course.ProviderUKPRN);
+            var provider = new ProviderServiceWrapper(_providerServiceSettings, new HttpClient()).GetByPRN(course.ProviderUKPRN);
             var qualification = new QualificationServiceWrapper(_qualServiceSettings).GetQualificationById(course.LearnAimRef);
 
             //return from Course c in new List<Course>() { course }

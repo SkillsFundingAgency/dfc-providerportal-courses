@@ -17,21 +17,25 @@ namespace Dfc.ProviderPortal.Courses.Helpers
     public class ProviderServiceWrapper : IProviderServiceWrapper
     {
         private readonly IProviderServiceSettings _settings;
+        private readonly HttpClient _client;
 
-        public ProviderServiceWrapper(IProviderServiceSettings settings)
+        public ProviderServiceWrapper(IProviderServiceSettings settings, HttpClient client)
         {
             Throw.IfNull(settings, nameof(settings));
             _settings = settings;
+
+            Throw.IfNull(client, nameof(client));
+            _client = client;
         }
 
         public dynamic GetByPRN(int PRN)
         {
             // Call service to get data
-            HttpClient client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _settings.ApiKey);
+            //HttpClient client = new HttpClient();
+            _client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _settings.ApiKey);
             var criteria = new { PRN };
             StringContent content = new StringContent(JsonConvert.SerializeObject(criteria), Encoding.UTF8, "application/json");
-            Task<HttpResponseMessage> taskResponse = client.PostAsync($"{_settings.ApiUrl}GetProviderByPRN", content);
+            Task<HttpResponseMessage> taskResponse = _client.PostAsync($"{_settings.ApiUrl}GetProviderByPRN", content);
             taskResponse.Wait();
             Task<string> taskJSON = taskResponse.Result.Content.ReadAsStringAsync();
             taskJSON.Wait();
@@ -44,11 +48,11 @@ namespace Dfc.ProviderPortal.Courses.Helpers
         public IEnumerable<AzureSearchProviderModel> GetLiveProvidersForAzureSearch()
         {
             // Call service to get data
-            HttpClient client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _settings.ApiKey);
+            //HttpClient client = new HttpClient();
+            _client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _settings.ApiKey);
             var criteria = new object();
             StringContent content = new StringContent(JsonConvert.SerializeObject(criteria), Encoding.UTF8, "application/json");
-            Task<HttpResponseMessage> taskResponse = client.PostAsync($"{_settings.ApiUrl}GetLiveProvidersForAzureSearch", content);
+            Task<HttpResponseMessage> taskResponse = _client.PostAsync($"{_settings.ApiUrl}GetLiveProvidersForAzureSearch", content);
             taskResponse.Wait();
             Task<string> taskJSON = taskResponse.Result.Content.ReadAsStringAsync();
             taskJSON.Wait();
