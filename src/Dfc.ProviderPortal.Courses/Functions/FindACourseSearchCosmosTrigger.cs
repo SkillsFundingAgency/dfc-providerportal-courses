@@ -24,7 +24,7 @@ namespace Dfc.ProviderPortal.Courses.Functions
         [FunctionName("FindACourseSearchCosmosTrigger")]
         public static async Task Run(
             [CosmosDBTrigger("providerportal", "courses", ConnectionStringSetting = "SearchServiceSettings:CoursesConnectionString",
-            //LeaseCollectionName = "courses-leases",
+            LeaseCollectionName = "courses-leases",
             CreateLeaseCollectionIfNotExists = true)]
             IReadOnlyList<Document> documents,
             //public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req,
