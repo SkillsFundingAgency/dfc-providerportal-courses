@@ -232,6 +232,8 @@ namespace Dfc.ProviderPortal.Courses.Helpers
                 {
                     foreach (DfcMigrationReport report in await queryable.ExecuteNextAsync<DfcMigrationReport>())
                     {
+                        //Some Providers have ',' in there name which is breaking the CSV
+                        report.ProviderName.Replace(",", "");
                         reports.Add(report);
                     }
                 }
