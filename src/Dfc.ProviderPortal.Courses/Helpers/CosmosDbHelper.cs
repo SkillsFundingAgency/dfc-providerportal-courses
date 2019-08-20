@@ -236,7 +236,6 @@ namespace Dfc.ProviderPortal.Courses.Helpers
                         report.ProviderName = report.ProviderName.Replace(",", "");
                         reports.Add(report);
                     }
-
                 }
             }
 
