@@ -22,11 +22,9 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         Task<ICourse> Update(ICourse doc);
         Task<IEnumerable<ICourse>> GetAllCourses(ILogger log);
         //Task<IEnumerable<IAzureSearchCourse>> FindACourseAzureSearchData(ILogger log);
-        Task<IEnumerable<IndexingResult>> UploadCoursesToSearch(ILogger log, IReadOnlyList<Document> documents);
         //Task<FACSearchResult> CourseSearch(ILogger log, SearchCriteriaStructure criteria); // string SearchText)
         Task<HttpResponseMessage> ArchiveProvidersLiveCourses(int UKPRN, int UIMode);
         Task<HttpResponseMessage> ChangeCourseRunStatusesForUKPRNSelection(int UKPRN, RecordStatus CurrentStatus, RecordStatus StatusToBeChangedTo);
-        Task<ICourseAudit> Audit(ILogger log, Document doc);
         Task<HttpResponseMessage> UpdateStatus(Guid courseId, Guid courseRunId, int status);
     }
 }
