@@ -84,6 +84,7 @@ namespace Dfc.ProviderPortal.Courses.Models
         YourCoursesLive = 3,
         YourCoursesArchived = 4,
         YourCoursesPending = 5,
-        YourCoursesDeleted = 6
+        YourCoursesDeleted = 6,
+        DeactivatedProvider = 7
     }
 }
