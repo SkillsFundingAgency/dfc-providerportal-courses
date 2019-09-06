@@ -269,14 +269,17 @@ namespace Dfc.ProviderPortal.Courses.Services
                     var result = Update(course);
                 }
 
-                foreach (var course in coursesToMakeLive)
+                if ((UIMode)UIMode != Models.UIMode.DeactivatedProvider)    // ensure nothing set live if provider is deactivated
                 {
-                    foreach (var courseRun in course.CourseRuns)
+                    foreach (var course in coursesToMakeLive)
                     {
-                        if (courseRun.RecordStatus == status)
-                            courseRun.RecordStatus = RecordStatus.Live;
+                        foreach (var courseRun in course.CourseRuns)
+                        {
+                            if (courseRun.RecordStatus == status)
+                                courseRun.RecordStatus = RecordStatus.Live;
+                        }
+                        var result = Update(course);
                     }
-                    var result = Update(course);
                 }
 
                 return new HttpResponseMessage(HttpStatusCode.OK);
