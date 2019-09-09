@@ -171,14 +171,9 @@ namespace Dfc.ProviderPortal.Courses.Helpers
                 var result = await client.DeleteDocumentAsync(docUri, new RequestOptions() { PartitionKey = new PartitionKey(doc.ProviderUKPRN) });
 
                 if(result.StatusCode == HttpStatusCode.NoContent)
-                {
                     responseList.Add($"Course with LARS ( { doc.LearnAimRef } ) and Title ( { doc.QualificationCourseTitle } ) was deleted.");
-                }
                 else
-                {
                     responseList.Add($"Course with LARS ( { doc.LearnAimRef } ) and Title ( { doc.QualificationCourseTitle } ) wasn't deleted. StatusCode: ( { result.StatusCode } )");
-                }
-                
             }
 
             return responseList;
@@ -203,17 +198,16 @@ namespace Dfc.ProviderPortal.Courses.Helpers
             foreach (var doc in bulkUploadDocs)
             {
                 Uri docUri = UriFactory.CreateDocumentUri(_settings.DatabaseId, collectionId, doc.id.ToString());
-                var result = await client.DeleteDocumentAsync(docUri, new RequestOptions() { PartitionKey = new PartitionKey(doc.ProviderUKPRN) });
 
-                if (result.StatusCode == HttpStatusCode.NoContent)
-                {
-                    responseList.Add($"Course with LARS ( { doc.LearnAimRef } ) and Title ( { doc.QualificationCourseTitle } ) was deleted.");
-                }
+                //var result = await client.DeleteDocumentAsync(docUri, new RequestOptions() { PartitionKey = new PartitionKey(doc.ProviderUKPRN) });
+                var result = client.ReadDocumentAsync(docUri, new RequestOptions() { PartitionKey = new PartitionKey(doc.ProviderUKPRN) }).Result;
+                result.Resource.SetPropertyValue("CourseStatus", (int)RecordStatus.Archived);
+                await UpdateDocumentAsync(client, collectionId, result?.Resource);
+
+                if (result.StatusCode == HttpStatusCode.OK)
+                    responseList.Add($"Course with LARS ( { doc.LearnAimRef } ) and Title ( { doc.QualificationCourseTitle } ) was archived"); //deleted.");
                 else
-                {
-                    responseList.Add($"Course with LARS ( { doc.LearnAimRef } ) and Title ( { doc.QualificationCourseTitle } ) wasn't deleted. StatusCode: ( { result.StatusCode } )");
-                }
-
+                    responseList.Add($"Course with LARS ( { doc.LearnAimRef } ) and Title ( { doc.QualificationCourseTitle } ) wasn't archived. StatusCode: ( { result.StatusCode } )");
             }
 
             return responseList;
