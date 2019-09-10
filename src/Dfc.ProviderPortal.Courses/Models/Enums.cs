@@ -35,6 +35,15 @@ namespace Dfc.ProviderPortal.Courses.Models
         MigrationDeleted = 1024,
     }
 
+    public enum LarlessReason
+    {
+        Undefined,
+        NoLars,
+        UnknownLars,
+        ExpiredLars,
+        MultipleMatchingLars
+    }
+
     public enum TransferMethod
     {
         [Description("Undefined")]

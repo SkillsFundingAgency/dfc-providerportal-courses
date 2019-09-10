@@ -45,6 +45,7 @@ namespace Dfc.ProviderPortal.Courses.Models
         public IEnumerable<BulkUploadError> BulkUploadErrors { get; set; }
         public string _self { get; set; }
         public string _rid { get; set; }
+        public LarlessReason? LarlessReason { get; set; }
         internal static RecordStatus GetBitMaskState(IEnumerable<CourseRun> courseRuns)
         {
             RecordStatus courseStatus = RecordStatus.Undefined; // Default BitMaskState (handles undefined and no CourseRuns)
