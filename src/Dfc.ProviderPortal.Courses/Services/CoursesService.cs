@@ -309,7 +309,7 @@ namespace Dfc.ProviderPortal.Courses.Services
                         if (courseRun.RecordStatus == CurrentStatus)
                             courseRun.RecordStatus = StatusToBeChangedTo;
                     }
-                    var result = Update(course);
+                    var result = await Update(course);
                 }
 
                 return new HttpResponseMessage(HttpStatusCode.OK);
