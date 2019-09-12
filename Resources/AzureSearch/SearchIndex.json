@@ -4,6 +4,7 @@
     "fields": [
       {"name": "id", "type": "Edm.String", "key": true, "sortable": false, "facetable": false, "searchable": false},
       {"name": "CourseId", "type": "Edm.String", "sortable": false, "facetable": false},
+      {"name": "CourseRunId", "type": "Edm.String", "sortable": false, "facetable": false},
       {"name": "QualificationCourseTitle", "type": "Edm.String", "sortable": false, "facetable": false},
       {"name": "LearnAimRef", "type": "Edm.String", "sortable": false, "facetable": false},
       {"name": "NotionalNVQLevelv2", "type": "Edm.String", "sortable": false, "searchable": false},
@@ -14,7 +15,16 @@
       {"name": "VenueAttendancePattern", "type": "Edm.String", "sortable": false},
       {"name": "ProviderName", "type": "Edm.String", "sortable": false, "searchable": false},
       {"name": "Region", "type": "Edm.String", "sortable": false},
-      {"name": "UpdatedOn", "type": "Edm.DateTimeOffset", "sortable": false, "facetable": false}
+      {"name": "Weighting", "type": "Edm.String"},
+      {"name": "ScoreBoost", "type": "Edm.Double"},
+      {"name": "UpdatedOn", "type": "Edm.DateTimeOffset", "sortable": false, "facetable": false},
+      {"name": "VenueStudyMode", "type": "Edm.String", "sortable": false},
+      {"name": "DeliveryMode", "type": "Edm.String", "sortable": false},
+      {"name": "StartDate", "type": "Edm.DateTimeOffset", "facetable": false},
+      {"name": "VenueTown", "type": "Edm.String", "sortable": false},
+      {"name": "Cost", "type": "Edm.Int32", "facetable": false},
+      {"name": "Cost Description", "type": "Edm.String", "sortable": false, "facetable": false, "searchable": false},
+      {"name": "CourseText", "type": "Edm.String", "sortable": false, "facetable": false, "searchable": false}
     ]
   }
 ]
