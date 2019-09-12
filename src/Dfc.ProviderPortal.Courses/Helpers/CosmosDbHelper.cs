@@ -190,7 +190,7 @@ namespace Dfc.ProviderPortal.Courses.Helpers
 
             List<Models.Course> bulkUploadDocs = client.CreateDocumentQuery<Course>(uri, options)
                                              .Where(x => x.ProviderUKPRN == UKPRN )
-                                             .Where((y => ((int)y.CourseStatus & (int)RecordStatus.BulkUloadPending) > 0 || ((int)y.CourseStatus & (int)RecordStatus.BulkUploadReadyToGoLive) > 0))
+                                             .Where((y => ((int)y.CourseStatus & (int)RecordStatus.BulkUploadPending) > 0 || ((int)y.CourseStatus & (int)RecordStatus.BulkUploadReadyToGoLive) > 0))
                                              .ToList();
 
             var responseList = new List<string>();

@@ -45,6 +45,11 @@ namespace Dfc.ProviderPortal.Courses.Functions
                 await coursesService.ChangeCourseRunStatusesForUKPRNSelection(UKPRN,
                     RecordStatus.MigrationReadyToGoLive, RecordStatus.Archived);
 
+                // COUR-1916 - DQI not being cleared after BU failure
+                // Appears to be because Courses with status Bulk Upload Pending are not being deleted.
+                await coursesService.ChangeCourseRunStatusesForUKPRNSelection(UKPRN,
+                    RecordStatus.BulkUploadPending, RecordStatus.Archived);
+
                 if (messagesList == null)
                     return new NotFoundObjectResult(UKPRN);
 
