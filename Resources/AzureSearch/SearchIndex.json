@@ -23,7 +23,7 @@
       {"name": "StartDate", "type": "Edm.DateTimeOffset", "facetable": false},
       {"name": "VenueTown", "type": "Edm.String", "sortable": false},
       {"name": "Cost", "type": "Edm.Int32", "facetable": false},
-      {"name": "Cost Description", "type": "Edm.String", "sortable": false, "facetable": false, "searchable": false},
+      {"name": "CostDescription", "type": "Edm.String", "sortable": false, "facetable": false, "searchable": false},
       {"name": "CourseText", "type": "Edm.String", "sortable": false, "facetable": false, "searchable": false}
     ]
   }
