@@ -28,6 +28,28 @@
       {"name": "VenueAttendancePatternDescription", "type": "Edm.String", "sortable": false, "facetable": false, "searchable": false},
       {"name": "VenueStudyModeDescription", "type": "Edm.String", "sortable": false, "facetable": false, "searchable": false},
       {"name": "DeliveryModeDescription", "type": "Edm.String", "sortable": false, "facetable": false, "searchable": false}
+    ],
+    "scoringProfiles": [
+      {
+        "name": "region-boost",
+        "functions": [
+          {
+            "fieldName": "ScoreBoost",
+            "freshness": null,
+            "interpolation": "linear",
+            "magnitude": {
+              "boostingRangeStart": 1,
+              "boostingRangeEnd": 100,
+              "constantBoostBeyondRange": true
+            },
+            "distance": null,
+            "tag": null,
+            "type": "magnitude",
+            "boost": 100
+          }
+        ],
+        "functionAggregation": 0
+      }
     ]
   }
 ]
