@@ -1,15 +1,15 @@
 ﻿
 using System;
+using System.Net;
 using System.Net.Http;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Search.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
-using Microsoft.Spatial;
 using Newtonsoft.Json;
 using Dfc.ProviderPortal.Courses.Helpers;
 using Dfc.ProviderPortal.Courses.Interfaces;
@@ -17,8 +17,7 @@ using Dfc.ProviderPortal.Courses.Models;
 using Dfc.ProviderPortal.Courses.Settings;
 using Dfc.ProviderPortal.Packages;
 using Document = Microsoft.Azure.Documents.Document;
-using Microsoft.AspNetCore.Http;
-using System.Net;
+
 
 namespace Dfc.ProviderPortal.Courses.Services
 {
@@ -31,12 +30,12 @@ namespace Dfc.ProviderPortal.Courses.Services
         private readonly IVenueServiceSettings _venueServiceSettings;
         private readonly ISearchServiceSettings _searchServiceSettings;
         private readonly IQualificationServiceSettings _qualServiceSettings;
-        //private readonly ISearchServiceWrapper _searchServiceWrapper;
+        private readonly ISearchServiceWrapper _searchServiceWrapper;
 
         public CoursesService(
             //ILogger log,
             ICosmosDbHelper cosmosDbHelper,
-            //ISearchServiceWrapper searchServiceWrapper,
+            ISearchServiceWrapper searchServiceWrapper,
             IOptions<ProviderServiceSettings> providerServiceSettings,
             IOptions<VenueServiceSettings> venueServiceSettings,
             IOptions<SearchServiceSettings> searchServiceSettings,
@@ -45,7 +44,7 @@ namespace Dfc.ProviderPortal.Courses.Services
         {
             //Throw.IfNull(log, nameof(log));
             Throw.IfNull(cosmosDbHelper, nameof(cosmosDbHelper));
-            //Throw.IfNull(searchServiceWrapper, nameof(searchServiceWrapper));
+            Throw.IfNull(searchServiceWrapper, nameof(searchServiceWrapper));
             Throw.IfNull(settings, nameof(settings));
             Throw.IfNull(providerServiceSettings, nameof(providerServiceSettings));
             Throw.IfNull(venueServiceSettings, nameof(venueServiceSettings));
@@ -59,40 +58,81 @@ namespace Dfc.ProviderPortal.Courses.Services
             _venueServiceSettings = venueServiceSettings.Value;
             _qualServiceSettings = qualServiceSettings.Value;
             _searchServiceSettings = searchServiceSettings.Value;
-            //_searchServiceWrapper = searchServiceWrapper;
+            _searchServiceWrapper = searchServiceWrapper;
         }
-        
+
+        /// <summary>
+        /// Make trivial update to all courses in collection
+        /// This will cause change feed listener to fire and update the courses index for each document
+        /// </summary>
+        /// <param name="log">ILogger</param>
+        /// <returns>Affected courses</returns>
+        public async Task<IEnumerable<ICourse>> TouchAllCourses(ILogger log)
+        {
+            try {
+                DateTime start = DateTime.Now;
+
+                IEnumerable<ICourse> courses = await GetAllCourses(log);
+                var grouped = courses.Where(c => (c.CourseStatus & RecordStatus.Live) != 0)
+                                     .GroupBy(c => c.ProviderUKPRN,
+                                              c => c,
+                                              (key, g) => new { PRN = key.ToString(), Courses = g.ToList() });
+
+                foreach (var group in grouped) {
+
+                    // Remove existing courses for this PRN from the index
+                    _searchServiceWrapper.DeleteCoursesByPRN(log, group.PRN);
+
+                    // Make trivial change to each course in cosmos to ensure it is reindexed
+                    foreach(Course c in group.Courses) {
+                        c.UpdatedDate = (c.UpdatedDate.HasValue ? c.UpdatedDate.Value.AddSeconds(0.25)
+                                                                : DateTime.Now
+                                        );
+                        Task task = Update(c);
+                        task.Wait();
+                    }
+                }
+                return courses;
+
+            } catch (Exception ex) {
+                throw ex;
+            }
+        }
+
         public async Task<IEnumerable<ICourse>> GetAllCourses(ILogger log)
         {
-            try
-            {
+            try {
                 // Get all course documents in the collection
                 string token = null;
                 Task<FeedResponse<dynamic>> task = null;
-                List<dynamic> docs = new List<dynamic>();
+                //List<dynamic> docs = new List<dynamic>();
+                List<Course> docs = new List<Course>();
                 log.LogInformation("Getting all courses from collection");
 
                 // Read documents in batches, using continuation token to make sure we get them all
                 using (DocumentClient client = _cosmosDbHelper.GetClient())
                 {
-                    do
-                    {
+                    do {
                         task = client.ReadDocumentFeedAsync(UriFactory.CreateDocumentCollectionUri("providerportal", _settings.CoursesCollectionId),
                                                             new FeedOptions { MaxItemCount = -1, RequestContinuation = token });
                         token = task.Result.ResponseContinuation;
-                        log.LogInformation("Collating results");
-                        docs.AddRange(task.Result.ToList());
+                        //log.LogInformation("Collating results");
+                        //docs.AddRange(task.Result.ToList());
+
+                        // Cast the data by serializing to json and then deserialising into Course objects
+                        log.LogInformation($"Serializing data for {task.Result.LongCount()} courses");
+                        string json = JsonConvert.SerializeObject(task.Result.ToList());
+                        docs.AddRange(JsonConvert.DeserializeObject<IEnumerable<Course>>(json));
                     } while (token != null);
                 }
+                return docs;
 
-                // Cast the returned data by serializing to json and then deserialising into Course objects
-                log.LogInformation($"Serializing data for {docs.LongCount()} courses");
-                string json = JsonConvert.SerializeObject(docs);
-                return JsonConvert.DeserializeObject<IEnumerable<Course>>(json);
+                //// Cast the returned data by serializing to json and then deserialising into Course objects
+                //log.LogInformation($"Serializing data for {docs.LongCount()} courses");
+                //string json = JsonConvert.SerializeObject(docs);
+                //return JsonConvert.DeserializeObject<IEnumerable<Course>>(json);
 
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 throw ex;
             }
         }
@@ -174,17 +214,18 @@ namespace Dfc.ProviderPortal.Courses.Services
         {
             Throw.IfNull(course, nameof(course));
 
-            Course updated = null;
+            try {
+                Course updated = null;
+                using (var client = _cosmosDbHelper.GetClient())
+                {
+                    var updatedDocument = await _cosmosDbHelper.UpdateDocumentAsync(client, _settings.CoursesCollectionId, course);
+                    updated = _cosmosDbHelper.DocumentTo<Course>(updatedDocument);
+                }
+                return updated;
 
-            using (var client = _cosmosDbHelper.GetClient())
-            {
-                var updatedDocument = await _cosmosDbHelper.UpdateDocumentAsync(client, _settings.CoursesCollectionId, course);
-
-                updated = _cosmosDbHelper.DocumentTo<Course>(updatedDocument);
+            } catch (Exception ex) {
+                throw ex;
             }
-
-            return updated;
-
         }
 
         public async Task<IEnumerable<ICourse>> GetCoursesByUKPRN(int UKPRN)
