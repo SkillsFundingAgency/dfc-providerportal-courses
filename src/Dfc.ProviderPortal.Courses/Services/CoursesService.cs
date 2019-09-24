@@ -78,12 +78,17 @@ namespace Dfc.ProviderPortal.Courses.Services
                                               c => c,
                                               (key, g) => new { PRN = key.ToString(), Courses = g.ToList() });
 
+                int groupedCount = grouped.Count();
+                int i = 0;
+                log.LogInformation($"Refreshing course index for {groupedCount} providers");
                 foreach (var group in grouped) {
 
                     // Remove existing courses for this PRN from the index
+                    log.LogInformation($"Processing provider {i++} of {groupedCount}");
                     _searchServiceWrapper.DeleteCoursesByPRN(log, group.PRN);
 
                     // Make trivial change to each course in cosmos to ensure it is reindexed
+                    log.LogInformation($"Refreshing {group.Courses.Count()} courses");
                     foreach(Course c in group.Courses) {
                         c.UpdatedDate = (c.UpdatedDate.HasValue ? c.UpdatedDate.Value.AddSeconds(0.25)
                                                                 : DateTime.Now
@@ -92,6 +97,10 @@ namespace Dfc.ProviderPortal.Courses.Services
                         task.Wait();
                     }
                 }
+
+                // Delete documents more than 24hrs old, as we haven't just re-indexed it above,
+                // so it doesn't represent a current course and shouldn't be there
+                _searchServiceWrapper.DeleteCoursesBeforeDate(log, start.AddDays(-1));
                 return courses;
 
             } catch (Exception ex) {
