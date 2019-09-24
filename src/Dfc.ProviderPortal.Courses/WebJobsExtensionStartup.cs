@@ -45,6 +45,7 @@ namespace Dfc.ProviderPortal.Courses
             var serviceProvider = builder.Services.BuildServiceProvider();
             serviceProvider.GetService<ICourseMigrationReportService>().Initialise().Wait();
             serviceProvider.GetService<IDfcReportService>().Initialise().Wait();
+            //serviceProvider.GetService<ISearchServiceWrapper>().Initialise().Wait();
         }
     }
 }
