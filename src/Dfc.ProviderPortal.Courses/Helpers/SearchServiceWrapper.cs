@@ -194,18 +194,18 @@ namespace Dfc.ProviderPortal.Courses.Helpers
                 SearchParameters parms = new SearchParameters()
                 {
                         Select = new[] { "id" },
-                        Filter = $"search.in(UKPRN, '{UKPRN}')",
+                        Filter = $"UKPRN eq '{UKPRN}'",
                         SearchMode = SearchMode.All,
                         QueryType = QueryType.Full,
                         Top = 99999
                 };
-                IEnumerable<string> docs = _adminIndex.Documents
-                                                      .Search<string>("*", parms)
+                IEnumerable<dynamic> docs = _adminIndex.Documents
+                                                      .Search<dynamic>("*", parms)
                                                      ?.Results
                                                      ?.Select(x => x.Document);
                 if (docs.Any())
                 {
-                    IndexBatch<Microsoft.Azure.Search.Models.Document> batch = IndexBatch.Delete("id", docs);
+                    IndexBatch<Microsoft.Azure.Search.Models.Document> batch = IndexBatch.Delete("id", docs.Select(x => (string)x.id.ToString()));
 
                     _log.LogInformation($"Deleting {docs.Count()} documents from index");
                     Task<DocumentIndexResult> task = _adminIndex.Documents.IndexAsync(batch);
@@ -219,7 +219,6 @@ namespace Dfc.ProviderPortal.Courses.Helpers
                 _log.LogError(ex, string.Format("Failed to index some of the documents: {0}",
                                                 string.Join(", ", failed)));
                 _log.LogError(ex.ToString());
-                //succeeded = ex.IndexingResults.Count(x => x.Succeeded);
                 return null;
 
             } catch (Exception e) {
@@ -227,7 +226,54 @@ namespace Dfc.ProviderPortal.Courses.Helpers
             }
 
             // Return empty list of failed IndexingResults
-            return null; // new List<IndexingResult>();
+            return null;
+        }
+
+        public DocumentSearchResult<AzureSearchCourse> DeleteCoursesBeforeDate(ILogger _log, DateTime deleteBefore)
+        {
+            try
+            {
+                IEnumerable<dynamic> docs;
+                do {
+                    _log.LogInformation($"Removing course index decuments updated before {deleteBefore.ToString()}");
+                    SearchParameters parms = new SearchParameters()
+                    {
+                            Select = new[] { "id" },
+                            Filter = $"UpdatedOn eq null or UpdatedOn lt {deleteBefore.ToString("yyyy-MM-ddTHH:mm:ssZ")}",
+                            SearchMode = SearchMode.All,
+                            QueryType = QueryType.Full,
+                            Top = 99999
+                    };
+                    docs = _adminIndex.Documents
+                                      .Search<dynamic>("*", parms)
+                                     ?.Results
+                                     ?.Select(x => x.Document);
+                    if (docs.Any())
+                    {
+                        IndexBatch<Microsoft.Azure.Search.Models.Document> batch = IndexBatch.Delete("id", docs.Select(x => (string)x.id.ToString()));
+
+                        _log.LogInformation($"Deleting {docs.Count()} documents from index");
+                        Task<DocumentIndexResult> task = _adminIndex.Documents.IndexAsync(batch);
+                        task.Wait();
+                        _log.LogInformation($"Successfully deleted {docs.Count()} docs from Azure search index: course");
+                    }
+                } while (docs.Any());
+                return null; //docs;
+
+            }
+            catch (IndexBatchException ex) {
+                IEnumerable<IndexingResult> failed = ex.IndexingResults.Where(r => !r.Succeeded);
+                _log.LogError(ex, string.Format("Failed to index some of the documents: {0}",
+                                                string.Join(", ", failed)));
+                _log.LogError(ex.ToString());
+                return null;
+
+            } catch (Exception e) {
+                throw e;
+            }
+
+            // Return empty list of failed IndexingResults
+            return null;
         }
 
 
