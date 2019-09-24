@@ -24,5 +24,6 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
 
         //Task Initialise();
         DocumentSearchResult<AzureSearchCourse> DeleteCoursesByPRN(ILogger log, string UKPRN);
+        DocumentSearchResult<AzureSearchCourse> DeleteCoursesBeforeDate(ILogger _log, DateTime deleteBefore);
     }
 }
