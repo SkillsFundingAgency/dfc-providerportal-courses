@@ -20,8 +20,8 @@ namespace Dfc.ProviderPortal.Courses.Functions
     public static class TouchAllCourses
     {
         [FunctionName("TouchAllCourses")]
-        //public static void Run([TimerTrigger("0 0 0 */1 * *")]TimerInfo myTimer,    // Every 24 hrs normally
-        public static void Run([TimerTrigger("0 */1 * * * *")]TimerInfo myTimer,    // Every minute for debug
+        public static void Run([TimerTrigger("0 0 0 */1 * *")]TimerInfo myTimer,    // Every 24 hrs normally
+        //public static void Run([TimerTrigger("0 */1 * * * *")]TimerInfo myTimer,    // Every minute for debug
             //[HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequestMessage req,
             ILogger log,
             [Inject] ICourseService coursesService)
@@ -29,8 +29,8 @@ namespace Dfc.ProviderPortal.Courses.Functions
             log.LogInformation($"TouchAllCourses timer trigger function executed at: {DateTime.Now}");
 
             try {
-                IEnumerable<Course> courses = (IEnumerable<Course>)/*await*/ coursesService.TouchAllCourses(log);
-                log.LogInformation($"TouchAllCourses affected {courses.LongCount()} courses");
+                var courses = /*await*/ coursesService.TouchAllCourses(log);
+                log.LogInformation($"TouchAllCourses refreshed {courses.Result?.Count()} courses in the course index");
                 //return new OkObjectResult(courses);
 
             } catch (Exception e) {
