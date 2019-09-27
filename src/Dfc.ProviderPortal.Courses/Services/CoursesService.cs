@@ -320,6 +320,38 @@ namespace Dfc.ProviderPortal.Courses.Services
             }
         }
 
+        public async Task<HttpResponseMessage> ChangeAllCourseRunStatusesForUKPRNSelection(int UKPRN, RecordStatus StatusToBeChangedTo)
+        {
+            Throw.IfNull<int>(UKPRN, nameof(UKPRN));
+            Throw.IfLessThan(0, UKPRN, nameof(UKPRN));
+
+            System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+            sw.Start();
+            var allCourses = GetCoursesByUKPRN(UKPRN).Result;
+            sw.Stop();
+
+            try
+            {
+                System.Diagnostics.Stopwatch sw2 = new System.Diagnostics.Stopwatch();
+                sw2.Start();
+                foreach (var course in allCourses)
+                {
+                    foreach (var courseRun in course.CourseRuns)
+                    {
+                        courseRun.RecordStatus = StatusToBeChangedTo;
+                    }
+                    var result = await Update(course);
+                }
+
+                sw2.Stop();
+
+                return new HttpResponseMessage(HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                return new HttpResponseMessage(HttpStatusCode.ExpectationFailed);
+            }
+        }
 
         public async Task<HttpResponseMessage> UpdateStatus(Guid courseId, Guid courseRunId, int status)
         {
