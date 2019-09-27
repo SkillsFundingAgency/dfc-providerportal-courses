@@ -150,7 +150,7 @@ namespace Dfc.ProviderPortal.Courses.Services
             Guid? venueid = course.CourseRuns
                                   .Where(r => r.id == RunId && r.VenueId != null)
                                   .FirstOrDefault()
-                                  ?.VenueId;
+                                 ?.VenueId;
             if (venueid.HasValue)
                 venue = (dynamic)new VenueServiceWrapper(_venueServiceSettings).GetById<dynamic>(venueid.Value);
             var provider = new ProviderServiceWrapper(_providerServiceSettings, new HttpClient()).GetByPRN(course.ProviderUKPRN);
