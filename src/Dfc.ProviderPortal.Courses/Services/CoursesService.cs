@@ -333,13 +333,10 @@ namespace Dfc.ProviderPortal.Courses.Services
                 }
 
                 return new HttpResponseMessage(HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
+
+            } catch (Exception ex) {
                 return new HttpResponseMessage(HttpStatusCode.ExpectationFailed);
             }
-
-
         }
 
         public async Task<HttpResponseMessage> ChangeCourseRunStatusesForUKPRNSelection(int UKPRN, RecordStatus CurrentStatus, RecordStatus StatusToBeChangedTo)

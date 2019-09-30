@@ -21,7 +21,7 @@ namespace Dfc.ProviderPortal.Courses.Functions
     {
         [FunctionName("TouchAllCourses")]
         public static void Run([TimerTrigger("0 0 0 */1 * *")]TimerInfo myTimer,    // Every 24 hrs normally
-        //public static void Run([TimerTrigger("0 */1 * * * *")]TimerInfo myTimer,    // Every minute for debug
+        //public static void Run([TimerTrigger("0 */1 * * * *")]TimerInfo myTimer,   // Every minute for debug
             //[HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequestMessage req,
             ILogger log,
             [Inject] ICourseService coursesService)
