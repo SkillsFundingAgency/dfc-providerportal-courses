@@ -33,9 +33,9 @@ namespace Dfc.ProviderPortal.Courses.Helpers
             // Call service to get data
             //HttpClient client = new HttpClient();
             _client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _settings.ApiKey);
-            var criteria = new { PRN };
-            StringContent content = new StringContent(JsonConvert.SerializeObject(criteria), Encoding.UTF8, "application/json");
-            Task<HttpResponseMessage> taskResponse = _client.PostAsync($"{_settings.ApiUrl}GetProviderByPRN", content);
+            //var criteria = new { PRN };
+            //StringContent content = new StringContent(JsonConvert.SerializeObject(criteria), Encoding.UTF8, "application/json");
+            Task<HttpResponseMessage> taskResponse = _client.GetAsync($"{_settings.ApiUrl}GetProviderByPRN?PRN={PRN}"); //, content);
             taskResponse.Wait();
             Task<string> taskJSON = taskResponse.Result.Content.ReadAsStringAsync();
             taskJSON.Wait();
