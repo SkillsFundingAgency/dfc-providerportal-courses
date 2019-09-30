@@ -21,6 +21,7 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         Task<List<string>> DeleteBulkUploadCourses(int UKPRN);
         Task<ICourse> Update(ICourse doc);
         Task<IEnumerable<ICourse>> GetAllCourses(ILogger log);
+        Task<IEnumerable<ICourse>> TouchAllCourses(ILogger log);
         //Task<IEnumerable<IAzureSearchCourse>> FindACourseAzureSearchData(ILogger log);
         //Task<FACSearchResult> CourseSearch(ILogger log, SearchCriteriaStructure criteria); // string SearchText)
         Task<HttpResponseMessage> ArchiveProvidersLiveCourses(int UKPRN, int UIMode);

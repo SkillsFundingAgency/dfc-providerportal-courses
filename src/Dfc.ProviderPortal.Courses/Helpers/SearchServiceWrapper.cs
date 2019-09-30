@@ -33,7 +33,7 @@ namespace Dfc.ProviderPortal.Courses.Helpers
             public AzureSearchVenueModel Venue { get; set; }
         }
 
-        private readonly ILogger _log;
+        //private readonly ILogger _log;
         private readonly ISearchServiceSettings _settings;
         //private readonly IProviderServiceSettings _providerServiceSettings;
         //private readonly IVenueServiceSettings _venueServiceSettings;
@@ -45,139 +45,235 @@ namespace Dfc.ProviderPortal.Courses.Helpers
         private HttpClient _httpClient;
         private readonly Uri _uri;
 
+        //public async Task Initialise()
+        //{
+        //}
+
         public SearchServiceWrapper(
-            ILogger log,
+            //ILogger log,
             //HttpClient httpClient,
             //IOptions<ProviderServiceSettings> providerServiceSettings,
             //IOptions<VenueServiceSettings> venueServiceSettings,
-            ISearchServiceSettings settings)
+            IOptions<SearchServiceSettings> settings)
         {
-            Throw.IfNull(log, nameof(log));
+            //Throw.IfNull(log, nameof(log));
             //Throw.IfNull(httpClient, nameof(httpClient));
             //Throw.IfNull(providerServiceSettings, nameof(providerServiceSettings));
             //Throw.IfNull(venueServiceSettings, nameof(venueServiceSettings));
             Throw.IfNull(settings, nameof(settings));
 
-            _log = log;
-            _settings = settings;
+            //_log = log;
+            _settings = settings.Value;
             //_providerServiceSettings = providerServiceSettings.Value;
             //_venueServiceSettings = venueServiceSettings.Value;
 
-            _queryService = new SearchServiceClient(settings.SearchService, new SearchCredentials(settings.QueryKey));
-            _adminService = new SearchServiceClient(settings.SearchService, new SearchCredentials(settings.AdminKey));
-            _queryIndex = _queryService?.Indexes?.GetClient(settings.Index);
-            _adminIndex = _adminService?.Indexes?.GetClient(settings.Index);
-            _onspdIndex = _queryService?.Indexes?.GetClient(settings.onspdIndex);
+            _queryService = new SearchServiceClient(_settings.SearchService, new SearchCredentials(_settings.QueryKey));
+            _adminService = new SearchServiceClient(_settings.SearchService, new SearchCredentials(_settings.AdminKey));
+            _queryIndex = _queryService?.Indexes?.GetClient(_settings.Index);
+            _adminIndex = _adminService?.Indexes?.GetClient(_settings.Index);
+            _onspdIndex = _queryService?.Indexes?.GetClient(_settings.onspdIndex);
 
             _httpClient = new HttpClient(); //httpClient;
             //_httpClient.DefaultRequestHeaders.Accept.Clear();
             //_httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             //_httpClient.DefaultRequestHeaders.Add("Content-Type", "application/json");
             //_httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json; charset=utf-8");
-            _httpClient.DefaultRequestHeaders.Add("api-key", settings.QueryKey);
-            _httpClient.DefaultRequestHeaders.Add("api-version", settings.ApiVersion);
-            _httpClient.DefaultRequestHeaders.Add("indexes", settings.Index);
-            _uri = new Uri($"{settings.ApiUrl}?api-version={settings.ApiVersion}");
+            _httpClient.DefaultRequestHeaders.Add("api-key", _settings.QueryKey);
+            _httpClient.DefaultRequestHeaders.Add("api-version", _settings.ApiVersion);
+            _httpClient.DefaultRequestHeaders.Add("indexes", _settings.Index);
+            _uri = new Uri($"{_settings.ApiUrl}?api-version={_settings.ApiVersion}");
         }
 
-        public IEnumerable<IndexingResult> UploadBatch(
-            IEnumerable<AzureSearchProviderModel> providers,
-            IEnumerable<AzureSearchVenueModel> venues,
-            IReadOnlyList<Document> documents,
-            out int succeeded)
+        //public IEnumerable<IndexingResult> UploadBatch(
+        //    ILogger _log,
+        //    IEnumerable<AzureSearchProviderModel> providers,
+        //    IEnumerable<AzureSearchVenueModel> venues,
+        //    IReadOnlyList<Document> documents,
+        //    out int succeeded)
+        //{
+        //    try {
+        //        succeeded = 0;
+        //        if (documents.Any()) {
+
+        //            IEnumerable<Course> courses = documents.Select(d => new Course()
+        //            {
+        //                id = d.GetPropertyValue<Guid>("id"),
+        //                QualificationCourseTitle = d.GetPropertyValue<string>("QualificationCourseTitle"),
+        //                LearnAimRef = d.GetPropertyValue<string>("LearnAimRef"),
+        //                NotionalNVQLevelv2 = d.GetPropertyValue<string>("NotionalNVQLevelv2"),
+        //                UpdatedDate = d.GetPropertyValue<DateTime?>("UpdatedDate"),
+        //                ProviderUKPRN = int.Parse(d.GetPropertyValue<string>("ProviderUKPRN")),
+        //                CourseRuns = d.GetPropertyValue<IEnumerable<CourseRun>>("CourseRuns")
+        //            });
+
+        //            _log.LogInformation("Creating batch of course data to index");
+
+        //            // Courses run in classrooms have an associated venue
+        //            IEnumerable<LINQComboClass> classroom =    from Course c in courses
+        //                                                       from CourseRun r in c.CourseRuns ?? new List<CourseRun>()
+        //                                                       from AzureSearchVenueModel v in venues.Where(x => r.VenueId == x.id)
+        //                                                                                             .DefaultIfEmpty()
+        //                                                       select new LINQComboClass() { Course = c, Run = r, SubRegion = (SubRegionItemModel)null, Venue = v };
+        //            _log.LogInformation($"{classroom.Count()} classroom courses (with VenueId and no regions)");
+
+
+        //            // Courses run elsewhere have regions instead (online, work-based, ...)
+        //            IEnumerable<LINQComboClass> nonclassroom = from Course c in courses
+        //                                                       from CourseRun r in c.CourseRuns ?? new List<CourseRun>()
+        //                                                       from SubRegionItemModel subregion in r.SubRegions ?? new List<SubRegionItemModel>()
+        //                                                       select new LINQComboClass() { Course = c, Run = r, SubRegion = subregion, Venue = (AzureSearchVenueModel)null };
+        //            _log.LogInformation($"{nonclassroom.Count()} other courses (with regions but no VenueId)");
+
+        //            decimal regionBoost = _settings.RegionSearchBoost ?? 2.3M;
+        //            decimal subregionBoost = _settings.SubRegionSearchBoost ?? 4.5M;
+
+        //            var batchdata = from LINQComboClass x in classroom.Union(nonclassroom)
+        //                            join AzureSearchProviderModel p in providers
+        //                            on x.Course?.ProviderUKPRN equals p.UnitedKingdomProviderReferenceNumber
+        //                            where (x.Run?.RecordStatus != RecordStatus.Pending && (x.Venue != null || x.SubRegion != null))
+        //                            select new AzureSearchCourse()
+        //                            {
+        //                                id = Guid.NewGuid(),
+        //                                CourseId = x.Course?.id,
+        //                                CourseRunId = x.Run?.id,
+        //                                QualificationCourseTitle = x.Course?.QualificationCourseTitle,
+        //                                LearnAimRef = x.Course?.LearnAimRef,
+        //                                NotionalNVQLevelv2 = x.Course?.NotionalNVQLevelv2,
+        //                                VenueName = x.Venue?.VENUE_NAME,
+        //                                VenueAddress = string.Format("{0}{1}{2}{3}{4}",
+        //                                               string.IsNullOrWhiteSpace(x.Venue?.ADDRESS_1) ? "" : x.Venue?.ADDRESS_1 + ", ",
+        //                                               string.IsNullOrWhiteSpace(x.Venue?.ADDRESS_2) ? "" : x.Venue?.ADDRESS_2 + ", ",
+        //                                               string.IsNullOrWhiteSpace(x.Venue?.TOWN) ? "" : x.Venue?.TOWN + ", ",
+        //                                               string.IsNullOrWhiteSpace(x.Venue?.COUNTY) ? "" : x.Venue?.COUNTY + ", ",
+        //                                               x.Venue?.POSTCODE),
+        //                                VenueAttendancePattern = ((int)x.Run?.AttendancePattern).ToString(),
+        //                                VenueLocation = GeographyPoint.Create(x.Venue?.Latitude ?? 0, x.Venue?.Longitude ?? 0),
+        //                                ProviderName = p?.ProviderName,
+        //                                Region = x.SubRegion?.SubRegionName,
+        //                                Status = (int?)x.Run?.RecordStatus,
+        //                                //Weighting = "",
+        //                                ScoreBoost = (x.SubRegion == null || x.SubRegion?.Weighting == SearchResultWeightings.Low ? 1
+        //                                                : (x.SubRegion?.Weighting == SearchResultWeightings.High ? subregionBoost : regionBoost)
+        //                                             ),
+        //                                UpdatedOn = x.Run?.UpdatedDate
+        //                            };
+
+        //            if (batchdata.Any()) {
+        //                IndexBatch<AzureSearchCourse> batch = IndexBatch.MergeOrUpload(batchdata);
+
+        //                _log.LogInformation("Merging docs to azure search index: course");
+        //                Task<DocumentIndexResult> task = _adminIndex.Documents.IndexAsync(batch);
+        //                task.Wait();
+        //                succeeded = batchdata.Count();
+        //            }
+        //            _log.LogInformation($"*** Successfully merged {succeeded} docs into Azure search index: course");
+        //        }
+
+        //    } catch (IndexBatchException ex) {
+        //        IEnumerable<IndexingResult> failed = ex.IndexingResults.Where(r => !r.Succeeded);
+        //        _log.LogError(ex, string.Format("Failed to index some of the documents: {0}",
+        //                                        string.Join(", ", failed)));
+        //        //_log.LogError(ex.ToString());
+        //        succeeded = ex.IndexingResults.Count(x => x.Succeeded);
+        //        return failed;
+
+        //    } catch (Exception e) {
+        //        throw e;
+        //    }
+
+        //    // Return empty list of failed IndexingResults
+        //    return new List<IndexingResult>();
+        //}
+
+
+        public DocumentSearchResult<AzureSearchCourse> DeleteCoursesByPRN(ILogger _log, string UKPRN)
         {
-            try {
-                succeeded = 0;
-                if (documents.Any()) {
+            try
+            {
+                _log.LogInformation($"Removing course index decuments for PRN {UKPRN}");
+                SearchParameters parms = new SearchParameters()
+                {
+                        Select = new[] { "id" },
+                        Filter = $"UKPRN eq '{UKPRN}'",
+                        SearchMode = SearchMode.All,
+                        QueryType = QueryType.Full,
+                        Top = 99999
+                };
+                IEnumerable<dynamic> docs = _adminIndex.Documents
+                                                      .Search<dynamic>("*", parms)
+                                                     ?.Results
+                                                     ?.Select(x => x.Document);
+                if (docs.Any())
+                {
+                    IndexBatch<Microsoft.Azure.Search.Models.Document> batch = IndexBatch.Delete("id", docs.Select(x => (string)x.id.ToString()));
 
-                    IEnumerable<Course> courses = documents.Select(d => new Course()
-                    {
-                        id = d.GetPropertyValue<Guid>("id"),
-                        QualificationCourseTitle = d.GetPropertyValue<string>("QualificationCourseTitle"),
-                        LearnAimRef = d.GetPropertyValue<string>("LearnAimRef"),
-                        NotionalNVQLevelv2 = d.GetPropertyValue<string>("NotionalNVQLevelv2"),
-                        UpdatedDate = d.GetPropertyValue<DateTime?>("UpdatedDate"),
-                        ProviderUKPRN = int.Parse(d.GetPropertyValue<string>("ProviderUKPRN")),
-                        CourseRuns = d.GetPropertyValue<IEnumerable<CourseRun>>("CourseRuns")
-                    });
-
-                    _log.LogInformation("Creating batch of course data to index");
-
-                    // Courses run in classrooms have an associated venue
-                    IEnumerable<LINQComboClass> classroom =    from Course c in courses
-                                                               from CourseRun r in c.CourseRuns ?? new List<CourseRun>()
-                                                               from AzureSearchVenueModel v in venues.Where(x => r.VenueId == x.id)
-                                                                                                     .DefaultIfEmpty()
-                                                               select new LINQComboClass() { Course = c, Run = r, SubRegion = (SubRegionItemModel)null, Venue = v };
-                    _log.LogInformation($"{classroom.Count()} classroom courses (with VenueId and no regions)");
-
-
-                    // Courses run elsewhere have regions instead (online, work-based, ...)
-                    IEnumerable<LINQComboClass> nonclassroom = from Course c in courses
-                                                               from CourseRun r in c.CourseRuns ?? new List<CourseRun>()
-                                                               from SubRegionItemModel subregion in r.SubRegions ?? new List<SubRegionItemModel>()
-                                                               select new LINQComboClass() { Course = c, Run = r, SubRegion = subregion, Venue = (AzureSearchVenueModel)null };
-                    _log.LogInformation($"{nonclassroom.Count()} other courses (with regions but no VenueId)");
-
-                    decimal regionBoost = _settings.RegionSearchBoost ?? 2.3M;
-                    decimal subregionBoost = _settings.SubRegionSearchBoost ?? 4.5M;
-
-                    var batchdata = from LINQComboClass x in classroom.Union(nonclassroom)
-                                    join AzureSearchProviderModel p in providers
-                                    on x.Course?.ProviderUKPRN equals p.UnitedKingdomProviderReferenceNumber
-                                    where (x.Run?.RecordStatus != RecordStatus.Pending && (x.Venue != null || x.SubRegion != null))
-                                    select new AzureSearchCourse()
-                                    {
-                                        id = Guid.NewGuid(),
-                                        CourseId = x.Course?.id,
-                                        CourseRunId = x.Run?.id,
-                                        QualificationCourseTitle = x.Course?.QualificationCourseTitle,
-                                        LearnAimRef = x.Course?.LearnAimRef,
-                                        NotionalNVQLevelv2 = x.Course?.NotionalNVQLevelv2,
-                                        VenueName = x.Venue?.VENUE_NAME,
-                                        VenueAddress = string.Format("{0}{1}{2}{3}{4}",
-                                                       string.IsNullOrWhiteSpace(x.Venue?.ADDRESS_1) ? "" : x.Venue?.ADDRESS_1 + ", ",
-                                                       string.IsNullOrWhiteSpace(x.Venue?.ADDRESS_2) ? "" : x.Venue?.ADDRESS_2 + ", ",
-                                                       string.IsNullOrWhiteSpace(x.Venue?.TOWN) ? "" : x.Venue?.TOWN + ", ",
-                                                       string.IsNullOrWhiteSpace(x.Venue?.COUNTY) ? "" : x.Venue?.COUNTY + ", ",
-                                                       x.Venue?.POSTCODE),
-                                        VenueAttendancePattern = ((int)x.Run?.AttendancePattern).ToString(),
-                                        VenueLocation = GeographyPoint.Create(x.Venue?.Latitude ?? 0, x.Venue?.Longitude ?? 0),
-                                        ProviderName = p?.ProviderName,
-                                        Region = x.SubRegion?.SubRegionName,
-                                        Status = (int?)x.Run?.RecordStatus,
-                                        //Weighting = "",
-                                        ScoreBoost = (x.SubRegion == null || x.SubRegion?.Weighting == SearchResultWeightings.Low ? 1
-                                                        : (x.SubRegion?.Weighting == SearchResultWeightings.High ? subregionBoost : regionBoost)
-                                                     ),
-                                        UpdatedOn = x.Run?.UpdatedDate
-                                    };
-
-                    if (batchdata.Any()) {
-                        IndexBatch<AzureSearchCourse> batch = IndexBatch.MergeOrUpload(batchdata);
-
-                        _log.LogInformation("Merging docs to azure search index: course");
-                        Task<DocumentIndexResult> task = _adminIndex.Documents.IndexAsync(batch);
-                        task.Wait();
-                        succeeded = batchdata.Count();
-                    }
-                    _log.LogInformation($"*** Successfully merged {succeeded} docs into Azure search index: course");
+                    _log.LogInformation($"Deleting {docs.Count()} documents from index");
+                    Task<DocumentIndexResult> task = _adminIndex.Documents.IndexAsync(batch);
+                    task.Wait();
+                    _log.LogInformation($"Successfully deleted {docs.Count()} docs from Azure search index: course");
+                    return null; //docs;
                 }
 
             } catch (IndexBatchException ex) {
                 IEnumerable<IndexingResult> failed = ex.IndexingResults.Where(r => !r.Succeeded);
                 _log.LogError(ex, string.Format("Failed to index some of the documents: {0}",
                                                 string.Join(", ", failed)));
-                //_log.LogError(ex.ToString());
-                succeeded = ex.IndexingResults.Count(x => x.Succeeded);
-                return failed;
+                _log.LogError(ex.ToString());
+                return null;
 
             } catch (Exception e) {
                 throw e;
             }
 
             // Return empty list of failed IndexingResults
-            return new List<IndexingResult>();
+            return null;
+        }
+
+        public DocumentSearchResult<AzureSearchCourse> DeleteCoursesBeforeDate(ILogger _log, DateTime deleteBefore)
+        {
+            try
+            {
+                IEnumerable<dynamic> docs;
+                do {
+                    _log.LogInformation($"Removing course index decuments updated before {deleteBefore.ToString()}");
+                    SearchParameters parms = new SearchParameters()
+                    {
+                            Select = new[] { "id" },
+                            Filter = $"UpdatedOn eq null or UpdatedOn lt {deleteBefore.ToString("yyyy-MM-ddTHH:mm:ssZ")}",
+                            SearchMode = SearchMode.All,
+                            QueryType = QueryType.Full,
+                            Top = 99999
+                    };
+                    docs = _adminIndex.Documents
+                                      .Search<dynamic>("*", parms)
+                                     ?.Results
+                                     ?.Select(x => x.Document);
+                    if (docs.Any())
+                    {
+                        IndexBatch<Microsoft.Azure.Search.Models.Document> batch = IndexBatch.Delete("id", docs.Select(x => (string)x.id.ToString()));
+
+                        _log.LogInformation($"Deleting {docs.Count()} documents from index");
+                        Task<DocumentIndexResult> task = _adminIndex.Documents.IndexAsync(batch);
+                        task.Wait();
+                        _log.LogInformation($"Successfully deleted {docs.Count()} docs from Azure search index: course");
+                    }
+                } while (docs.Any());
+                return null; //docs;
+
+            }
+            catch (IndexBatchException ex) {
+                IEnumerable<IndexingResult> failed = ex.IndexingResults.Where(r => !r.Succeeded);
+                _log.LogError(ex, string.Format("Failed to index some of the documents: {0}",
+                                                string.Join(", ", failed)));
+                _log.LogError(ex.ToString());
+                return null;
+
+            } catch (Exception e) {
+                throw e;
+            }
+
+            // Return empty list of failed IndexingResults
+            return null;
         }
 
 
