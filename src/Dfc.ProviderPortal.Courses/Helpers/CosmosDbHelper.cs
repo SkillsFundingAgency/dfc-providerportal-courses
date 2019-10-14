@@ -235,5 +235,16 @@ namespace Dfc.ProviderPortal.Courses.Helpers
 
             return reports;
         }
+
+        public async Task<int> GetTotalLiveCourses(DocumentClient client, string collectionId)
+        {
+            Uri uri = UriFactory.CreateDocumentCollectionUri(_settings.DatabaseId, collectionId);
+            FeedOptions options = new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 };
+
+            return await client.CreateDocumentQuery<Course>(uri, options)
+                .SelectMany(c => c.CourseRuns)
+                .Where(cr => cr.RecordStatus == RecordStatus.Live)
+                .CountAsync();
+        }
     }
 }
