@@ -198,16 +198,17 @@ namespace Dfc.ProviderPortal.Courses.Helpers
             foreach (var doc in bulkUploadDocs)
             {
                 Uri docUri = UriFactory.CreateDocumentUri(_settings.DatabaseId, collectionId, doc.id.ToString());
+                var result = await client.DeleteDocumentAsync(docUri, new RequestOptions() { PartitionKey = new PartitionKey(doc.ProviderUKPRN) });
 
-                //var result = await client.DeleteDocumentAsync(docUri, new RequestOptions() { PartitionKey = new PartitionKey(doc.ProviderUKPRN) });
-                var result = client.ReadDocumentAsync(docUri, new RequestOptions() { PartitionKey = new PartitionKey(doc.ProviderUKPRN) }).Result;
-                result.Resource.SetPropertyValue("CourseStatus", (int)RecordStatus.Archived);
-                await UpdateDocumentAsync(client, collectionId, result?.Resource);
-
-                if (result.StatusCode == HttpStatusCode.OK)
-                    responseList.Add($"Course with LARS ( { doc.LearnAimRef } ) and Title ( { doc.QualificationCourseTitle } ) was archived"); //deleted.");
+                if (result.StatusCode == HttpStatusCode.NoContent)
+                {
+                    responseList.Add($"Course with LARS ( { doc.LearnAimRef } ) and Title ( { doc.QualificationCourseTitle } ) was deleted.");
+                }
                 else
-                    responseList.Add($"Course with LARS ( { doc.LearnAimRef } ) and Title ( { doc.QualificationCourseTitle } ) wasn't archived. StatusCode: ( { result.StatusCode } )");
+                {
+                    responseList.Add($"Course with LARS ( { doc.LearnAimRef } ) and Title ( { doc.QualificationCourseTitle } ) wasn't deleted. StatusCode: ( { result.StatusCode } )");
+                }
+
             }
 
             return responseList;
@@ -234,6 +235,17 @@ namespace Dfc.ProviderPortal.Courses.Helpers
             }
 
             return reports;
+        }
+
+        public async Task<int> GetTotalLiveCourses(DocumentClient client, string collectionId)
+        {
+            Uri uri = UriFactory.CreateDocumentCollectionUri(_settings.DatabaseId, collectionId);
+            FeedOptions options = new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 };
+
+            return await client.CreateDocumentQuery<Course>(uri, options)
+                .SelectMany(c => c.CourseRuns)
+                .Where(cr => cr.RecordStatus == RecordStatus.Live)
+                .CountAsync();
         }
     }
 }

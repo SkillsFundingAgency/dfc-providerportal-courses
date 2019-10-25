@@ -433,5 +433,13 @@ namespace Dfc.ProviderPortal.Courses.Services
             return new HttpResponseMessage(HttpStatusCode.NotFound);
 
         }
+
+        public async Task<int> GetTotalLiveCourses()
+        {
+            using (var documentClient = _cosmosDbHelper.GetClient())
+            {
+                return await _cosmosDbHelper.GetTotalLiveCourses(documentClient, _settings.CoursesCollectionId);
+            }
+        }
     }
 }
