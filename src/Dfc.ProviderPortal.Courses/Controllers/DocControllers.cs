@@ -166,5 +166,13 @@ namespace Dfc.ProviderPortal.Courses.Controllers
             return Ok();
         }
 
+        [Route("GetTotalLiveCourses")]
+        [HttpGet]
+        [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult GetTotalLiveCourses()
+        {
+            return Ok();
+        }
     }
 }
