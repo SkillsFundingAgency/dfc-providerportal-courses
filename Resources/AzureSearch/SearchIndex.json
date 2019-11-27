@@ -29,7 +29,8 @@
       {"name": "VenueStudyModeDescription", "type": "Edm.String", "sortable": false, "facetable": false, "searchable": false},
       {"name": "DeliveryModeDescription", "type": "Edm.String", "sortable": false, "facetable": false, "searchable": false},
       {"name": "UKPRN", "type": "Edm.String", "sortable": false},
-      {"name": "CourseDescription", "type": "Edm.String", "sortable": false, "facetable": false, "searchable": false}
+      {"name": "CourseDescription", "type": "Edm.String", "sortable": false, "facetable": false, "searchable": false},
+      {"name": "CourseName", "type": "Edm.String", "sortable": false, "facetable": false, "searchable": true}
     ],
     "scoringProfiles": [
       {
