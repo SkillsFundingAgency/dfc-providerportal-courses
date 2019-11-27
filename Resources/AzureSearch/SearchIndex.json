@@ -13,7 +13,7 @@
       {"name": "VenueAddress", "type": "Edm.String", "sortable": false, "facetable": false},
       {"name": "VenueLocation", "type": "Edm.GeographyPoint"},
       {"name": "VenueAttendancePattern", "type": "Edm.String", "sortable": false},
-      {"name": "ProviderName", "type": "Edm.String", "sortable": false, "searchable": false},
+      {"name": "ProviderName", "type": "Edm.String", "sortable": false, "searchable": true},
       {"name": "Region", "type": "Edm.String", "sortable": false},
       {"name": "Weighting", "type": "Edm.String"},
       {"name": "ScoreBoost", "type": "Edm.Double"},
