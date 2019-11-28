@@ -141,11 +141,11 @@ namespace Dfc.ProviderPortal.Courses.Helpers
             }
         }
 
-        public async Task RecreateCourseIndex()
+        public async Task UpdateCourseIndex(bool recreate)
         {
             var indexName = _settings.Index;
 
-            if (await _adminService.Indexes.ExistsAsync(indexName))
+            if (recreate && await _adminService.Indexes.ExistsAsync(indexName))
             {
                 await _adminService.Indexes.DeleteAsync(indexName);
             }
@@ -208,7 +208,7 @@ namespace Dfc.ProviderPortal.Courses.Helpers
                 }
             };
 
-            await _adminService.Indexes.CreateAsync(index);
+            await _adminService.Indexes.CreateOrUpdateAsync(index);
         }
     }
 }
