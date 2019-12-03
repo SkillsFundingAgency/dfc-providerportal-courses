@@ -17,7 +17,7 @@ using Dfc.ProviderPortal.Courses.Models;
 using Dfc.ProviderPortal.Courses.Settings;
 using Dfc.ProviderPortal.Packages;
 using Document = Microsoft.Azure.Documents.Document;
-
+using Newtonsoft.Json.Linq;
 
 namespace Dfc.ProviderPortal.Courses.Services
 {
@@ -187,7 +187,6 @@ namespace Dfc.ProviderPortal.Courses.Services
                 throw new ArgumentException($"Cannot be an empty {nameof(Guid)}", nameof(RunId));
 
             Course course = null;
-            dynamic venue = null;
 
             using (var client = _cosmosDbHelper.GetClient())
             {
@@ -195,15 +194,17 @@ namespace Dfc.ProviderPortal.Courses.Services
                 course = _cosmosDbHelper.DocumentTo<Course>(doc);
             }
 
-            //CourseRun run = course.CourseRuns.FirstOrDefault(r => r.id == RunId);
-            Guid? venueid = course.CourseRuns
-                                  .Where(r => r.id == RunId && r.VenueId != null)
-                                  .FirstOrDefault()
-                                 ?.VenueId;
-            if (venueid.HasValue)
-                venue = (dynamic)new VenueServiceWrapper(_venueServiceSettings).GetById<dynamic>(venueid.Value);
+            if (course == null || !(course?.CourseRuns.Any(cr => cr.id == RunId) ?? false))
+            {
+                return null;
+            }
+
             var provider = new ProviderServiceWrapper(_providerServiceSettings, new HttpClient()).GetByPRN(course.ProviderUKPRN);
             var qualification = new QualificationServiceWrapper(_qualServiceSettings).GetQualificationById(course.LearnAimRef);
+            var providerVenues = new VenueServiceWrapper(_venueServiceSettings).GetVenuesByPRN(course.ProviderUKPRN);
+
+            var courseRunVenueIds = new HashSet<Guid>(course.CourseRuns.Where(cr => cr.VenueId.HasValue).Select(cr => cr.VenueId.Value));
+            var courseRunVenues = providerVenues.Where(v => courseRunVenueIds.Contains(((JObject)v)["id"].ToObject<Guid>()));
 
             //return from Course c in new List<Course>() { course }
             //       from CourseRun r in c.CourseRuns
@@ -215,7 +216,7 @@ namespace Dfc.ProviderPortal.Courses.Services
                 Course = course,
                 Provider = provider,
                 Qualification = qualification,
-                Venue = venue
+                CourseRunVenues = courseRunVenues
             };
         }
 

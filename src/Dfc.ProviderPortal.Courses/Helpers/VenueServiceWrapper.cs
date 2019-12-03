@@ -41,6 +41,21 @@ namespace Dfc.ProviderPortal.Courses.Helpers
             return JsonConvert.DeserializeObject<T>(json);
         }
 
+        public IEnumerable<dynamic> GetVenuesByPRN(int prn)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _settings.ApiKey);
+
+                var response = httpClient.GetAsync($"{_settings.ApiUrl}GetVenuesByPRN?prn={prn}").Result;
+                response.EnsureSuccessStatusCode();
+
+                var json = response.Content.ReadAsStringAsync().Result;
+
+                return JsonConvert.DeserializeObject<IEnumerable<dynamic>>(json);
+            }
+        }
+
         public IEnumerable<AzureSearchVenueModel> GetVenues()
         {
             // Call service to get data
