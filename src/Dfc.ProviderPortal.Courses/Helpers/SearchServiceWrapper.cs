@@ -184,7 +184,9 @@ namespace Dfc.ProviderPortal.Courses.Helpers
                     new Field("UKPRN", DataType.String) { IsFacetable = true, IsFilterable = true, IsSearchable = true, IsSortable = false },
                     new Field("CourseDescription", DataType.String) { IsFacetable = false, IsFilterable = true, IsSearchable = false, IsSortable = false },
                     new Field("CourseName", DataType.String) { IsFacetable = false, IsFilterable = true, IsSearchable = true, IsSortable = false },
-                    new Field("FlexibleStartDate", DataType.Boolean) { IsFacetable = false, IsFilterable = true, IsSearchable = false, IsSortable = false }
+                    new Field("FlexibleStartDate", DataType.Boolean) { IsFacetable = false, IsFilterable = true, IsSearchable = false, IsSortable = false },
+                    new Field("DurationUnit", DataType.Int32) { IsFacetable = false, IsFilterable = false, IsSearchable = false, IsSortable = false },
+                    new Field("DurationValue", DataType.Int32) { IsFacetable = false, IsFilterable = false, IsSearchable = false, IsSortable = false },
                 },
                 ScoringProfiles = new List<ScoringProfile>()
                 {
