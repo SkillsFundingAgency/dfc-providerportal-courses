@@ -187,7 +187,7 @@ namespace Dfc.ProviderPortal.Courses.Helpers
                     new Field("FlexibleStartDate", DataType.Boolean) { IsFacetable = false, IsFilterable = true, IsSearchable = false, IsSortable = false },
                     new Field("DurationUnit", DataType.Int32) { IsFacetable = false, IsFilterable = false, IsSearchable = false, IsSortable = false },
                     new Field("DurationValue", DataType.Int32) { IsFacetable = false, IsFilterable = false, IsSearchable = false, IsSortable = false },
-                    new Field("National", DataType.Boolean) { IsFacetable = false, IsFilterable = false, IsSearchable = true, IsSortable = false },
+                    new Field("National", DataType.Boolean) { IsFacetable = false, IsFilterable = true, IsSearchable = false, IsSortable = false },
                 },
                 ScoringProfiles = new List<ScoringProfile>()
                 {
