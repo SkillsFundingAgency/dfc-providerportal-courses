@@ -41,16 +41,16 @@ namespace Dfc.ProviderPortal.Courses.Helpers
             return JsonConvert.DeserializeObject<T>(json);
         }
 
-        public IEnumerable<dynamic> GetVenuesByPRN(int prn)
+        public async Task<IEnumerable<dynamic>> GetVenuesByPRN(int prn)
         {
             using (var httpClient = new HttpClient())
             {
                 httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _settings.ApiKey);
 
-                var response = httpClient.GetAsync($"{_settings.ApiUrl}GetVenuesByPRN?prn={prn}").Result;
+                var response = await httpClient.GetAsync($"{_settings.ApiUrl}GetVenuesByPRN?prn={prn}");
                 response.EnsureSuccessStatusCode();
 
-                var json = response.Content.ReadAsStringAsync().Result;
+                var json = await response.Content.ReadAsStringAsync();
 
                 return JsonConvert.DeserializeObject<IEnumerable<dynamic>>(json);
             }

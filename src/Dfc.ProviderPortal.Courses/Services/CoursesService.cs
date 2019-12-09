@@ -1,22 +1,19 @@
 ﻿
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Azure.Documents.Client;
-using Microsoft.Azure.Search.Models;
-using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Dfc.ProviderPortal.Courses.Helpers;
 using Dfc.ProviderPortal.Courses.Interfaces;
 using Dfc.ProviderPortal.Courses.Models;
 using Dfc.ProviderPortal.Courses.Settings;
 using Dfc.ProviderPortal.Packages;
-using Document = Microsoft.Azure.Documents.Document;
+using Microsoft.Azure.Documents.Client;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Dfc.ProviderPortal.Courses.Services
@@ -199,18 +196,19 @@ namespace Dfc.ProviderPortal.Courses.Services
                 return null;
             }
 
-            var provider = new ProviderServiceWrapper(_providerServiceSettings, new HttpClient()).GetByPRN(course.ProviderUKPRN);
-            var qualification = new QualificationServiceWrapper(_qualServiceSettings).GetQualificationById(course.LearnAimRef);
-            var providerVenues = new VenueServiceWrapper(_venueServiceSettings).GetVenuesByPRN(course.ProviderUKPRN);
+            var providerTask = new ProviderServiceWrapper(_providerServiceSettings).GetByPRN(course.ProviderUKPRN);
+            var qualificationTask = new QualificationServiceWrapper(_qualServiceSettings).GetQualificationById(course.LearnAimRef);
+            var providerVenuesTask = new VenueServiceWrapper(_venueServiceSettings).GetVenuesByPRN(course.ProviderUKPRN);
+
+            await Task.WhenAll(providerTask, qualificationTask, providerVenuesTask);
+
+            var provider = providerTask.Result;
+            var qualification = qualificationTask.Result;
+            var providerVenues = providerVenuesTask.Result;
 
             var courseRunVenueIds = new HashSet<Guid>(course.CourseRuns.Where(cr => cr.VenueId.HasValue).Select(cr => cr.VenueId.Value));
             var courseRunVenues = providerVenues.Where(v => courseRunVenueIds.Contains(((JObject)v)["id"].ToObject<Guid>()));
 
-            //return from Course c in new List<Course>() { course }
-            //       from CourseRun r in c.CourseRuns
-            //       from AzureSearchProviderModel p in new List<AzureSearchProviderModel>() { provider }
-            //       from AzureSearchVenueModel v in venues
-            //       select new AzureSearchCourseDetail();
             return new AzureSearchCourseDetail()
             {
                 Course = course,

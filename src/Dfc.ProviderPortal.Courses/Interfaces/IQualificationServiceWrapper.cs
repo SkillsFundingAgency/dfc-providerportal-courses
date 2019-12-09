@@ -1,17 +1,9 @@
-﻿
-using System;
-using System.Text;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using Microsoft.Azure.Documents;
-using Microsoft.Azure.Documents.Client;
-using Dfc.ProviderPortal.Courses.Models;
-
+﻿using System.Threading.Tasks;
 
 namespace Dfc.ProviderPortal.Courses.Interfaces
 {
     public interface IQualificationServiceWrapper
     {
-        dynamic GetQualificationById(string LARSRef);
+        Task<dynamic> GetQualificationById(string LARSRef);
     }
 }
