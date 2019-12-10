@@ -188,6 +188,7 @@ namespace Dfc.ProviderPortal.Courses.Helpers
                     new Field("DurationUnit", DataType.Int32) { IsFacetable = false, IsFilterable = false, IsSearchable = false, IsSortable = false },
                     new Field("DurationValue", DataType.Int32) { IsFacetable = false, IsFilterable = false, IsSearchable = false, IsSortable = false },
                     new Field("National", DataType.Boolean) { IsFacetable = false, IsFilterable = true, IsSearchable = false, IsSortable = false },
+                    new Field("UpdateBatchId", DataType.String) { IsFacetable = false, IsFilterable = true, IsSearchable = false, IsSortable = false },
                 },
                 ScoringProfiles = new List<ScoringProfile>()
                 {
