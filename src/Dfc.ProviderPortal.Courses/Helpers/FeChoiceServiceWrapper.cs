@@ -21,7 +21,7 @@ namespace Dfc.ProviderPortal.Courses.Helpers
             {
                 httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _settings.ApiKey);
 
-                var response = await httpClient.GetAsync($"{_settings.ApiUrl}fe-choices/{ukprn}");
+                var response = await httpClient.GetAsync($"{_settings.ApiUrl}/fe-choices/{ukprn}");
 
                 if ((int)response.StatusCode == 404)
                 {
