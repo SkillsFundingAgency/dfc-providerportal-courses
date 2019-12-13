@@ -145,6 +145,18 @@
       "metadata": {
         "description": "Query key for accessing search"
       }
+    },
+    "referenceDataServiceApiUrl": {
+      "type": "string",
+      "metadata": {
+        "description": "Reference Data API url"
+      }
+    },
+    "referenceDataServiceApiKey": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Reference Data API service key"
+      }
     }
   },
   "variables": {
@@ -323,6 +335,14 @@
               {
                 "name": "CosmosDbCollectionSettings__DfcReportCollectionId",
                 "value": "DfcReport"
+              },
+              {
+                "name": "ReferenceDataServiceSettings__ApiKey",
+                "value": "[parameters('referenceDataServiceApiKey')]"
+              },
+              {
+                "name": "ReferenceDataServiceSettings__ApiUrl",
+                "value": "[parameters('referenceDataServiceApiUrl')]"
               }
             ]
           },
