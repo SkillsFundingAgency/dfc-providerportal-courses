@@ -28,6 +28,7 @@ namespace Dfc.ProviderPortal.Courses.Services
         private readonly ISearchServiceSettings _searchServiceSettings;
         private readonly IQualificationServiceSettings _qualServiceSettings;
         private readonly ISearchServiceWrapper _searchServiceWrapper;
+        private readonly IReferenceDataServiceSettings _referenceDataSettings;
 
         public CoursesService(
             //ILogger log,
@@ -37,6 +38,7 @@ namespace Dfc.ProviderPortal.Courses.Services
             IOptions<VenueServiceSettings> venueServiceSettings,
             IOptions<SearchServiceSettings> searchServiceSettings,
             IOptions<QualificationServiceSettings> qualServiceSettings,
+            IOptions<ReferenceDataServiceSettings> referenceDataSettings,
             IOptions<CosmosDbCollectionSettings> settings)
         {
             //Throw.IfNull(log, nameof(log));
@@ -54,6 +56,7 @@ namespace Dfc.ProviderPortal.Courses.Services
             _providerServiceSettings = providerServiceSettings.Value;
             _venueServiceSettings = venueServiceSettings.Value;
             _qualServiceSettings = qualServiceSettings.Value;
+            _referenceDataSettings = referenceDataSettings.Value;
             _searchServiceSettings = searchServiceSettings.Value;
             _searchServiceWrapper = searchServiceWrapper;
         }
@@ -199,12 +202,14 @@ namespace Dfc.ProviderPortal.Courses.Services
             var providerTask = new ProviderServiceWrapper(_providerServiceSettings).GetByPRN(course.ProviderUKPRN);
             var qualificationTask = new QualificationServiceWrapper(_qualServiceSettings).GetQualificationById(course.LearnAimRef);
             var providerVenuesTask = new VenueServiceWrapper(_venueServiceSettings).GetVenuesByPRN(course.ProviderUKPRN);
+            var feChoiceTask = new FeChoiceServiceWrapper(_referenceDataSettings).GetByUKPRNAsync(course.ProviderUKPRN);
 
-            await Task.WhenAll(providerTask, qualificationTask, providerVenuesTask);
+            await Task.WhenAll(providerTask, qualificationTask, providerVenuesTask, feChoiceTask);
 
             var provider = providerTask.Result;
             var qualification = qualificationTask.Result;
             var providerVenues = providerVenuesTask.Result;
+            var feChoice = feChoiceTask.Result;
 
             var courseRunVenueIds = new HashSet<Guid>(course.CourseRuns.Where(cr => cr.VenueId.HasValue).Select(cr => cr.VenueId.Value));
             var courseRunVenues = providerVenues.Where(v => courseRunVenueIds.Contains(((JObject)v)["id"].ToObject<Guid>()));
@@ -214,7 +219,8 @@ namespace Dfc.ProviderPortal.Courses.Services
                 Course = course,
                 Provider = provider,
                 Qualification = qualification,
-                CourseRunVenues = courseRunVenues
+                CourseRunVenues = courseRunVenues,
+                FeChoice = feChoice
             };
         }
 

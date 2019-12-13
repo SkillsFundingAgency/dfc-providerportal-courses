@@ -34,12 +34,14 @@ namespace Dfc.ProviderPortal.Courses
             builder.Services.Configure<VenueServiceSettings>(configuration.GetSection(nameof(VenueServiceSettings)));
             builder.Services.Configure<QualificationServiceSettings>(configuration.GetSection(nameof(QualificationServiceSettings)));
             builder.Services.Configure<SearchServiceSettings>(configuration.GetSection(nameof(SearchServiceSettings)));
+            builder.Services.Configure<ReferenceDataServiceSettings>(configuration.GetSection(nameof(ReferenceDataServiceSettings)));
             builder.Services.AddScoped<ICosmosDbHelper, CosmosDbHelper>();
             builder.Services.AddScoped<ISearchServiceWrapper, SearchServiceWrapper>();
             builder.Services.AddScoped<ICourseService, CoursesService>();
             builder.Services.AddScoped<ICourseMigrationReportService, CourseMigrationReportService>();
             builder.Services.AddScoped<IDfcReportService, DfcReportService>();
             builder.Services.AddScoped<ICosmosDbSettings, CosmosDbSettings>();
+            builder.Services.AddScoped<IReferenceDataServiceSettings, ReferenceDataServiceSettings>();
             builder.Services.AddTransient((provider) => new HttpClient());
 
             var serviceProvider = builder.Services.BuildServiceProvider();
