@@ -1,23 +1,20 @@
 ﻿
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Azure.Documents.Client;
-using Microsoft.Azure.Search.Models;
-using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Dfc.ProviderPortal.Courses.Helpers;
 using Dfc.ProviderPortal.Courses.Interfaces;
 using Dfc.ProviderPortal.Courses.Models;
 using Dfc.ProviderPortal.Courses.Settings;
 using Dfc.ProviderPortal.Packages;
-using Document = Microsoft.Azure.Documents.Document;
-
+using Microsoft.Azure.Documents.Client;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Dfc.ProviderPortal.Courses.Services
 {
@@ -187,7 +184,6 @@ namespace Dfc.ProviderPortal.Courses.Services
                 throw new ArgumentException($"Cannot be an empty {nameof(Guid)}", nameof(RunId));
 
             Course course = null;
-            dynamic venue = null;
 
             using (var client = _cosmosDbHelper.GetClient())
             {
@@ -195,27 +191,30 @@ namespace Dfc.ProviderPortal.Courses.Services
                 course = _cosmosDbHelper.DocumentTo<Course>(doc);
             }
 
-            //CourseRun run = course.CourseRuns.FirstOrDefault(r => r.id == RunId);
-            Guid? venueid = course.CourseRuns
-                                  .Where(r => r.id == RunId && r.VenueId != null)
-                                  .FirstOrDefault()
-                                 ?.VenueId;
-            if (venueid.HasValue)
-                venue = (dynamic)new VenueServiceWrapper(_venueServiceSettings).GetById<dynamic>(venueid.Value);
-            var provider = new ProviderServiceWrapper(_providerServiceSettings, new HttpClient()).GetByPRN(course.ProviderUKPRN);
-            var qualification = new QualificationServiceWrapper(_qualServiceSettings).GetQualificationById(course.LearnAimRef);
+            if (course == null || !(course?.CourseRuns.Any(cr => cr.id == RunId) ?? false))
+            {
+                return null;
+            }
 
-            //return from Course c in new List<Course>() { course }
-            //       from CourseRun r in c.CourseRuns
-            //       from AzureSearchProviderModel p in new List<AzureSearchProviderModel>() { provider }
-            //       from AzureSearchVenueModel v in venues
-            //       select new AzureSearchCourseDetail();
+            var providerTask = new ProviderServiceWrapper(_providerServiceSettings).GetByPRN(course.ProviderUKPRN);
+            var qualificationTask = new QualificationServiceWrapper(_qualServiceSettings).GetQualificationById(course.LearnAimRef);
+            var providerVenuesTask = new VenueServiceWrapper(_venueServiceSettings).GetVenuesByPRN(course.ProviderUKPRN);
+
+            await Task.WhenAll(providerTask, qualificationTask, providerVenuesTask);
+
+            var provider = providerTask.Result;
+            var qualification = qualificationTask.Result;
+            var providerVenues = providerVenuesTask.Result;
+
+            var courseRunVenueIds = new HashSet<Guid>(course.CourseRuns.Where(cr => cr.VenueId.HasValue).Select(cr => cr.VenueId.Value));
+            var courseRunVenues = providerVenues.Where(v => courseRunVenueIds.Contains(((JObject)v)["id"].ToObject<Guid>()));
+
             return new AzureSearchCourseDetail()
             {
                 Course = course,
                 Provider = provider,
                 Qualification = qualification,
-                Venue = venue
+                CourseRunVenues = courseRunVenues
             };
         }
 
@@ -432,6 +431,14 @@ namespace Dfc.ProviderPortal.Courses.Services
 
             return new HttpResponseMessage(HttpStatusCode.NotFound);
 
+        }
+
+        public async Task<int> GetTotalLiveCourses()
+        {
+            using (var documentClient = _cosmosDbHelper.GetClient())
+            {
+                return await _cosmosDbHelper.GetTotalLiveCourses(documentClient, _settings.CoursesCollectionId);
+            }
         }
     }
 }

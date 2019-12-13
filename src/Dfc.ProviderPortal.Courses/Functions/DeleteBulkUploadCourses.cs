@@ -39,8 +39,6 @@ namespace Dfc.ProviderPortal.Courses.Functions
             {
                 messagesList = await coursesService.DeleteBulkUploadCourses(UKPRN);
 
-                var r0 = await coursesService.ChangeAllCourseRunStatusesForUKPRNSelection(UKPRN, RecordStatus.Archived);
-
                 if (messagesList == null)
                     return new NotFoundObjectResult(UKPRN);
 
