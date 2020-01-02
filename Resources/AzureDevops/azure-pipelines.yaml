@@ -79,4 +79,4 @@ steps:
   displayName: Publish Artifact
   inputs:
      pathtoPublish: $(Build.ArtifactStagingDirectory)
-     artifactName: Dfc.ProviderPortal.ChangeFeedListener
+     artifactName: Dfc.ProviderPortal.Courses
