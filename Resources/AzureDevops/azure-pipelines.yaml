@@ -6,6 +6,7 @@ pool:
 variables:
   BuildPlatform: 'any cpu'
   BuildConfiguration: 'release'
+  SolutionBaseName: 'Dfc.ProviderPortal.Courses'
 
 resources:
   repositories:
@@ -63,7 +64,7 @@ steps:
   displayName: dotnet publish
   inputs:
     command: publish
-    projects: 'src/Dfc.ProviderPortal.Courses/Dfc.ProviderPortal.Courses.csproj'
+    projects: 'src/${{ variables.SolutionBaseName }}/${{ variables.SolutionBaseName }}.csproj'
     configuration: ${{ variables.buildConfiguration }}
     arguments: '--output $(Build.ArtifactStagingDirectory)'
     publishWebProjects: false
@@ -79,4 +80,4 @@ steps:
   displayName: Publish Artifact
   inputs:
      pathtoPublish: $(Build.ArtifactStagingDirectory)
-     artifactName: Dfc.ProviderPortal.Courses
+     artifactName: '${{ variables.SolutionBaseName }}'
