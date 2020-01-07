@@ -23,13 +23,9 @@ namespace Dfc.ProviderPortal.Courses.Helpers
             _index = _service.Indexes.GetClient(_settings.Index);
         }
 
-        public async Task<dynamic> GetQualificationById(string LARSRef)
+        public Task<dynamic> GetQualificationById(string LARSRef)
         {
-            var searchParams = new SearchParameters() { Top = 1 };
-
-            var results = await _index.Documents.SearchAsync<dynamic>(LARSRef, searchParams);
-
-            return results.Results.Count > 0 ? results.Results[0].Document : null;
+            return _index.Documents.GetAsync<dynamic>(LARSRef);
         }
     }
 }
