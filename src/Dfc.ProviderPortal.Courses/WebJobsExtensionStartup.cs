@@ -8,6 +8,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using System;
 using System.Net.Http;
 
@@ -40,9 +41,17 @@ namespace Dfc.ProviderPortal.Courses
             builder.Services.AddScoped<ICourseService, CoursesService>();
             builder.Services.AddScoped<ICourseMigrationReportService, CourseMigrationReportService>();
             builder.Services.AddScoped<IDfcReportService, DfcReportService>();
-            builder.Services.AddScoped<ICosmosDbSettings, CosmosDbSettings>();
-            builder.Services.AddScoped<IReferenceDataServiceSettings, ReferenceDataServiceSettings>();
+            builder.Services.AddSingleton<ICosmosDbSettings, CosmosDbSettings>();
+            builder.Services.AddSingleton<IReferenceDataServiceSettings, ReferenceDataServiceSettings>();
             builder.Services.AddTransient((provider) => new HttpClient());
+            builder.Services.AddSingleton<IProviderServiceSettings>(sp => sp.GetRequiredService<IOptions<ProviderServiceSettings>>().Value);
+            builder.Services.AddSingleton<IQualificationServiceSettings>(sp => sp.GetRequiredService<IOptions<QualificationServiceSettings>>().Value);
+            builder.Services.AddSingleton<IVenueServiceSettings>(sp => sp.GetRequiredService<IOptions<VenueServiceSettings>>().Value);
+            builder.Services.AddSingleton<IReferenceDataServiceSettings>(sp => sp.GetRequiredService<IOptions<ReferenceDataServiceSettings>>().Value);
+            builder.Services.AddSingleton<ProviderServiceWrapper>();
+            builder.Services.AddSingleton<QualificationServiceWrapper>();
+            builder.Services.AddSingleton<VenueServiceWrapper>();
+            builder.Services.AddSingleton<FeChoiceServiceWrapper>();
 
             var serviceProvider = builder.Services.BuildServiceProvider();
             serviceProvider.GetService<ICourseMigrationReportService>().Initialise().Wait();
