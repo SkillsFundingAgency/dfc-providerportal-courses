@@ -16,6 +16,7 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         T DocumentTo<T>(Document document);
         IEnumerable<T> DocumentsTo<T>(IEnumerable<Document> documents);
         Document GetDocumentById<T>(DocumentClient client, string collectionId, T id);
+        Task<Document> GetDocumentByIdAsync<T>(DocumentClient client, string collectionId, T id);
         Task<Document> UpdateDocumentAsync(DocumentClient client, string collectionId, object document);
         List<Course> GetDocumentsByUKPRN(DocumentClient client, string collectionId, int UKPRN);
         Task<List<string>> DeleteDocumentsByUKPRN(DocumentClient client, string collectionId, int UKPRN);

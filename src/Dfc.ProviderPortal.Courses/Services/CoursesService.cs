@@ -190,7 +190,7 @@ namespace Dfc.ProviderPortal.Courses.Services
 
             using (var client = _cosmosDbHelper.GetClient())
             {
-                var doc = _cosmosDbHelper.GetDocumentById(client, _settings.CoursesCollectionId, CourseId);
+                var doc = await _cosmosDbHelper.GetDocumentByIdAsync(client, _settings.CoursesCollectionId, CourseId);
                 course = _cosmosDbHelper.DocumentTo<Course>(doc);
             }
 
