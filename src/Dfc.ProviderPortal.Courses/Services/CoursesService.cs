@@ -23,42 +23,39 @@ namespace Dfc.ProviderPortal.Courses.Services
         //private readonly ILogger _log;
         private readonly ICosmosDbHelper _cosmosDbHelper;
         private readonly ICosmosDbCollectionSettings _settings;
-        private readonly IProviderServiceSettings _providerServiceSettings;
-        private readonly IVenueServiceSettings _venueServiceSettings;
         private readonly ISearchServiceSettings _searchServiceSettings;
-        private readonly IQualificationServiceSettings _qualServiceSettings;
         private readonly ISearchServiceWrapper _searchServiceWrapper;
-        private readonly IReferenceDataServiceSettings _referenceDataSettings;
+        private readonly ProviderServiceWrapper _providerServiceWrapper;
+        private readonly QualificationServiceWrapper _qualificationServiceWrapper;
+        private readonly VenueServiceWrapper _venueServiceWrapper;
+        private readonly FeChoiceServiceWrapper _feChoiceServiceWrapper;
 
         public CoursesService(
             //ILogger log,
             ICosmosDbHelper cosmosDbHelper,
             ISearchServiceWrapper searchServiceWrapper,
-            IOptions<ProviderServiceSettings> providerServiceSettings,
-            IOptions<VenueServiceSettings> venueServiceSettings,
             IOptions<SearchServiceSettings> searchServiceSettings,
-            IOptions<QualificationServiceSettings> qualServiceSettings,
-            IOptions<ReferenceDataServiceSettings> referenceDataSettings,
-            IOptions<CosmosDbCollectionSettings> settings)
+            IOptions<CosmosDbCollectionSettings> settings,
+            ProviderServiceWrapper providerServiceWrapper,
+            QualificationServiceWrapper qualificationServiceWrapper,
+            VenueServiceWrapper venueServiceWrapper,
+            FeChoiceServiceWrapper feChoiceServiceWrapper)
         {
             //Throw.IfNull(log, nameof(log));
             Throw.IfNull(cosmosDbHelper, nameof(cosmosDbHelper));
             Throw.IfNull(searchServiceWrapper, nameof(searchServiceWrapper));
             Throw.IfNull(settings, nameof(settings));
-            Throw.IfNull(providerServiceSettings, nameof(providerServiceSettings));
-            Throw.IfNull(venueServiceSettings, nameof(venueServiceSettings));
-            Throw.IfNull(qualServiceSettings, nameof(qualServiceSettings));
             Throw.IfNull(searchServiceSettings, nameof(searchServiceSettings));
 
             //_log = log;
             _cosmosDbHelper = cosmosDbHelper;
             _settings = settings.Value;
-            _providerServiceSettings = providerServiceSettings.Value;
-            _venueServiceSettings = venueServiceSettings.Value;
-            _qualServiceSettings = qualServiceSettings.Value;
-            _referenceDataSettings = referenceDataSettings.Value;
             _searchServiceSettings = searchServiceSettings.Value;
             _searchServiceWrapper = searchServiceWrapper;
+            _providerServiceWrapper = providerServiceWrapper;
+            _qualificationServiceWrapper = qualificationServiceWrapper;
+            _venueServiceWrapper = venueServiceWrapper;
+            _feChoiceServiceWrapper = feChoiceServiceWrapper;
         }
 
         /// <summary>
@@ -199,10 +196,10 @@ namespace Dfc.ProviderPortal.Courses.Services
                 return null;
             }
 
-            var providerTask = new ProviderServiceWrapper(_providerServiceSettings).GetByPRN(course.ProviderUKPRN);
-            var qualificationTask = new QualificationServiceWrapper(_qualServiceSettings).GetQualificationById(course.LearnAimRef);
-            var providerVenuesTask = new VenueServiceWrapper(_venueServiceSettings).GetVenuesByPRN(course.ProviderUKPRN);
-            var feChoiceTask = new FeChoiceServiceWrapper(_referenceDataSettings).GetByUKPRNAsync(course.ProviderUKPRN);
+            var providerTask = _providerServiceWrapper.GetByPRN(course.ProviderUKPRN);
+            var qualificationTask = _qualificationServiceWrapper.GetQualificationById(course.LearnAimRef);
+            var providerVenuesTask = _venueServiceWrapper.GetVenuesByPRN(course.ProviderUKPRN);
+            var feChoiceTask = _feChoiceServiceWrapper.GetByUKPRNAsync(course.ProviderUKPRN);
 
             await Task.WhenAll(providerTask, qualificationTask, providerVenuesTask, feChoiceTask);
 
