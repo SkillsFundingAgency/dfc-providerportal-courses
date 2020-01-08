@@ -205,7 +205,7 @@ namespace Dfc.ProviderPortal.Courses.Services
 
             var provider = providerTask.Result;
             var qualification = qualificationTask.Result;
-            var providerVenues = providerVenuesTask.Result;
+            var providerVenues = providerVenuesTask.Result ?? Enumerable.Empty<dynamic>();
             var feChoice = feChoiceTask.Result;
 
             var courseRunVenueIds = new HashSet<Guid>(course.CourseRuns.Where(cr => cr.VenueId.HasValue).Select(cr => cr.VenueId.Value));
