@@ -24,7 +24,6 @@ namespace Dfc.ProviderPortal.Courses.Functions
         {
             string qryCourseId = req.Query["CourseId"];
             string qryRunId = req.Query["RunId"];
-            AzureSearchCourseDetail persisted = null;
 
             if (string.IsNullOrWhiteSpace(qryCourseId))
                 return new BadRequestObjectResult($"Empty or missing CourseId value.");
@@ -36,17 +35,12 @@ namespace Dfc.ProviderPortal.Courses.Functions
             if (!Guid.TryParse(qryRunId, out Guid runId))
                 return new BadRequestObjectResult($"Invalid RunId value. Expected a non-empty valid {nameof(Guid)}");
 
-            try {
-                persisted = (AzureSearchCourseDetail) await coursesService.GetCourseSearchDataById(courseId, runId);
+            var persisted = await coursesService.GetCourseSearchDataById(courseId, runId);
 
-                if (persisted == null)
-                    return new NotFoundObjectResult(new { courseId, runId });
+            if (persisted == null)
+                return new NotFoundResult();
 
-                return new OkObjectResult(persisted);
-
-            } catch (Exception e) {
-                return new InternalServerErrorObjectResult(e);
-            }
+            return new OkObjectResult(persisted);
         }
     }
 }
