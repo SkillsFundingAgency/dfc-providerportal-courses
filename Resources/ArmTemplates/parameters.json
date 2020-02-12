@@ -5,21 +5,6 @@
     "functionAppPrefix": {
       "value": "__functionAppPrefix__"
     },
-    "apimResourceGroup": {
-      "value": "__SharedResourceGroupName__"
-    },
-    "apimServiceName": {
-      "value": "__ApimServiceName__"
-    },
-    "apiName": {
-      "value": "__apiName__"
-    },
-    "apiProductDisplayName": {
-      "value": "__apiProductDisplayName__"
-    },
-    "apiSuffix": {
-      "value": "__apiSuffix__"
-    },
     "appServicePlanName": {
       "value": "__providerPortalAppServicePlan__"
     },
