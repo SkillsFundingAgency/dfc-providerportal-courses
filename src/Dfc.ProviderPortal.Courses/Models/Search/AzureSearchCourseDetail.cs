@@ -12,8 +12,9 @@ namespace Dfc.ProviderPortal.Courses.Models
     {
         public Course Course { get; set; }
         public dynamic Provider { get; set; }
-        public dynamic Venue { get; set; }
+        public dynamic CourseRunVenues { get; set; }
         public dynamic Qualification { get; set; }
+        public dynamic FeChoice { get; set; }
 
         ////public Guid? id { get; set; }
         ////public Guid? CourseId { get; set; }

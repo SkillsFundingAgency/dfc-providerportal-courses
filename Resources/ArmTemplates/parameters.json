@@ -1,0 +1,87 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "functionAppPrefix": {
+      "value": "__functionAppPrefix__"
+    },
+    "apimResourceGroup": {
+      "value": "__SharedResourceGroupName__"
+    },
+    "apimServiceName": {
+      "value": "__ApimServiceName__"
+    },
+    "apiName": {
+      "value": "__apiName__"
+    },
+    "apiProductDisplayName": {
+      "value": "__apiProductDisplayName__"
+    },
+    "apiSuffix": {
+      "value": "__apiSuffix__"
+    },
+    "appServicePlanName": {
+      "value": "__providerPortalAppServicePlan__"
+    },
+    "appServicePlanResourceGroup": {
+      "value": "__providerPortalResourceGroup__"
+    },
+    "storageConnectionString": {
+      "value": "__providerPortalStorageConnectionStr__"
+    },
+    "cosmosDBfqdn": {
+      "value": "__cosmosDBConnectionStr__"
+    },
+    "cosmosDBkey": {
+      "value": "__providerPortalCosmosDBPrimaryKey__"
+    },
+    "cosmosDbAccount": {
+      "value": "__providerPortalCosmosDBName__"
+    },
+    "cosmosDBdatabase": {
+      "value": "__cosmosDatabase__"
+    },
+    "cosmosDBcollection": {
+      "value": "__cosmosCollection__"
+    },
+    "cosmosDBcollectionMigrationReport": {
+      "value": "__cosmosCollectionMigrationReport__"
+    },
+    "venueApiUrl": {
+      "value": "__venueApiUrl__"
+    },
+    "venueApiKey": {
+      "value": "__venueApiKey__"
+    },
+    "providerApiUrl": {
+      "value": "__providerApiUrl__"
+    },
+    "providerApiKey": {
+      "value": "__providerApiKey__"
+    },
+    "searchName": {
+      "value": "__searchName__"
+    },
+    "qualIndex": {
+      "value": "__qualIndex__"
+    },
+    "searchIndex": {
+      "value": "__searchIndex__"
+    },
+    "onspdIndex": {
+      "value": "__onspdIndex__"
+    },
+    "searchAdminKey": {
+      "value": "__searchAdminKey__"
+    },
+    "searchQueryKey": { 
+      "value": "__searchQueryKey__"
+    },
+    "referenceDataServiceApiUrl": {
+      "value": "__referenceDataApiUrl__"
+    },
+    "referenceDataServiceApiKey": {
+      "value": "__apimKey__"
+    }
+  }
+}

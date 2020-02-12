@@ -1,25 +1,16 @@
-﻿
-using System;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
+using Dfc.ProviderPortal.Courses.Interfaces;
+using Dfc.ProviderPortal.Courses.Models;
+using Dfc.ProviderPortal.Courses.Settings;
+using Dfc.ProviderPortal.Packages;
 using Microsoft.Azure.Search;
 using Microsoft.Azure.Search.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Spatial;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Dfc.GeoCoordinate;
-using Dfc.ProviderPortal.Packages;
-using Dfc.ProviderPortal.Courses.Models;
-using Dfc.ProviderPortal.Courses.Settings;
-using Dfc.ProviderPortal.Courses.Interfaces;
-using Dfc.ProviderPortal.Courses.Services;
-using Document = Microsoft.Azure.Documents.Document;
-
 
 namespace Dfc.ProviderPortal.Courses.Helpers
 {
@@ -35,37 +26,20 @@ namespace Dfc.ProviderPortal.Courses.Helpers
 
         //private readonly ILogger _log;
         private readonly ISearchServiceSettings _settings;
-        //private readonly IProviderServiceSettings _providerServiceSettings;
-        //private readonly IVenueServiceSettings _venueServiceSettings;
-        private static SearchServiceClient _queryService;
-        private static SearchServiceClient _adminService;
-        private static ISearchIndexClient _queryIndex;
-        private static ISearchIndexClient _adminIndex;
-        private static ISearchIndexClient _onspdIndex;
-        private HttpClient _httpClient;
+        private readonly SearchServiceClient _queryService;
+        private readonly SearchServiceClient _adminService;
+        private readonly ISearchIndexClient _queryIndex;
+        private readonly ISearchIndexClient _adminIndex;
+        private readonly ISearchIndexClient _onspdIndex;
+        private readonly HttpClient _httpClient;
         private readonly Uri _uri;
 
-        //public async Task Initialise()
-        //{
-        //}
-
         public SearchServiceWrapper(
-            //ILogger log,
-            //HttpClient httpClient,
-            //IOptions<ProviderServiceSettings> providerServiceSettings,
-            //IOptions<VenueServiceSettings> venueServiceSettings,
             IOptions<SearchServiceSettings> settings)
         {
-            //Throw.IfNull(log, nameof(log));
-            //Throw.IfNull(httpClient, nameof(httpClient));
-            //Throw.IfNull(providerServiceSettings, nameof(providerServiceSettings));
-            //Throw.IfNull(venueServiceSettings, nameof(venueServiceSettings));
             Throw.IfNull(settings, nameof(settings));
 
-            //_log = log;
             _settings = settings.Value;
-            //_providerServiceSettings = providerServiceSettings.Value;
-            //_venueServiceSettings = venueServiceSettings.Value;
 
             _queryService = new SearchServiceClient(_settings.SearchService, new SearchCredentials(_settings.QueryKey));
             _adminService = new SearchServiceClient(_settings.SearchService, new SearchCredentials(_settings.AdminKey));
@@ -73,118 +47,12 @@ namespace Dfc.ProviderPortal.Courses.Helpers
             _adminIndex = _adminService?.Indexes?.GetClient(_settings.Index);
             _onspdIndex = _queryService?.Indexes?.GetClient(_settings.onspdIndex);
 
-            _httpClient = new HttpClient(); //httpClient;
-            //_httpClient.DefaultRequestHeaders.Accept.Clear();
-            //_httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            //_httpClient.DefaultRequestHeaders.Add("Content-Type", "application/json");
-            //_httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json; charset=utf-8");
+            _httpClient = new HttpClient();
             _httpClient.DefaultRequestHeaders.Add("api-key", _settings.QueryKey);
             _httpClient.DefaultRequestHeaders.Add("api-version", _settings.ApiVersion);
             _httpClient.DefaultRequestHeaders.Add("indexes", _settings.Index);
             _uri = new Uri($"{_settings.ApiUrl}?api-version={_settings.ApiVersion}");
         }
-
-        //public IEnumerable<IndexingResult> UploadBatch(
-        //    ILogger _log,
-        //    IEnumerable<AzureSearchProviderModel> providers,
-        //    IEnumerable<AzureSearchVenueModel> venues,
-        //    IReadOnlyList<Document> documents,
-        //    out int succeeded)
-        //{
-        //    try {
-        //        succeeded = 0;
-        //        if (documents.Any()) {
-
-        //            IEnumerable<Course> courses = documents.Select(d => new Course()
-        //            {
-        //                id = d.GetPropertyValue<Guid>("id"),
-        //                QualificationCourseTitle = d.GetPropertyValue<string>("QualificationCourseTitle"),
-        //                LearnAimRef = d.GetPropertyValue<string>("LearnAimRef"),
-        //                NotionalNVQLevelv2 = d.GetPropertyValue<string>("NotionalNVQLevelv2"),
-        //                UpdatedDate = d.GetPropertyValue<DateTime?>("UpdatedDate"),
-        //                ProviderUKPRN = int.Parse(d.GetPropertyValue<string>("ProviderUKPRN")),
-        //                CourseRuns = d.GetPropertyValue<IEnumerable<CourseRun>>("CourseRuns")
-        //            });
-
-        //            _log.LogInformation("Creating batch of course data to index");
-
-        //            // Courses run in classrooms have an associated venue
-        //            IEnumerable<LINQComboClass> classroom =    from Course c in courses
-        //                                                       from CourseRun r in c.CourseRuns ?? new List<CourseRun>()
-        //                                                       from AzureSearchVenueModel v in venues.Where(x => r.VenueId == x.id)
-        //                                                                                             .DefaultIfEmpty()
-        //                                                       select new LINQComboClass() { Course = c, Run = r, SubRegion = (SubRegionItemModel)null, Venue = v };
-        //            _log.LogInformation($"{classroom.Count()} classroom courses (with VenueId and no regions)");
-
-
-        //            // Courses run elsewhere have regions instead (online, work-based, ...)
-        //            IEnumerable<LINQComboClass> nonclassroom = from Course c in courses
-        //                                                       from CourseRun r in c.CourseRuns ?? new List<CourseRun>()
-        //                                                       from SubRegionItemModel subregion in r.SubRegions ?? new List<SubRegionItemModel>()
-        //                                                       select new LINQComboClass() { Course = c, Run = r, SubRegion = subregion, Venue = (AzureSearchVenueModel)null };
-        //            _log.LogInformation($"{nonclassroom.Count()} other courses (with regions but no VenueId)");
-
-        //            decimal regionBoost = _settings.RegionSearchBoost ?? 2.3M;
-        //            decimal subregionBoost = _settings.SubRegionSearchBoost ?? 4.5M;
-
-        //            var batchdata = from LINQComboClass x in classroom.Union(nonclassroom)
-        //                            join AzureSearchProviderModel p in providers
-        //                            on x.Course?.ProviderUKPRN equals p.UnitedKingdomProviderReferenceNumber
-        //                            where (x.Run?.RecordStatus != RecordStatus.Pending && (x.Venue != null || x.SubRegion != null))
-        //                            select new AzureSearchCourse()
-        //                            {
-        //                                id = Guid.NewGuid(),
-        //                                CourseId = x.Course?.id,
-        //                                CourseRunId = x.Run?.id,
-        //                                QualificationCourseTitle = x.Course?.QualificationCourseTitle,
-        //                                LearnAimRef = x.Course?.LearnAimRef,
-        //                                NotionalNVQLevelv2 = x.Course?.NotionalNVQLevelv2,
-        //                                VenueName = x.Venue?.VENUE_NAME,
-        //                                VenueAddress = string.Format("{0}{1}{2}{3}{4}",
-        //                                               string.IsNullOrWhiteSpace(x.Venue?.ADDRESS_1) ? "" : x.Venue?.ADDRESS_1 + ", ",
-        //                                               string.IsNullOrWhiteSpace(x.Venue?.ADDRESS_2) ? "" : x.Venue?.ADDRESS_2 + ", ",
-        //                                               string.IsNullOrWhiteSpace(x.Venue?.TOWN) ? "" : x.Venue?.TOWN + ", ",
-        //                                               string.IsNullOrWhiteSpace(x.Venue?.COUNTY) ? "" : x.Venue?.COUNTY + ", ",
-        //                                               x.Venue?.POSTCODE),
-        //                                VenueAttendancePattern = ((int)x.Run?.AttendancePattern).ToString(),
-        //                                VenueLocation = GeographyPoint.Create(x.Venue?.Latitude ?? 0, x.Venue?.Longitude ?? 0),
-        //                                ProviderName = p?.ProviderName,
-        //                                Region = x.SubRegion?.SubRegionName,
-        //                                Status = (int?)x.Run?.RecordStatus,
-        //                                //Weighting = "",
-        //                                ScoreBoost = (x.SubRegion == null || x.SubRegion?.Weighting == SearchResultWeightings.Low ? 1
-        //                                                : (x.SubRegion?.Weighting == SearchResultWeightings.High ? subregionBoost : regionBoost)
-        //                                             ),
-        //                                UpdatedOn = x.Run?.UpdatedDate
-        //                            };
-
-        //            if (batchdata.Any()) {
-        //                IndexBatch<AzureSearchCourse> batch = IndexBatch.MergeOrUpload(batchdata);
-
-        //                _log.LogInformation("Merging docs to azure search index: course");
-        //                Task<DocumentIndexResult> task = _adminIndex.Documents.IndexAsync(batch);
-        //                task.Wait();
-        //                succeeded = batchdata.Count();
-        //            }
-        //            _log.LogInformation($"*** Successfully merged {succeeded} docs into Azure search index: course");
-        //        }
-
-        //    } catch (IndexBatchException ex) {
-        //        IEnumerable<IndexingResult> failed = ex.IndexingResults.Where(r => !r.Succeeded);
-        //        _log.LogError(ex, string.Format("Failed to index some of the documents: {0}",
-        //                                        string.Join(", ", failed)));
-        //        //_log.LogError(ex.ToString());
-        //        succeeded = ex.IndexingResults.Count(x => x.Succeeded);
-        //        return failed;
-
-        //    } catch (Exception e) {
-        //        throw e;
-        //    }
-
-        //    // Return empty list of failed IndexingResults
-        //    return new List<IndexingResult>();
-        //}
-
 
         public DocumentSearchResult<AzureSearchCourse> DeleteCoursesByPRN(ILogger _log, string UKPRN)
         {
@@ -271,151 +139,80 @@ namespace Dfc.ProviderPortal.Courses.Helpers
             } catch (Exception e) {
                 throw e;
             }
-
-            // Return empty list of failed IndexingResults
-            return null;
         }
 
+        public async Task UpdateCourseIndex(bool recreate)
+        {
+            var indexName = _settings.Index;
 
-        //public FACSearchResult SearchCourses(SearchCriteriaStructure criteria)
-        //{
-        //    //try {
-        //    //    _log.LogInformation($"Searching by {criteria.SubjectKeywordField}");
-        //    //    SearchParameters parms = new SearchParameters() {
-        //    //        //OrderBy = new[] { "id" },
-        //    //        Top = criteria.TopResults ?? _settings.DefaultTop
-        //    //    };
-        //    //    DocumentSearchResult<AzureSearchCourse> results =
-        //    //        _queryIndex.Documents.Search<AzureSearchCourse>(criteria.SubjectKeywordField, parms); // SearchText, parms);
-        //    //    _log.LogInformation($"{results.Count ?? 0} matches found");
-        //    //    return results;
+            if (recreate && await _adminService.Indexes.ExistsAsync(indexName))
+            {
+                await _adminService.Indexes.DeleteAsync(indexName);
+            }
 
-        //    //} catch (Exception ex) {
-        //    //    _log.LogError(ex, "Error in SearchCourses", criteria);
-        //    //    throw ex;
-        //    //}
+            var index = new Index()
+            {
+                Name = indexName,
+                Fields = new List<Field>()
+                {
+                    new Field("id", DataType.String) { IsKey = true, IsFacetable = false, IsFilterable = false, IsSearchable = false, IsSortable = false },
+                    new Field("CourseId", DataType.String) { IsFacetable = false, IsFilterable = true, IsSearchable = true, IsSortable = false },
+                    new Field("CourseRunId", DataType.String) { IsFacetable = false, IsFilterable = true, IsSearchable = true, IsSortable = false },
+                    new Field("QualificationCourseTitle", DataType.String) { IsFacetable = false, IsFilterable = true, IsSearchable = true, IsSortable = false },
+                    new Field("LearnAimRef", DataType.String) { IsFacetable = false, IsFilterable = true, IsSearchable = true, IsSortable = false },
+                    new Field("NotionalNVQLevelv2", DataType.String) { IsFacetable = true, IsFilterable = true, IsSearchable = false, IsSortable = false },
+                    new Field("Status", DataType.Int32) { IsFacetable = false, IsFilterable = true, IsSearchable = false, IsSortable = false },
+                    new Field("VenueName", DataType.String) { IsFacetable = false, IsFilterable = true, IsSearchable = true, IsSortable = false },
+                    new Field("VenueAddress", DataType.String) { IsFacetable = false, IsFilterable = true, IsSearchable = true, IsSortable = false },
+                    new Field("VenueLocation", DataType.GeographyPoint) { IsFacetable = false, IsFilterable = true, IsSearchable = false, IsSortable = true },
+                    new Field("VenueAttendancePattern", DataType.String) { IsFacetable = true, IsFilterable = true, IsSearchable = true, IsSortable = false },
+                    new Field("ProviderName", DataType.String) { IsFacetable = true, IsFilterable = true, IsSearchable = true, IsSortable = false },
+                    new Field("Region", DataType.String) { IsFacetable = true, IsFilterable = true, IsSearchable = true, IsSortable = false },
+                    new Field("Weighting", DataType.String) { IsFacetable = true, IsFilterable = true, IsSearchable = true, IsSortable = true },
+                    new Field("ScoreBoost", DataType.Double) { IsFacetable = true, IsFilterable = true, IsSearchable = false, IsSortable = true },
+                    new Field("UpdatedOn", DataType.DateTimeOffset) { IsFacetable = false, IsFilterable = true, IsSearchable = false, IsSortable = false },
+                    new Field("VenueStudyMode", DataType.String) { IsFacetable = true, IsFilterable = true, IsSearchable = true, IsSortable = false },
+                    new Field("DeliveryMode", DataType.String) { IsFacetable = true, IsFilterable = true, IsSearchable = true, IsSortable = false },
+                    new Field("StartDate", DataType.DateTimeOffset) { IsFacetable = false, IsFilterable = true, IsSearchable = false, IsSortable = true },
+                    new Field("VenueTown", DataType.String) { IsFacetable = true, IsFilterable = true, IsSearchable = true, IsSortable = false },
+                    new Field("Cost", DataType.Int32) { IsFacetable = false, IsFilterable = true, IsSearchable = false, IsSortable = true },
+                    new Field("CostDescription", DataType.String) { IsFacetable = false, IsFilterable = true, IsSearchable = false, IsSortable = false },
+                    new Field("CourseText", DataType.String) { IsFacetable = false, IsFilterable = true, IsSearchable = false, IsSortable = false },
+                    new Field("VenueAttendancePatternDescription", DataType.String) { IsFacetable = false, IsFilterable = true, IsSearchable = false, IsSortable = false },
+                    new Field("VenueStudyModeDescription", DataType.String) { IsFacetable = false, IsFilterable = true, IsSearchable = false, IsSortable = false },
+                    new Field("DeliveryModeDescription", DataType.String) { IsFacetable = false, IsFilterable = true, IsSearchable = false, IsSortable = false },
+                    new Field("UKPRN", DataType.String) { IsFacetable = true, IsFilterable = true, IsSearchable = true, IsSortable = false },
+                    new Field("CourseDescription", DataType.String) { IsFacetable = false, IsFilterable = true, IsSearchable = false, IsSortable = false },
+                    new Field("CourseName", DataType.String) { IsFacetable = false, IsFilterable = true, IsSearchable = true, IsSortable = false },
+                    new Field("FlexibleStartDate", DataType.Boolean) { IsFacetable = false, IsFilterable = true, IsSearchable = false, IsSortable = false },
+                    new Field("DurationUnit", DataType.Int32) { IsFacetable = false, IsFilterable = false, IsSearchable = false, IsSortable = false },
+                    new Field("DurationValue", DataType.Int32) { IsFacetable = false, IsFilterable = false, IsSearchable = false, IsSortable = false },
+                    new Field("National", DataType.Boolean) { IsFacetable = false, IsFilterable = true, IsSearchable = false, IsSortable = false },
+                    new Field("UpdateBatchId", DataType.String) { IsFacetable = false, IsFilterable = true, IsSearchable = false, IsSortable = false },
+                },
+                ScoringProfiles = new List<ScoringProfile>()
+                {
+                    new ScoringProfile()
+                    {
+                        Name = "region-boost",
+                        Functions = new List<ScoringFunction>()
+                        {
+                            new MagnitudeScoringFunction(
+                                "ScoreBoost",
+                                boost: 100,
+                                parameters: new MagnitudeScoringParameters()
+                                {
+                                    BoostingRangeStart = 1,
+                                    BoostingRangeEnd = 100,
+                                    ShouldBoostBeyondRangeByConstant = true
+                                },
+                                interpolation: ScoringFunctionInterpolation.Linear)
+                        }
+                    }
+                }
+            };
 
-
-        //    Throw.IfNull(criteria, nameof(criteria));
-
-        //    //_log.LogMethodEnter();
-
-        //    try
-        //    {
-        //        _log.LogInformation("FAC search criteria.", criteria);
-        //        _log.LogInformation("FAC search uri.", _uri.ToString());
-
-        //        // Create filter string
-        //        // Use a pipe char to delimit; default commas and spaces can't be used as may be in facet values
-        //        List<KeyValuePair<string, string>> list = new List<KeyValuePair<string, string>>();
-        //        //list.Add(new KeyValuePair<string, string>("AttendanceMode", string.Join("|", criteria.AttendanceModes ?? new string[] { } )));
-        //        list.Add(new KeyValuePair<string, string>("VenueAttendancePattern", string.Join("|", criteria.AttendancePatterns ?? new string[] { } )));
-        //        //list.Add(new KeyValuePair<string, string>("DFE1619FundedField", string.Join("|", criteria.DFE1619Funded ?? new string[] { } )));
-        //        list.Add(new KeyValuePair<string, string>("NotionalNVQLevelv2", string.Join("|", criteria.QualificationLevels ?? new string[] { })));
-        //        //list.Add(new KeyValuePair<string, string>("StudyModesField", string.Join("|", criteria.StudyModes ?? new string[] { } )));
-        //        string filter = string.Join(" and ", list.Where(x => !string.IsNullOrWhiteSpace(x.Value))
-        //                                                 .Select(x => "search.in(" + x.Key + ", '" + x.Value + "', '|')"));
-
-        //        // Add geo distance clause if required
-        //        float? latitude = null;
-        //        float? longitude = null;
-        //        bool geoSearchRequired = (criteria.Distance.GetValueOrDefault(0) > 0 && !string.IsNullOrWhiteSpace(criteria.TownOrPostcode));
-        //        if (geoSearchRequired) {
-        //            _log.LogInformation($"FAC getting lat/long for location {criteria.TownOrPostcode}");
-
-        //            SearchParameters parameters = new SearchParameters {
-        //                Select = new[] { "pcds", "lat", "long" },
-        //                SearchMode = SearchMode.All,
-        //                Top = 1,
-        //                QueryType = QueryType.Full
-        //            };
-        //            DocumentSearchResult<dynamic> results = _onspdIndex.Documents.Search<dynamic>(criteria.TownOrPostcode, parameters);
-        //            latitude = (float?)results?.Results?.FirstOrDefault()?.Document?.lat;
-        //            longitude = (float?)results?.Results?.FirstOrDefault()?.Document?.@long;
-
-        //            if (latitude.HasValue && longitude.HasValue)
-        //                filter += $" and geo.distance(VenueLocation, geography'POINT({longitude.Value} {latitude.Value})') le {criteria.Distance}"; //-122.121513 47.673988)') le {criteria.Distance}";
-        //        }
-
-        //        // Create a search criteria object for azure search service
-        //        IFACSearchCriteria facCriteria = new FACSearchCriteria()
-        //        {
-        //            //scoringProfile = _settings.RegionBoostScoringProfile,
-        //            search = $"{criteria.SubjectKeyword}*", //}* {(string.IsNullOrWhiteSpace(criteria.TownOrPostcode) ? "" : criteria.TownOrPostcode)}".Trim(),
-        //            searchMode = "all",
-        //            top = criteria.TopResults ?? _settings.DefaultTop,
-        //            filter = filter,
-        //            facets = new string[] { "NotionalNVQLevelv2", "VenueAttendancePattern", "ProviderName", "Region" },
-        //            count = true
-        //        };
-
-        //        // Create json ready for posting
-        //        JsonSerializerSettings settings = new JsonSerializerSettings {
-        //            //ContractResolver = new FACSearchCriteriaContractResolver()
-        //        };
-        //        settings.Converters.Add(new StringEnumConverter() { CamelCaseText = false });
-        //        StringContent content = new StringContent(JsonConvert.SerializeObject(facCriteria, settings), Encoding.UTF8, "application/json");
-
-        //        // Do the search
-        //        Task<HttpResponseMessage> task = _httpClient.PostAsync(_uri, content);
-        //        //https://dfc-dev-prov-sch.search.windows.net/indexes/course/docs?api-version=2017-11-11&queryType=full&$count=true&search=VenueAddress:evergreen AND QualificationCourseTitle:biology AND bell
-        //        //Task<HttpResponseMessage> task = _httpClient.GetAsync($"{_settings.ApiUrl}?api-version={_settings.ApiVersion}&queryType=full&$count={facCriteria.Count.ToString()}&search=VenueAddress:evergreen AND QualificationCourseTitle:biology AND {criteria.SubjectKeywordField}*");
-
-        //        task.Wait();
-        //        HttpResponseMessage response = task.Result;
-
-        //        _log.LogInformation("FAC search service http response.", response);
-
-        //        // Handle response and deserialize results
-        //        if (response.IsSuccessStatusCode) {
-        //            //var json = await response.Content.ReadAsStringAsync();
-        //            var json = response.Content.ReadAsStringAsync().Result;
-
-        //            _log.LogInformation("FAC search service json response.", json);
-        //            settings = new JsonSerializerSettings {
-        //                ContractResolver = new FACSearchResultContractResolver()
-        //            };
-        //            settings.Converters.Add(new StringEnumConverter() { CamelCaseText = false });
-
-        //            FACSearchResult searchResult = JsonConvert.DeserializeObject<FACSearchResult>(json, settings);
-        //            //return Result.Ok<IFACSearchResult>(searchResult);
-
-        //            if (geoSearchRequired) {
-        //                foreach (FACSearchResultItem ri in searchResult.Value) {
-        //                    if (ri.VenueLocation != null && ri?.VenueLocation["coordinates"][0] != 0 && ri?.VenueLocation["coordinates"][1] != 0)
-        //                        ri.GeoSearchDistance = Math.Round(
-        //                            GeoHelper.DistanceTo(
-        //                                new GeoHelper.Coordinates() { Latitude = latitude.Value,
-        //                                                              Longitude = longitude.Value },
-        //                                new GeoHelper.Coordinates() { Latitude = ri?.VenueLocation["coordinates"][1],
-        //                                                              Longitude = ri?.VenueLocation["coordinates"][0] }),
-        //                        2);
-        //                }
-        //            }
-
-        //            return searchResult;
-
-        //        } else {
-        //            _log.LogWarning($"FAC unexpected response: {response.StatusCode}", response);
-        //            //return Result.Fail<IFACSearchResult>("FAC search service unsuccessfull http response.");
-        //            return null;
-        //        }
-
-        //    } catch (HttpRequestException hre) {
-        //        _log.LogError("FAC search service http request error.", hre);
-        //        //return Result.Fail<IFACSearchResult>("FAC search service http request error.");
-        //        return null;
-
-        //    } catch (Exception e) {
-        //        _log.LogError("FAC search service unknown error.", e);
-        //        //return Result.Fail<IFACSearchResult>("FAC search service unknown error.");
-        //        return null;
-
-        //    } finally {
-        //        //_log.LogMethodExit();
-        //    }
-
-
-        //}
+            await _adminService.Indexes.CreateOrUpdateAsync(index);
+        }
     }
 }

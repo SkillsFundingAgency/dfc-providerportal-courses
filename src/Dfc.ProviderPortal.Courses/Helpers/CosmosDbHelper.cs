@@ -247,5 +247,26 @@ namespace Dfc.ProviderPortal.Courses.Helpers
                 .Where(cr => cr.RecordStatus == RecordStatus.Live)
                 .CountAsync();
         }
+
+        public async Task<Document> GetDocumentByIdAsync<T>(DocumentClient client, string collectionId, T id)
+        {
+            Throw.IfNull(client, nameof(client));
+            Throw.IfNullOrWhiteSpace(collectionId, nameof(collectionId));
+            Throw.IfNull(id, nameof(id));
+
+            var uri = UriFactory.CreateDocumentCollectionUri(
+                _settings.DatabaseId,
+                collectionId);
+
+            var options = new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 };
+
+            var query = client.CreateDocumentQuery(uri, options)
+                .Where(x => x.Id == id.ToString())
+                .AsDocumentQuery();
+
+            var doc = (await query.ExecuteNextAsync()).FirstOrDefault();
+
+            return doc;
+        }
     }
 }

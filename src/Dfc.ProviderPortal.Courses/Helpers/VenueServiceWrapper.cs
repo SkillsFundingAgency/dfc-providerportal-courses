@@ -14,24 +14,26 @@ using Dfc.ProviderPortal.Courses.Interfaces;
 
 namespace Dfc.ProviderPortal.Courses.Helpers
 {
-    public class VenueServiceWrapper : IVenueServiceWrapper
+    public class VenueServiceWrapper : IVenueServiceWrapper, IDisposable
     {
         private readonly IVenueServiceSettings _settings;
+        private readonly HttpClient _httpClient;
 
         public VenueServiceWrapper(IVenueServiceSettings settings)
         {
             Throw.IfNull(settings, nameof(settings));
             _settings = settings;
+
+            _httpClient = new HttpClient();
+            _httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _settings.ApiKey);
         }
 
         public T GetById<T>(Guid id)
         {
             // Call service to get data
-            HttpClient client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _settings.ApiKey);
             var criteria = new { id };
             StringContent content = new StringContent(JsonConvert.SerializeObject(criteria), Encoding.UTF8, "application/json");
-            Task<HttpResponseMessage> taskResponse = client.PostAsync($"{_settings.ApiUrl}GetVenueById?code={_settings.ApiKey}", content);
+            Task<HttpResponseMessage> taskResponse = _httpClient.PostAsync($"{_settings.ApiUrl}GetVenueById?code={_settings.ApiKey}", content);
             taskResponse.Wait();
             Task<string> taskJSON = taskResponse.Result.Content.ReadAsStringAsync();
             taskJSON.Wait();
@@ -41,14 +43,22 @@ namespace Dfc.ProviderPortal.Courses.Helpers
             return JsonConvert.DeserializeObject<T>(json);
         }
 
+        public async Task<IEnumerable<dynamic>> GetVenuesByPRN(int prn)
+        {
+            var response = await _httpClient.GetAsync($"{_settings.ApiUrl}GetVenuesByPRN?prn={prn}");
+            response.EnsureSuccessStatusCode();
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<IEnumerable<dynamic>>(json);
+        }
+
         public IEnumerable<AzureSearchVenueModel> GetVenues()
         {
             // Call service to get data
-            HttpClient client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _settings.ApiKey);
             var criteria = new object();
             StringContent content = new StringContent(JsonConvert.SerializeObject(criteria), Encoding.UTF8, "application/json");
-            Task<HttpResponseMessage> taskResponse = client.PostAsync($"{_settings.ApiUrl}GetAllVenues", content);
+            Task<HttpResponseMessage> taskResponse = _httpClient.PostAsync($"{_settings.ApiUrl}GetAllVenues", content);
             taskResponse.Wait();
             Task<string> taskJSON = taskResponse.Result.Content.ReadAsStringAsync();
             taskJSON.Wait();
@@ -58,6 +68,11 @@ namespace Dfc.ProviderPortal.Courses.Helpers
             if (!json.StartsWith("["))
                 json = "[" + json + "]";
             return JsonConvert.DeserializeObject<IEnumerable<AzureSearchVenueModel>>(json);
+        }
+
+        public void Dispose()
+        {
+            _httpClient.Dispose();
         }
     }
 }

@@ -1,23 +1,20 @@
 ﻿
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Azure.Documents.Client;
-using Microsoft.Azure.Search.Models;
-using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Dfc.ProviderPortal.Courses.Helpers;
 using Dfc.ProviderPortal.Courses.Interfaces;
 using Dfc.ProviderPortal.Courses.Models;
 using Dfc.ProviderPortal.Courses.Settings;
 using Dfc.ProviderPortal.Packages;
-using Document = Microsoft.Azure.Documents.Document;
-
+using Microsoft.Azure.Documents.Client;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Dfc.ProviderPortal.Courses.Services
 {
@@ -26,39 +23,39 @@ namespace Dfc.ProviderPortal.Courses.Services
         //private readonly ILogger _log;
         private readonly ICosmosDbHelper _cosmosDbHelper;
         private readonly ICosmosDbCollectionSettings _settings;
-        private readonly IProviderServiceSettings _providerServiceSettings;
-        private readonly IVenueServiceSettings _venueServiceSettings;
         private readonly ISearchServiceSettings _searchServiceSettings;
-        private readonly IQualificationServiceSettings _qualServiceSettings;
         private readonly ISearchServiceWrapper _searchServiceWrapper;
+        private readonly ProviderServiceWrapper _providerServiceWrapper;
+        private readonly QualificationServiceWrapper _qualificationServiceWrapper;
+        private readonly VenueServiceWrapper _venueServiceWrapper;
+        private readonly FeChoiceServiceWrapper _feChoiceServiceWrapper;
 
         public CoursesService(
             //ILogger log,
             ICosmosDbHelper cosmosDbHelper,
             ISearchServiceWrapper searchServiceWrapper,
-            IOptions<ProviderServiceSettings> providerServiceSettings,
-            IOptions<VenueServiceSettings> venueServiceSettings,
             IOptions<SearchServiceSettings> searchServiceSettings,
-            IOptions<QualificationServiceSettings> qualServiceSettings,
-            IOptions<CosmosDbCollectionSettings> settings)
+            IOptions<CosmosDbCollectionSettings> settings,
+            ProviderServiceWrapper providerServiceWrapper,
+            QualificationServiceWrapper qualificationServiceWrapper,
+            VenueServiceWrapper venueServiceWrapper,
+            FeChoiceServiceWrapper feChoiceServiceWrapper)
         {
             //Throw.IfNull(log, nameof(log));
             Throw.IfNull(cosmosDbHelper, nameof(cosmosDbHelper));
             Throw.IfNull(searchServiceWrapper, nameof(searchServiceWrapper));
             Throw.IfNull(settings, nameof(settings));
-            Throw.IfNull(providerServiceSettings, nameof(providerServiceSettings));
-            Throw.IfNull(venueServiceSettings, nameof(venueServiceSettings));
-            Throw.IfNull(qualServiceSettings, nameof(qualServiceSettings));
             Throw.IfNull(searchServiceSettings, nameof(searchServiceSettings));
 
             //_log = log;
             _cosmosDbHelper = cosmosDbHelper;
             _settings = settings.Value;
-            _providerServiceSettings = providerServiceSettings.Value;
-            _venueServiceSettings = venueServiceSettings.Value;
-            _qualServiceSettings = qualServiceSettings.Value;
             _searchServiceSettings = searchServiceSettings.Value;
             _searchServiceWrapper = searchServiceWrapper;
+            _providerServiceWrapper = providerServiceWrapper;
+            _qualificationServiceWrapper = qualificationServiceWrapper;
+            _venueServiceWrapper = venueServiceWrapper;
+            _feChoiceServiceWrapper = feChoiceServiceWrapper;
         }
 
         /// <summary>
@@ -187,35 +184,40 @@ namespace Dfc.ProviderPortal.Courses.Services
                 throw new ArgumentException($"Cannot be an empty {nameof(Guid)}", nameof(RunId));
 
             Course course = null;
-            dynamic venue = null;
 
             using (var client = _cosmosDbHelper.GetClient())
             {
-                var doc = _cosmosDbHelper.GetDocumentById(client, _settings.CoursesCollectionId, CourseId);
+                var doc = await _cosmosDbHelper.GetDocumentByIdAsync(client, _settings.CoursesCollectionId, CourseId);
                 course = _cosmosDbHelper.DocumentTo<Course>(doc);
             }
 
-            //CourseRun run = course.CourseRuns.FirstOrDefault(r => r.id == RunId);
-            Guid? venueid = course.CourseRuns
-                                  .Where(r => r.id == RunId && r.VenueId != null)
-                                  .FirstOrDefault()
-                                 ?.VenueId;
-            if (venueid.HasValue)
-                venue = (dynamic)new VenueServiceWrapper(_venueServiceSettings).GetById<dynamic>(venueid.Value);
-            var provider = new ProviderServiceWrapper(_providerServiceSettings, new HttpClient()).GetByPRN(course.ProviderUKPRN);
-            var qualification = new QualificationServiceWrapper(_qualServiceSettings).GetQualificationById(course.LearnAimRef);
+            if (course == null || !(course?.CourseRuns.Any(cr => cr.id == RunId) ?? false))
+            {
+                return null;
+            }
 
-            //return from Course c in new List<Course>() { course }
-            //       from CourseRun r in c.CourseRuns
-            //       from AzureSearchProviderModel p in new List<AzureSearchProviderModel>() { provider }
-            //       from AzureSearchVenueModel v in venues
-            //       select new AzureSearchCourseDetail();
+            var providerTask = _providerServiceWrapper.GetByPRN(course.ProviderUKPRN);
+            var qualificationTask = _qualificationServiceWrapper.GetQualificationById(course.LearnAimRef);
+            var providerVenuesTask = _venueServiceWrapper.GetVenuesByPRN(course.ProviderUKPRN);
+            var feChoiceTask = _feChoiceServiceWrapper.GetByUKPRNAsync(course.ProviderUKPRN);
+
+            await Task.WhenAll(providerTask, qualificationTask, providerVenuesTask, feChoiceTask);
+
+            var provider = providerTask.Result;
+            var qualification = qualificationTask.Result;
+            var providerVenues = providerVenuesTask.Result ?? Enumerable.Empty<dynamic>();
+            var feChoice = feChoiceTask.Result;
+
+            var courseRunVenueIds = new HashSet<Guid>(course.CourseRuns.Where(cr => cr.VenueId.HasValue).Select(cr => cr.VenueId.Value));
+            var courseRunVenues = providerVenues.Where(v => courseRunVenueIds.Contains(((JObject)v)["id"].ToObject<Guid>()));
+
             return new AzureSearchCourseDetail()
             {
                 Course = course,
                 Provider = provider,
                 Qualification = qualification,
-                Venue = venue
+                CourseRunVenues = courseRunVenues,
+                FeChoice = feChoice
             };
         }
 

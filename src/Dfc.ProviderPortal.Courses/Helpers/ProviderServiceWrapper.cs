@@ -1,63 +1,55 @@
-﻿
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Dfc.ProviderPortal.Packages;
-using Dfc.ProviderPortal.Courses.Models;
-using Dfc.ProviderPortal.Courses.Settings;
 using Dfc.ProviderPortal.Courses.Interfaces;
-
+using Dfc.ProviderPortal.Courses.Models;
+using Dfc.ProviderPortal.Packages;
+using Newtonsoft.Json;
 
 namespace Dfc.ProviderPortal.Courses.Helpers
 {
-    public class ProviderServiceWrapper : IProviderServiceWrapper
+    public class ProviderServiceWrapper : IProviderServiceWrapper, IDisposable
     {
         private readonly IProviderServiceSettings _settings;
-        private readonly HttpClient _client;
+        private readonly HttpClient _httpClient;
 
-        public ProviderServiceWrapper(IProviderServiceSettings settings, HttpClient client)
+        public ProviderServiceWrapper(IProviderServiceSettings settings)
         {
             Throw.IfNull(settings, nameof(settings));
             _settings = settings;
 
-            Throw.IfNull(client, nameof(client));
-            _client = client;
+            _httpClient = new HttpClient();
+            _httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _settings.ApiKey);
         }
 
-        public dynamic GetByPRN(int PRN)
+        public void Dispose()
         {
-            // Call service to get data
-            //HttpClient client = new HttpClient();
-            _client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _settings.ApiKey);
-            //var criteria = new { PRN };
-            //StringContent content = new StringContent(JsonConvert.SerializeObject(criteria), Encoding.UTF8, "application/json");
-            Task<HttpResponseMessage> taskResponse = _client.GetAsync($"{_settings.ApiUrl}GetProviderByPRN?PRN={PRN}"); //, content);
-            taskResponse.Wait();
-            Task<string> taskJSON = taskResponse.Result.Content.ReadAsStringAsync();
-            taskJSON.Wait();
-            string json = taskJSON.Result;
+            _httpClient.Dispose();
+        }
 
-            // Return data as model object
+        public async Task<dynamic> GetByPRN(int PRN)
+        {
+            var response = await _httpClient.GetAsync($"{_settings.ApiUrl}GetProviderByPRN?PRN={PRN}");
+            response.EnsureSuccessStatusCode();
+
+            var json = await response.Content.ReadAsStringAsync();
+
             return JsonConvert.DeserializeObject<dynamic>(json);
         }
 
         public IEnumerable<AzureSearchProviderModel> GetLiveProvidersForAzureSearch()
         {
             // Call service to get data
-            //HttpClient client = new HttpClient();
-            _client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _settings.ApiKey);
             var criteria = new object();
             StringContent content = new StringContent(JsonConvert.SerializeObject(criteria), Encoding.UTF8, "application/json");
-            Task<HttpResponseMessage> taskResponse = _client.PostAsync($"{_settings.ApiUrl}GetLiveProvidersForAzureSearch", content);
+            Task<HttpResponseMessage> taskResponse = _httpClient.PostAsync($"{_settings.ApiUrl}GetLiveProvidersForAzureSearch", content);
             taskResponse.Wait();
             Task<string> taskJSON = taskResponse.Result.Content.ReadAsStringAsync();
             taskJSON.Wait();
             string json = taskJSON.Result;
-                
+
             // Return data as model objects
             if (!json.StartsWith("["))
                 json = "[" + json + "]";
