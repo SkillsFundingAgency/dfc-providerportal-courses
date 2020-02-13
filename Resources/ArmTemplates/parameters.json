@@ -5,21 +5,6 @@
     "functionAppPrefix": {
       "value": "__functionAppPrefix__"
     },
-    "apimResourceGroup": {
-      "value": "__SharedResourceGroupName__"
-    },
-    "apimServiceName": {
-      "value": "__ApimServiceName__"
-    },
-    "apiName": {
-      "value": "__apiName__"
-    },
-    "apiProductDisplayName": {
-      "value": "__apiProductDisplayName__"
-    },
-    "apiSuffix": {
-      "value": "__apiSuffix__"
-    },
     "appServicePlanName": {
       "value": "__providerPortalAppServicePlan__"
     },
@@ -48,16 +33,16 @@
       "value": "__cosmosCollectionMigrationReport__"
     },
     "venueApiUrl": {
-      "value": "__venueApiUrl__"
+      "value": "__venueServiceApiUrl__"
     },
     "venueApiKey": {
-      "value": "__venueApiKey__"
+      "value": "__ApimPublishCourseDirectoryKey__"
     },
     "providerApiUrl": {
       "value": "__providerApiUrl__"
     },
     "providerApiKey": {
-      "value": "__providerApiKey__"
+      "value": "__ApimPublishCourseDirectoryKey__"
     },
     "searchName": {
       "value": "__searchName__"
@@ -81,7 +66,7 @@
       "value": "__referenceDataApiUrl__"
     },
     "referenceDataServiceApiKey": {
-      "value": "__apimKey__"
+      "value": "__ApimPublishCourseDirectoryKey__"
     }
   }
 }
