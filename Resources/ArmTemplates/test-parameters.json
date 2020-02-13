@@ -5,21 +5,6 @@
     "functionAppPrefix": {
       "value": "dfc-foo-prov-ukrlp"
     },
-    "apimResourceGroup": {
-      "value": "dfc-dev-shared-rg"
-    },
-    "apimServiceName": {
-      "value": "dfc-dev-shared-apim"
-    },
-    "apiName": {
-      "value": "courses"
-    },
-    "apiProductDisplayName": {
-      "value": "Find a course"
-    },
-    "apiSuffix": {
-      "value": "coursedirectory/courses"
-    },
     "appServicePlanName": {
       "value": "dfc-dev-prov-asp"
     },
