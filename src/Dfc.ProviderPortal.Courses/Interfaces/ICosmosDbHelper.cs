@@ -23,6 +23,9 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         Task<List<string>> DeleteBulkUploadCourses(DocumentClient client, string collectionId, int UKPRN);
         IList<T> GetDocumentsByUKPRN<T>(DocumentClient client, string collectionId, int UKPRN);
         Task<List<DfcMigrationReport>> GetAllDfcMigrationReports(DocumentClient client, string collectionId);
-        Task<int> GetTotalLiveCourses(DocumentClient client, string collectionId);
+        Task<int> GetTotalLiveCourses(DocumentClient client, string collectionId);       
+        Task<int> UpdateRecordStatuses(DocumentClient client, string collectionId, string procedureName, int UKPRN, int? currentStatus, int statusToBeChangedTo, int partitionKey);
+
+        Task CreateStoredProcedures();
     }
 }

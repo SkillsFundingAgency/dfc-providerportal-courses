@@ -18,6 +18,7 @@ namespace Dfc.ProviderPortal.Courses
 {
     public class WebJobsExtensionStartup : IWebJobsStartup
     {
+       
         public void Configure(IWebJobsBuilder builder)
         {
             builder.AddDependencyInjection();
@@ -57,6 +58,9 @@ namespace Dfc.ProviderPortal.Courses
             serviceProvider.GetService<ICourseMigrationReportService>().Initialise().Wait();
             serviceProvider.GetService<IDfcReportService>().Initialise().Wait();
             //serviceProvider.GetService<ISearchServiceWrapper>().Initialise().Wait();
+
+
+            serviceProvider.GetService<ICosmosDbHelper>().CreateStoredProcedures().Wait();
         }
     }
 }
