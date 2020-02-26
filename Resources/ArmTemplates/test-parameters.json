@@ -67,6 +67,9 @@
     },
     "referenceDataServiceApiKey": {
       "value": "not-a-real-api-key"
+    },
+    "CourseDirectoryDefaultRequestsUnits": {
+      "value": 400
     }
   }
 }
