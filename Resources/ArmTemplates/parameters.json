@@ -67,6 +67,18 @@
     },
     "referenceDataServiceApiKey": {
       "value": "__ApimPublishCourseDirectoryKey__"
+    },
+    "CourseDirectoryDefaultRequestsUnits": {
+      "value": 400
+    },
+    "CourseCollectionRequestUnits": {
+      "value": "__CourseCollectionRequestUnits__"
+    },
+    "CourseMigrationReportCollectionRequestUnits": {
+      "value": "__CourseMigrationReportCollectionRequestUnits__"
+    },
+    "AuditCollectionRequestUnits": {
+      "value": "__AuditCollectionRequestUnits__"
     }
   }
 }
