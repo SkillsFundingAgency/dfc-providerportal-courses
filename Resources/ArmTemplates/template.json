@@ -133,6 +133,33 @@
       "metadata": {
         "description": "Reference Data API service key"
       }
+    },
+    "CourseDirectoryDefaultRequestsUnits": {
+      "type": "int",
+      "metadata": {
+        "description": "The request units to provision on collections by default"
+      }
+    },
+    "CourseCollectionRequestUnits": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The request units to provision on the courses collection"
+      }
+    },
+    "CourseMigrationReportCollectionRequestUnits": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The request units to provision on the courseMigrationReports collection"
+      }
+    },
+    "AuditCollectionRequestUnits": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The request units to provision on the audit collection"
+      }
     }
   },
   "variables": {
@@ -140,6 +167,29 @@
     "functionAppName": "[concat(parameters('functionAppPrefix'),'-fa')]",
     "appInsightName": "[concat(parameters('functionAppPrefix'),'-ai')]"
   },
+    "functions": [
+      {
+        "namespace": "dfc",
+        "members": {
+          "getCollectionRUs": {
+            "parameters":[
+              {
+                "name": "defaultRUs",
+                "type": "int"
+              },
+              {
+                "name": "collectionSpecificRUs",
+                "type": "string"
+              }
+            ],
+            "output": {
+              "type": "int",
+              "value": "[if(equals(parameters('collectionSpecificRUs'), ''), parameters('defaultRUs'), int(parameters('collectionSpecificRUs')))]"
+            }
+          }
+        }
+      }
+    ],
   "resources": [{
       "apiVersion": "2017-05-10",
       "name": "ppcourseAppInsights",
@@ -358,7 +408,7 @@
               "value": "audit"
           },
           "offerThroughput": {
-              "value": 400
+              "value": "[dfc.getCollectionRUs(parameters('CourseDirectoryDefaultRequestsUnits'), parameters('AuditCollectionRequestUnits'))]"
           },
           "partitionKey": {
             "value": "/Collection"
@@ -388,7 +438,7 @@
               "value": "courseMigrationReports"
           },
           "offerThroughput": {
-              "value": 400
+              "value": "[dfc.getCollectionRUs(parameters('CourseDirectoryDefaultRequestsUnits'), parameters('CourseMigrationReportCollectionRequestUnits'))]"
           }
         }
       }
@@ -415,7 +465,7 @@
               "value": "courses"
           },
           "offerThroughput": {
-              "value": 400
+              "value": "[dfc.getCollectionRUs(parameters('CourseDirectoryDefaultRequestsUnits'), parameters('CourseCollectionRequestUnits'))]"
           },
           "partitionKey": {
             "value": "/ProviderUKPRN"
