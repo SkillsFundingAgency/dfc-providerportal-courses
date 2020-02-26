@@ -348,20 +348,18 @@ namespace Dfc.ProviderPortal.Courses.Services
 
             var allCourses = GetCoursesByUKPRN(UKPRN).Result;
             var coursesToBeChanged = allCourses.Where(x => x.CourseRuns.Any(cr => cr.RecordStatus == CurrentStatus)).ToList();
+            int currentstatus = (int)CurrentStatus;
+
+            int statusTobeChangeTo = (int)StatusToBeChangedTo;
 
             try
             {
-                foreach (var course in coursesToBeChanged)
+                using (var client = _cosmosDbHelper.GetClient())
                 {
-                    foreach (var courseRun in course.CourseRuns)
-                    {
-                        if (courseRun.RecordStatus == CurrentStatus)
-                            courseRun.RecordStatus = StatusToBeChangedTo;
-                    }
-                    var result = await Update(course);
-                }
+                    var spResults = await _cosmosDbHelper.UpdateRecordStatuses(client, _settings.CoursesCollectionId, "UpdateRecordStatuses", UKPRN, currentstatus, statusTobeChangeTo, UKPRN);
 
-                return new HttpResponseMessage(HttpStatusCode.OK);
+                    return new HttpResponseMessage(HttpStatusCode.OK);
+                }
             }
             catch (Exception ex)
             {
@@ -378,23 +376,17 @@ namespace Dfc.ProviderPortal.Courses.Services
             sw.Start();
             var allCourses = GetCoursesByUKPRN(UKPRN).Result;
             sw.Stop();
+            int statusTobeChangeTo = (int)StatusToBeChangedTo;
 
             try
             {
-                System.Diagnostics.Stopwatch sw2 = new System.Diagnostics.Stopwatch();
-                sw2.Start();
-                foreach (var course in allCourses)
+               
+                using (var client = _cosmosDbHelper.GetClient())
                 {
-                    foreach (var courseRun in course.CourseRuns)
-                    {
-                        courseRun.RecordStatus = StatusToBeChangedTo;
-                    }
-                    var result = await Update(course);
+                    var spResults = await _cosmosDbHelper.UpdateRecordStatuses(client, _settings.CoursesCollectionId, "UpdateRecordStatuses", UKPRN, null, statusTobeChangeTo, UKPRN);
+
+                    return new HttpResponseMessage(HttpStatusCode.OK);
                 }
-
-                sw2.Stop();
-
-                return new HttpResponseMessage(HttpStatusCode.OK);
             }
             catch (Exception ex)
             {

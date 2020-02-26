@@ -250,9 +250,9 @@
                 "name": "AzureWebJobsStorage",
                 "value": "[parameters('storageConnectionString')]"
               },
-              {
-                "name": "WEBSITE_RUN_FROM_PACKAGE",
-                "value": "1"
+              { 
+                "name": "WEBSITE_RUN_FROM_PACKAGE", 
+                "value": "1" 
               },
               {
                 "name": "FUNCTIONS_WORKER_RUNTIME",
