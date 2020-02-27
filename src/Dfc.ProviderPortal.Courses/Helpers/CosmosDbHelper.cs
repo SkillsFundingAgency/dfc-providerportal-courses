@@ -13,6 +13,8 @@ using Dfc.ProviderPortal.Courses.Settings;
 using Dfc.ProviderPortal.Courses.Interfaces;
 using System.Net;
 using Microsoft.Azure.Documents.Linq;
+using System.IO;
+using System.Reflection;
 
 namespace Dfc.ProviderPortal.Courses.Helpers
 {
@@ -268,5 +270,69 @@ namespace Dfc.ProviderPortal.Courses.Helpers
 
             return doc;
         }
+        public async Task<int> UpdateRecordStatuses(DocumentClient client, string collectionId, string procedureName, int UKPRN, int? currentStatus, int statusToBeChangedTo, int partitionKey)
+        {
+
+            RequestOptions requestOptions = new RequestOptions { PartitionKey = new PartitionKey(partitionKey), EnableScriptLogging = true };
+
+            var response = await client.ExecuteStoredProcedureAsync<SPResponse>(UriFactory.CreateStoredProcedureUri(_settings.DatabaseId, collectionId, "UpdateRecordStatuses"), requestOptions, UKPRN, currentStatus, statusToBeChangedTo);
+
+           
+            return response.Response.updated;
+
+        }
+        public async Task CreateStoredProcedures()
+        {
+            string scriptFileName = @"Data/UpdateRecordStatuses.js";
+            string StoredProcedureName = Path.GetFileNameWithoutExtension(scriptFileName);
+
+            await UpdateRecordStatuses(GetClient(), _settings.DatabaseId, StoredProcedureName, scriptFileName);
+        }
+
+        public async Task UpdateRecordStatuses(DocumentClient client, string collectionId, string procedureName, string procedurePath)
+        {
+
+
+            Throw.IfNull(client, nameof(client));
+            Throw.IfNullOrWhiteSpace(collectionId, nameof(collectionId));
+
+           
+            string StoredProcedureName = Path.GetFileNameWithoutExtension(procedurePath);
+
+            var collectionLink = string.Join(@",", UriFactory.CreateDocumentCollectionUri(_settings.DatabaseId, "courses") + "/sprocs/");
+
+            StoredProcedure isStoredProcedureExist = client.CreateStoredProcedureQuery(collectionLink)
+                                   .Where(sp => sp.Id == StoredProcedureName)
+                                   .AsEnumerable()
+                                   .FirstOrDefault();
+            try
+            {
+                if (isStoredProcedureExist == null)
+                {
+                    string sProcresult;
+                    Assembly assembly = this.GetType().Assembly;
+                    var resourceStream = assembly.GetManifestResourceStream(assembly.GetName().Name + "." + "Data.StoredProcedures" + ".UpdateRecordStatuses.js");
+                    using (var reader = new StreamReader(resourceStream, Encoding.UTF8))
+                    {
+                        sProcresult = await reader.ReadToEndAsync();
+                    }
+
+                    StoredProcedure sproc = await client.CreateStoredProcedureAsync(collectionLink, new StoredProcedure
+                    {
+                        Id = StoredProcedureName,
+                        Body = sProcresult
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+
+            }
+
+        }
+
+      
     }
 }
+
