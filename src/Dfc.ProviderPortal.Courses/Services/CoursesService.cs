@@ -188,7 +188,9 @@ namespace Dfc.ProviderPortal.Courses.Services
             using (var client = _cosmosDbHelper.GetClient())
             {
                 var doc = await _cosmosDbHelper.GetDocumentByIdAsync(client, _settings.CoursesCollectionId, CourseId);
-                course = _cosmosDbHelper.DocumentTo<Course>(doc);
+
+                if (doc != null)
+                    course = _cosmosDbHelper.DocumentTo<Course>(doc);
             }
 
             if (course == null || !(course?.CourseRuns.Any(cr => cr.id == RunId) ?? false))
