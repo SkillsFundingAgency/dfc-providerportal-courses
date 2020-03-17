@@ -26,6 +26,8 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         //Task<FACSearchResult> CourseSearch(ILogger log, SearchCriteriaStructure criteria); // string SearchText)
         Task<HttpResponseMessage> ArchiveProvidersLiveCourses(int UKPRN, int UIMode);
         Task<HttpResponseMessage> ChangeCourseRunStatusesForUKPRNSelection(int UKPRN, RecordStatus CurrentStatus, RecordStatus StatusToBeChangedTo);
+        Task<HttpResponseMessage> ArchiveCourseRunsByUKPRN(int UKPRN);
+
         Task<HttpResponseMessage> ChangeAllCourseRunStatusesForUKPRNSelection(int UKPRN, RecordStatus StatusToBeChangedTo);
         Task<HttpResponseMessage> UpdateStatus(Guid courseId, Guid courseRunId, int status);
         Task<int> GetTotalLiveCourses();

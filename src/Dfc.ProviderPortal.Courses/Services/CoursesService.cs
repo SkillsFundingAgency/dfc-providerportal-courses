@@ -369,6 +369,32 @@ namespace Dfc.ProviderPortal.Courses.Services
             }
         }
 
+        public async Task<HttpResponseMessage> ArchiveCourseRunsByUKPRN(int UKPRN)
+        {
+            Throw.IfNull<int>(UKPRN, nameof(UKPRN));
+            Throw.IfLessThan(0, UKPRN, nameof(UKPRN));
+
+            try
+            {
+                using (var client = _cosmosDbHelper.GetClient())
+                {
+                    var coursesToUpdate =  _cosmosDbHelper.GetDocumentsByUKPRN(client, _settings.CoursesCollectionId, UKPRN);
+
+                    foreach(var course in coursesToUpdate)
+                    {
+                        course.CourseRuns.ToList().ForEach(cr => cr.RecordStatus = RecordStatus.Archived);
+                        await _cosmosDbHelper.UpdateDocumentAsync(client, _settings.CoursesCollectionId, course);
+                    }
+
+                    return new HttpResponseMessage(HttpStatusCode.OK);
+                }
+            }
+            catch (Exception ex)
+            {
+                return new HttpResponseMessage(HttpStatusCode.ExpectationFailed);
+            }
+        }
+
         public async Task<HttpResponseMessage> ChangeAllCourseRunStatusesForUKPRNSelection(int UKPRN, RecordStatus StatusToBeChangedTo)
         {
             Throw.IfNull<int>(UKPRN, nameof(UKPRN));
