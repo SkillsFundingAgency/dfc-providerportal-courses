@@ -382,8 +382,14 @@ namespace Dfc.ProviderPortal.Courses.Services
 
                     foreach(var course in coursesToUpdate)
                     {
-                        course.CourseRuns.ToList().ForEach(cr => cr.RecordStatus = RecordStatus.Archived);
-                        await _cosmosDbHelper.UpdateDocumentAsync(client, _settings.CoursesCollectionId, course);
+                        // Only Archive if not already archived
+                        if (course.CourseRuns.Where(cr => cr.RecordStatus != RecordStatus.Archived).Any())
+                        {
+                            course.CourseRuns.Where(cr => cr.RecordStatus != RecordStatus.Archived).ToList()
+                                                .ForEach(cr => cr.RecordStatus = RecordStatus.Archived);
+
+                            await _cosmosDbHelper.UpdateDocumentAsync(client, _settings.CoursesCollectionId, course);
+                        }
                     }
 
                     return new HttpResponseMessage(HttpStatusCode.OK);
