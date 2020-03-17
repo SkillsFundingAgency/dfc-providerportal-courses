@@ -30,8 +30,8 @@ function updateSproc(UKPRN, currentStatus, statusToBeChangedTo) {
     // Calls tryUpdate(document) as soon as the query returns a document.
     function tryQueryAndUpdate(continuation) {
         var query = {
-            query: "select * from courses apr where apr.CourseRuns[0].RecordStatus = @currentStatus and apr.ProviderUKPRN = @UKPRN", parameters: [{ name: "@currentStatus", value: currentStatus },
-            { name: "@UKPRN", value: UKPRN }]
+            query: "select c from courses c JOIN cr in c.CourseRuns where cr.CourseRuns.RecordStatus = @currentStatus and c.ProviderUKPRN = @UKPRN", parameters: [{ name: "@currentStatus", value: currentStatus },
+                { name: "@UKPRN", value: UKPRN }]
         };
 
         var requestOptions = { continuation: continuation };
