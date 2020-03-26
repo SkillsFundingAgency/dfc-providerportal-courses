@@ -30,8 +30,8 @@ function updateSproc(UKPRN, currentStatus, statusToBeChangedTo) {
     // Calls tryUpdate(document) as soon as the query returns a document.
     function tryQueryAndUpdate(continuation) {
         var query = {
-            query: "select c from courses c JOIN cr in c.CourseRuns where cr.CourseRuns.RecordStatus = @currentStatus and c.ProviderUKPRN = @UKPRN", parameters: [{ name: "@currentStatus", value: currentStatus },
-                { name: "@UKPRN", value: UKPRN }]
+            query: "select * from courses apr where apr.CourseStatus = @currentStatus and apr.ProviderUKPRN = @UKPRN", parameters: [{ name: "@currentStatus", value: currentStatus },
+            { name: "@UKPRN", value: UKPRN }]
         };
 
         var requestOptions = { continuation: continuation };
@@ -63,8 +63,8 @@ function updateSproc(UKPRN, currentStatus, statusToBeChangedTo) {
     function tryUpdateWithCurrentStatus(document) {
         // DocumentDB supports optimistic concurrency control via HTTP ETag.
         var requestOptions = { etag: document._etag };
-        // document.CourseStatus = statusToBeChangedTo;
-        document.CourseRuns.forEach(run => run.RecordStatus = statusToBeChangedTo);
+        document.CourseStatus = statusToBeChangedTo;
+        document.CourseRuns.forEach(l => l.RecordStatus = statusToBeChangedTo);
         // Update the document.
         var isAccepted = collection.replaceDocument(document._self, document, requestOptions, function (err, updatedDocument, responseOptions) {
             if (err) throw err;
@@ -101,8 +101,7 @@ function updateSproc(UKPRN, currentStatus, statusToBeChangedTo) {
 
     function tryUpdate(document) {
         var requestOptions = { etag: document._etag };
-        //document.CourseRuns[0].RecordStatus = statusToBeChangedTo;
-        document.CourseRuns.forEach(run => run.RecordStatus = statusToBeChangedTo);
+        document.CourseRuns.forEach(l => l.RecordStatus = statusToBeChangedTo);
 
         var isAccepted = collection.replaceDocument(document._self, document, requestOptions, function (err, updatedDocument, responseOptions) {
             if (err) throw err;
