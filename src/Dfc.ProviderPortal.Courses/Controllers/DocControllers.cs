@@ -127,6 +127,17 @@ namespace Dfc.ProviderPortal.Courses.Controllers
         {
             return Ok();
         }
+
+        [Route("ArchiveCourseRunsByUKPRN")]
+        [HttpGet]
+        [ProducesResponseType(typeof(Course), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult ArchiveCourseRunsByUKPRN([Required]int UKPRN)
+        {
+            return Ok();
+        }
+
         [Route("GetAllDfcReports")]
         [HttpGet]
         [ProducesResponseType(typeof(Course), StatusCodes.Status200OK)]
