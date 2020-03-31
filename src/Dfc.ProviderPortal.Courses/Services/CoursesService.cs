@@ -193,7 +193,8 @@ namespace Dfc.ProviderPortal.Courses.Services
                     course = _cosmosDbHelper.DocumentTo<Course>(doc);
             }
 
-            if (course == null || !(course?.CourseRuns.Any(cr => cr.id == RunId) ?? false))
+            if (course == null || !(course?.CourseRuns.Any(cr => cr.id == RunId) ?? false) ||
+                course.CourseStatus != RecordStatus.Live)
             {
                 return null;
             }
@@ -359,6 +360,38 @@ namespace Dfc.ProviderPortal.Courses.Services
                 using (var client = _cosmosDbHelper.GetClient())
                 {
                     var spResults = await _cosmosDbHelper.UpdateRecordStatuses(client, _settings.CoursesCollectionId, "UpdateRecordStatuses", UKPRN, currentstatus, statusTobeChangeTo, UKPRN);
+
+                    return new HttpResponseMessage(HttpStatusCode.OK);
+                }
+            }
+            catch (Exception ex)
+            {
+                return new HttpResponseMessage(HttpStatusCode.ExpectationFailed);
+            }
+        }
+
+        public async Task<HttpResponseMessage> ArchiveCourseRunsByUKPRN(int UKPRN)
+        {
+            Throw.IfNull<int>(UKPRN, nameof(UKPRN));
+            Throw.IfLessThan(0, UKPRN, nameof(UKPRN));
+
+            try
+            {
+                using (var client = _cosmosDbHelper.GetClient())
+                {
+                    var coursesToUpdate =  _cosmosDbHelper.GetDocumentsByUKPRN(client, _settings.CoursesCollectionId, UKPRN);
+
+                    foreach(var course in coursesToUpdate)
+                    {
+                        // Only Archive if not already archived
+                        if (course.CourseRuns.Where(cr => cr.RecordStatus != RecordStatus.Archived).Any())
+                        {
+                            course.CourseRuns.Where(cr => cr.RecordStatus != RecordStatus.Archived).ToList()
+                                                .ForEach(cr => cr.RecordStatus = RecordStatus.Archived);
+
+                            await _cosmosDbHelper.UpdateDocumentAsync(client, _settings.CoursesCollectionId, course);
+                        }
+                    }
 
                     return new HttpResponseMessage(HttpStatusCode.OK);
                 }
