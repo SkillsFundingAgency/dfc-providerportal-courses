@@ -193,8 +193,13 @@ namespace Dfc.ProviderPortal.Courses.Services
                     course = _cosmosDbHelper.DocumentTo<Course>(doc);
             }
 
-            if (course == null || !(course?.CourseRuns.Any(cr => cr.id == RunId) ?? false) ||
-                course.CourseStatus != RecordStatus.Live)
+            if (course == null)
+            {
+                return null;
+            }
+
+            var courseRun = course.CourseRuns.SingleOrDefault(cr => cr.id == RunId);
+            if (courseRun == null || courseRun.RecordStatus != RecordStatus.Live)
             {
                 return null;
             }
