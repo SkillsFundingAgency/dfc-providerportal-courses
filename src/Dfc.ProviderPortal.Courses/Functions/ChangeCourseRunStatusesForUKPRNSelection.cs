@@ -37,18 +37,7 @@ namespace Dfc.ProviderPortal.Courses.Functions
             if (string.IsNullOrWhiteSpace(qryCurrentStatus))
                 return new BadRequestObjectResult($"Empty or missing CurrentStatus value.");
 
-            //if (!int.TryParse(qryCurrentStatus, out int intCurrentStatus))
-            //    return new BadRequestObjectResult($"Invalid CurrentStatus value, expected a valid integer");
-
-            RecordStatus? CurrentStatus = null;
-            //if (Enum.IsDefined(typeof(RecordStatus), intCurrentStatus))
-            //{
-            //    CurrentStatus = (RecordStatus)Enum.ToObject(typeof(RecordStatus), intCurrentStatus);
-            //}
-            //else
-            //{
-            //    return new BadRequestObjectResult($"CurrentStatus value cannot be parse into valid RecordStatus");
-            //}
+            RecordStatus? CurrentStatus = null;          
 
             if (string.IsNullOrWhiteSpace(qryStatusToBeChangedTo))
                 return new BadRequestObjectResult($"Empty or missing StatusToBeChangedTo value.");
