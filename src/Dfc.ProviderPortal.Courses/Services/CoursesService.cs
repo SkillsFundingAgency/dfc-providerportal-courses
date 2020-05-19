@@ -349,14 +349,14 @@ namespace Dfc.ProviderPortal.Courses.Services
             }
         }
 
-        public async Task<HttpResponseMessage> ChangeCourseRunStatusesForUKPRNSelection(int UKPRN, RecordStatus CurrentStatus, RecordStatus StatusToBeChangedTo)
+        public async Task<HttpResponseMessage> ChangeCourseRunStatusesForUKPRNSelection(int UKPRN, RecordStatus? CurrentStatus, RecordStatus StatusToBeChangedTo)
         {
             Throw.IfNull<int>(UKPRN, nameof(UKPRN));
             Throw.IfLessThan(0, UKPRN, nameof(UKPRN));
 
             var allCourses = GetCoursesByUKPRN(UKPRN).Result;
             var coursesToBeChanged = allCourses.Where(x => x.CourseRuns.Any(cr => cr.RecordStatus == CurrentStatus)).ToList();
-            int currentstatus = (int)CurrentStatus;
+            int? currentstatus = (int?)CurrentStatus;
 
             int statusTobeChangeTo = (int)StatusToBeChangedTo;
 

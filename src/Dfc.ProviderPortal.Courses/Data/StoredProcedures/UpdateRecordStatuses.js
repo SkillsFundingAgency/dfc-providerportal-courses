@@ -101,6 +101,7 @@ function updateSproc(UKPRN, currentStatus, statusToBeChangedTo) {
 
     function tryUpdate(document) {
         var requestOptions = { etag: document._etag };
+        document.CourseStatus = statusToBeChangedTo;
         document.CourseRuns.forEach(l => l.RecordStatus = statusToBeChangedTo);
 
         var isAccepted = collection.replaceDocument(document._self, document, requestOptions, function (err, updatedDocument, responseOptions) {
