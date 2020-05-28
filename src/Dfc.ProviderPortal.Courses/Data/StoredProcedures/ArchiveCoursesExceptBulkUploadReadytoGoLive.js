@@ -22,7 +22,7 @@ function ArchiveCourses(UKPRN, statusToBeChangedTo) {
         var query = {
             query: "select * from courses c where c.CourseStatus != @BulkUploadReadyToGoLiveCourseStatus and c.CourseStatus != @ArchivedStatus and c.ProviderUKPRN = @UKPRN",
             parameters: [
-                { name: "@archivedStatus", value: archivedStatus },
+                { name: "@ArchivedStatus", value: ArchivedStatus },
                 { name: "@BulkUploadReadyToGoLiveCourseStatus", value: BulkUploadReadyToGoLiveCourseStatus },
                 { name: "@UKPRN", value: UKPRN }]
         };
