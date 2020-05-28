@@ -349,14 +349,14 @@ namespace Dfc.ProviderPortal.Courses.Services
             }
         }
 
-        public async Task<HttpResponseMessage> ChangeCourseRunStatusesForUKPRNSelection(int UKPRN, RecordStatus? CurrentStatus, RecordStatus StatusToBeChangedTo)
+        public async Task<HttpResponseMessage> ChangeCourseRunStatusesForUKPRNSelection(int UKPRN, RecordStatus CurrentStatus, RecordStatus StatusToBeChangedTo)
         {
             Throw.IfNull<int>(UKPRN, nameof(UKPRN));
             Throw.IfLessThan(0, UKPRN, nameof(UKPRN));
 
             var allCourses = GetCoursesByUKPRN(UKPRN).Result;
             var coursesToBeChanged = allCourses.Where(x => x.CourseRuns.Any(cr => cr.RecordStatus == CurrentStatus)).ToList();
-            int? currentstatus = (int?)CurrentStatus;
+            int currentstatus = (int)CurrentStatus;
 
             int statusTobeChangeTo = (int)StatusToBeChangedTo;
 
@@ -473,6 +473,28 @@ namespace Dfc.ProviderPortal.Courses.Services
             using (var documentClient = _cosmosDbHelper.GetClient())
             {
                 return await _cosmosDbHelper.GetTotalLiveCourses(documentClient, _settings.CoursesCollectionId);
+            }
+        }
+
+        public async Task<HttpResponseMessage> ArchiveCoursesExceptBulkUploadReadytoGoLive(int UKPRN, RecordStatus StatusToBeChangedTo)
+        {
+            Throw.IfNull<int>(UKPRN, nameof(UKPRN));
+            Throw.IfLessThan(0, UKPRN, nameof(UKPRN));
+
+            var allCourses = GetCoursesByUKPRN(UKPRN).Result;
+            int statusTobeChangeTo = (int)StatusToBeChangedTo;
+            try
+            {
+                using (var client = _cosmosDbHelper.GetClient())
+                {
+                    var spResults = await _cosmosDbHelper.ArchiveCoursesExceptBulkUploadReadytoGoLive(client, _settings.CoursesCollectionId, "ArchiveCoursesExceptBulkUploadReadytoGoLive", UKPRN, statusTobeChangeTo, UKPRN);
+
+                    return new HttpResponseMessage(HttpStatusCode.OK);
+                }
+            }
+            catch (Exception ex)
+            {
+                return new HttpResponseMessage(HttpStatusCode.ExpectationFailed);
             }
         }
     }

@@ -284,9 +284,13 @@ namespace Dfc.ProviderPortal.Courses.Helpers
         public async Task CreateStoredProcedures()
         {
             string scriptFileName = @"Data/UpdateRecordStatuses.js";
+            string ArchiveCoursesSPName = @"Data/ArchiveCoursesExceptBulkUploadReadytoGoLive.js";
             string StoredProcedureName = Path.GetFileNameWithoutExtension(scriptFileName);
+            string ArchiveCoursesStoredProcedureName = Path.GetFileNameWithoutExtension(ArchiveCoursesSPName);
 
             await UpdateRecordStatuses(GetClient(), _settings.DatabaseId, StoredProcedureName, scriptFileName);
+
+            await ArchiveCoursesExceptBulkUploadReadytoGoLive(GetClient(), _settings.DatabaseId, ArchiveCoursesStoredProcedureName, ArchiveCoursesSPName);
         }
 
         public async Task UpdateRecordStatuses(DocumentClient client, string collectionId, string procedureName, string procedurePath)
@@ -332,7 +336,59 @@ namespace Dfc.ProviderPortal.Courses.Helpers
 
         }
 
-      
+        public async Task<int> ArchiveCoursesExceptBulkUploadReadytoGoLive(DocumentClient client, string collectionId, string procedureName, int UKPRN, int statusToBeChangedTo, int partitionKey)
+        {
+
+            RequestOptions requestOptions = new RequestOptions { PartitionKey = new PartitionKey(partitionKey), EnableScriptLogging = true };
+
+            var response = await client.ExecuteStoredProcedureAsync<SPResponse>(UriFactory.CreateStoredProcedureUri(_settings.DatabaseId, collectionId, "ArchiveCoursesExceptBulkUploadReadytoGoLive"), requestOptions, UKPRN, statusToBeChangedTo);
+
+
+            return response.Response.updated;
+
+        }
+
+        public async Task ArchiveCoursesExceptBulkUploadReadytoGoLive(DocumentClient client, string collectionId, string procedureName, string procedurePath)
+        {
+
+            Throw.IfNull(client, nameof(client));
+            Throw.IfNullOrWhiteSpace(collectionId, nameof(collectionId));
+
+            string StoredProcedureName = Path.GetFileNameWithoutExtension(procedurePath);
+
+            var collectionLink = string.Join(@",", UriFactory.CreateDocumentCollectionUri(_settings.DatabaseId, "courses") + "/sprocs/");
+
+            StoredProcedure isStoredProcedureExist = client.CreateStoredProcedureQuery(collectionLink)
+                                   .Where(sp => sp.Id == StoredProcedureName)
+                                   .AsEnumerable()
+                                   .FirstOrDefault();
+            try
+            {
+                if (isStoredProcedureExist == null)
+                {
+                    string sProcresult;
+                    Assembly assembly = this.GetType().Assembly;
+                    var resourceStream = assembly.GetManifestResourceStream(assembly.GetName().Name + "." + "Data.StoredProcedures" + ".ArchiveCoursesExceptBulkUploadReadytoGoLive.js");
+                    using (var reader = new StreamReader(resourceStream, Encoding.UTF8))
+                    {
+                        sProcresult = await reader.ReadToEndAsync();
+                    }
+
+                    StoredProcedure sproc = await client.CreateStoredProcedureAsync(collectionLink, new StoredProcedure
+                    {
+                        Id = StoredProcedureName,
+                        Body = sProcresult
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+
+            }
+
+        }
+        
     }
 }
 

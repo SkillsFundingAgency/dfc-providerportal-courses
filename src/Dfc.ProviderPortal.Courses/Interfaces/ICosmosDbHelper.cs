@@ -27,5 +27,7 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         Task<int> UpdateRecordStatuses(DocumentClient client, string collectionId, string procedureName, int UKPRN, int? currentStatus, int statusToBeChangedTo, int partitionKey);
 
         Task CreateStoredProcedures();
+        Task<int> ArchiveCoursesExceptBulkUploadReadytoGoLive(DocumentClient client, string collectionId, string procedureName, int UKPRN, int statusToBeChangedTo, int partitionKey);
+        
     }
 }
