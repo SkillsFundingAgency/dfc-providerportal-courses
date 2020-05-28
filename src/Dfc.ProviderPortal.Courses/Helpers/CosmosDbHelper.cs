@@ -1,20 +1,19 @@
-﻿
-using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.Azure.Documents;
-using Microsoft.Azure.Documents.Client;
-using Microsoft.Extensions.Options;
-using Dfc.ProviderPortal.Packages;
+﻿using Dfc.ProviderPortal.Courses.Interfaces;
 using Dfc.ProviderPortal.Courses.Models;
 using Dfc.ProviderPortal.Courses.Settings;
-using Dfc.ProviderPortal.Courses.Interfaces;
-using System.Net;
+using Dfc.ProviderPortal.Packages;
+using Microsoft.Azure.Documents;
+using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Documents.Linq;
+using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Net;
 using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Dfc.ProviderPortal.Courses.Helpers
 {
@@ -39,8 +38,8 @@ namespace Dfc.ProviderPortal.Courses.Helpers
         }
 
         public async Task<Document> CreateDocumentAsync(
-            DocumentClient client, 
-            string collectionId, 
+            DocumentClient client,
+            string collectionId,
             object document)
         {
             Throw.IfNull(client, nameof(client));
@@ -55,7 +54,7 @@ namespace Dfc.ProviderPortal.Courses.Helpers
         }
 
         public async Task<DocumentCollection> CreateDocumentCollectionIfNotExistsAsync(
-            DocumentClient client, 
+            DocumentClient client,
             string collectionId)
         {
             Throw.IfNull(client, nameof(client));
@@ -104,7 +103,6 @@ namespace Dfc.ProviderPortal.Courses.Helpers
             return doc;
         }
 
-
         public async Task<Document> UpdateDocumentAsync(
             DocumentClient client,
             string collectionId,
@@ -146,7 +144,6 @@ namespace Dfc.ProviderPortal.Courses.Helpers
             Uri uri = UriFactory.CreateDocumentCollectionUri(_settings.DatabaseId, collectionId);
             FeedOptions options = new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 };
 
-            
             var docs = client.CreateDocumentQuery<T>(uri, $"SELECT * FROM c WHERE c.ProviderUKPRN = {UKPRN}");
 
             return docs == null ? new List<T>() : docs.ToList();
@@ -163,7 +160,7 @@ namespace Dfc.ProviderPortal.Courses.Helpers
 
             List<Models.Course> docs = client.CreateDocumentQuery<Course>(uri, options)
                                              .Where(x => x.ProviderUKPRN == UKPRN)
-                                             .ToList(); 
+                                             .ToList();
 
             var responseList = new List<string>();
 
@@ -172,7 +169,7 @@ namespace Dfc.ProviderPortal.Courses.Helpers
                 Uri docUri = UriFactory.CreateDocumentUri(_settings.DatabaseId, collectionId, doc.id.ToString());
                 var result = await client.DeleteDocumentAsync(docUri, new RequestOptions() { PartitionKey = new PartitionKey(doc.ProviderUKPRN) });
 
-                if(result.StatusCode == HttpStatusCode.NoContent)
+                if (result.StatusCode == HttpStatusCode.NoContent)
                     responseList.Add($"Course with LARS ( { doc.LearnAimRef } ) and Title ( { doc.QualificationCourseTitle } ) was deleted.");
                 else
                     responseList.Add($"Course with LARS ( { doc.LearnAimRef } ) and Title ( { doc.QualificationCourseTitle } ) wasn't deleted. StatusCode: ( { result.StatusCode } )");
@@ -191,7 +188,7 @@ namespace Dfc.ProviderPortal.Courses.Helpers
             FeedOptions options = new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 };
 
             List<Models.Course> bulkUploadDocs = client.CreateDocumentQuery<Course>(uri, options)
-                                             .Where(x => x.ProviderUKPRN == UKPRN )
+                                             .Where(x => x.ProviderUKPRN == UKPRN)
                                              .Where((y => ((int)y.CourseStatus & (int)RecordStatus.BulkUploadPending) > 0 || ((int)y.CourseStatus & (int)RecordStatus.BulkUploadReadyToGoLive) > 0))
                                              .ToList();
 
@@ -210,7 +207,6 @@ namespace Dfc.ProviderPortal.Courses.Helpers
                 {
                     responseList.Add($"Course with LARS ( { doc.LearnAimRef } ) and Title ( { doc.QualificationCourseTitle } ) wasn't deleted. StatusCode: ( { result.StatusCode } )");
                 }
-
             }
 
             return responseList;
@@ -270,17 +266,16 @@ namespace Dfc.ProviderPortal.Courses.Helpers
 
             return doc;
         }
+
         public async Task<int> UpdateRecordStatuses(DocumentClient client, string collectionId, string procedureName, int UKPRN, int? currentStatus, int statusToBeChangedTo, int partitionKey)
         {
-
             RequestOptions requestOptions = new RequestOptions { PartitionKey = new PartitionKey(partitionKey), EnableScriptLogging = true };
 
             var response = await client.ExecuteStoredProcedureAsync<SPResponse>(UriFactory.CreateStoredProcedureUri(_settings.DatabaseId, collectionId, "UpdateRecordStatuses"), requestOptions, UKPRN, currentStatus, statusToBeChangedTo);
 
-           
             return response.Response.updated;
-
         }
+
         public async Task CreateStoredProcedures()
         {
             string scriptFileName = @"Data/UpdateRecordStatuses.js";
@@ -295,12 +290,9 @@ namespace Dfc.ProviderPortal.Courses.Helpers
 
         public async Task UpdateRecordStatuses(DocumentClient client, string collectionId, string procedureName, string procedurePath)
         {
-
-
             Throw.IfNull(client, nameof(client));
             Throw.IfNullOrWhiteSpace(collectionId, nameof(collectionId));
 
-           
             string StoredProcedureName = Path.GetFileNameWithoutExtension(procedurePath);
 
             var collectionLink = string.Join(@",", UriFactory.CreateDocumentCollectionUri(_settings.DatabaseId, "courses") + "/sprocs/");
@@ -331,26 +323,20 @@ namespace Dfc.ProviderPortal.Courses.Helpers
             catch (Exception ex)
             {
                 throw ex;
-
             }
-
         }
 
         public async Task<int> ArchiveCoursesExceptBulkUploadReadytoGoLive(DocumentClient client, string collectionId, string procedureName, int UKPRN, int statusToBeChangedTo, int partitionKey)
         {
-
             RequestOptions requestOptions = new RequestOptions { PartitionKey = new PartitionKey(partitionKey), EnableScriptLogging = true };
 
             var response = await client.ExecuteStoredProcedureAsync<SPResponse>(UriFactory.CreateStoredProcedureUri(_settings.DatabaseId, collectionId, "ArchiveCoursesExceptBulkUploadReadytoGoLive"), requestOptions, UKPRN, statusToBeChangedTo);
 
-
             return response.Response.updated;
-
         }
 
         public async Task ArchiveCoursesExceptBulkUploadReadytoGoLive(DocumentClient client, string collectionId, string procedureName, string procedurePath)
         {
-
             Throw.IfNull(client, nameof(client));
             Throw.IfNullOrWhiteSpace(collectionId, nameof(collectionId));
 
@@ -362,33 +348,23 @@ namespace Dfc.ProviderPortal.Courses.Helpers
                                    .Where(sp => sp.Id == StoredProcedureName)
                                    .AsEnumerable()
                                    .FirstOrDefault();
-            try
+
+            if (isStoredProcedureExist == null)
             {
-                if (isStoredProcedureExist == null)
+                string sProcresult;
+                Assembly assembly = this.GetType().Assembly;
+                var resourceStream = assembly.GetManifestResourceStream(assembly.GetName().Name + "." + "Data.StoredProcedures" + ".ArchiveCoursesExceptBulkUploadReadytoGoLive.js");
+                using (var reader = new StreamReader(resourceStream, Encoding.UTF8))
                 {
-                    string sProcresult;
-                    Assembly assembly = this.GetType().Assembly;
-                    var resourceStream = assembly.GetManifestResourceStream(assembly.GetName().Name + "." + "Data.StoredProcedures" + ".ArchiveCoursesExceptBulkUploadReadytoGoLive.js");
-                    using (var reader = new StreamReader(resourceStream, Encoding.UTF8))
-                    {
-                        sProcresult = await reader.ReadToEndAsync();
-                    }
-
-                    StoredProcedure sproc = await client.CreateStoredProcedureAsync(collectionLink, new StoredProcedure
-                    {
-                        Id = StoredProcedureName,
-                        Body = sProcresult
-                    });
+                    sProcresult = await reader.ReadToEndAsync();
                 }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
 
+                StoredProcedure sproc = await client.CreateStoredProcedureAsync(collectionLink, new StoredProcedure
+                {
+                    Id = StoredProcedureName,
+                    Body = sProcresult
+                });
             }
-
         }
-        
     }
 }
-

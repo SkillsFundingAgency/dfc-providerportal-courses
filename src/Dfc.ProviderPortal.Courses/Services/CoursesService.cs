@@ -481,7 +481,7 @@ namespace Dfc.ProviderPortal.Courses.Services
             Throw.IfNull<int>(UKPRN, nameof(UKPRN));
             Throw.IfLessThan(0, UKPRN, nameof(UKPRN));
 
-            var allCourses = GetCoursesByUKPRN(UKPRN).Result;
+            var allCourses = await GetCoursesByUKPRN(UKPRN);
             int statusTobeChangeTo = (int)StatusToBeChangedTo;
             try
             {
