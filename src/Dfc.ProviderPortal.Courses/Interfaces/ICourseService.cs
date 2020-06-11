@@ -31,5 +31,6 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         Task<HttpResponseMessage> ChangeAllCourseRunStatusesForUKPRNSelection(int UKPRN, RecordStatus StatusToBeChangedTo);
         Task<HttpResponseMessage> UpdateStatus(Guid courseId, Guid courseRunId, int status);
         Task<int> GetTotalLiveCourses();
+        Task<HttpResponseMessage> ArchiveCoursesExceptBulkUploadReadytoGoLive(int UKPRN, RecordStatus StatusToBeChangedTo);
     }
 }

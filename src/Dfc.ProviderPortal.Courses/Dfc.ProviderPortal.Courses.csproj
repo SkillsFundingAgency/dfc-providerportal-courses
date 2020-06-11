@@ -7,10 +7,16 @@
     <FileVersion>1.0.19189.1252</FileVersion>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Data\StoredProcedures\ArchiveCoursesExceptBulkUploadReadytoGoLive.js" />
     <None Remove="Data\StoredProcedures\UpdateRecordStatuses.js" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Data\StoredProcedures\UpdateRecordStatuses.js" />
+    <EmbeddedResource Include="Data\StoredProcedures\ArchiveCoursesExceptBulkUploadReadytoGoLive.js">
+     
+    </EmbeddedResource>
+    <EmbeddedResource Include="Data\StoredProcedures\UpdateRecordStatuses.js">
+     
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Dfc.ProviderPortal.Packages" Version="0.1.1" />

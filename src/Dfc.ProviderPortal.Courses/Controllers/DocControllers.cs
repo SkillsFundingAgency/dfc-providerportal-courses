@@ -185,5 +185,15 @@ namespace Dfc.ProviderPortal.Courses.Controllers
         {
             return Ok();
         }
+
+        [Route("ArchiveCoursesExceptBulkUploadReadytoGoLive")]
+        [HttpGet]
+        [ProducesResponseType(typeof(ArchiveCoursesExceptBulkUploadReadytoGoLive), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult ArchiveCoursesExceptBulkUploadReadytoGoLive([Required]string UKPRN, [Required]string StatusToBeChangedTo)
+        {
+            return Ok();
+        }
     }
 }

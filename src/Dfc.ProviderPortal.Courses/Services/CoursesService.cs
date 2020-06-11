@@ -193,8 +193,13 @@ namespace Dfc.ProviderPortal.Courses.Services
                     course = _cosmosDbHelper.DocumentTo<Course>(doc);
             }
 
-            if (course == null || !(course?.CourseRuns.Any(cr => cr.id == RunId) ?? false) ||
-                course.CourseStatus != RecordStatus.Live)
+            if (course == null)
+            {
+                return null;
+            }
+
+            var courseRun = course.CourseRuns.SingleOrDefault(cr => cr.id == RunId);
+            if (courseRun == null || courseRun.RecordStatus != RecordStatus.Live)
             {
                 return null;
             }
@@ -468,6 +473,28 @@ namespace Dfc.ProviderPortal.Courses.Services
             using (var documentClient = _cosmosDbHelper.GetClient())
             {
                 return await _cosmosDbHelper.GetTotalLiveCourses(documentClient, _settings.CoursesCollectionId);
+            }
+        }
+
+        public async Task<HttpResponseMessage> ArchiveCoursesExceptBulkUploadReadytoGoLive(int UKPRN, RecordStatus StatusToBeChangedTo)
+        {
+            Throw.IfNull<int>(UKPRN, nameof(UKPRN));
+            Throw.IfLessThan(0, UKPRN, nameof(UKPRN));
+
+            var allCourses = await GetCoursesByUKPRN(UKPRN);
+            int statusTobeChangeTo = (int)StatusToBeChangedTo;
+            try
+            {
+                using (var client = _cosmosDbHelper.GetClient())
+                {
+                    var spResults = await _cosmosDbHelper.ArchiveCoursesExceptBulkUploadReadytoGoLive(client, _settings.CoursesCollectionId, "ArchiveCoursesExceptBulkUploadReadytoGoLive", UKPRN, statusTobeChangeTo, UKPRN);
+
+                    return new HttpResponseMessage(HttpStatusCode.OK);
+                }
+            }
+            catch (Exception ex)
+            {
+                return new HttpResponseMessage(HttpStatusCode.ExpectationFailed);
             }
         }
     }
