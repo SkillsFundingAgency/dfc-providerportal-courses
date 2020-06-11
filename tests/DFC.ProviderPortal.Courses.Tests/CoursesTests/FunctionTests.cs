@@ -126,9 +126,9 @@ namespace Dfc.ProviderPortal.Courses.Tests.CoursesTests
         //    Assert.True(true); // c != null);
         //}
 
-        [Fact]
-        public async void _GetCoursesByUKPRN_Run()
-        {
+        //[Fact]
+        //public async void _GetCoursesByUKPRN_Run()
+        //{
             //DefaultHttpRequest request = new DefaultHttpRequest(new DefaultHttpContext())
             //{
             //    Query = new QueryCollection(new Dictionary<string, StringValues>
@@ -144,11 +144,11 @@ namespace Dfc.ProviderPortal.Courses.Tests.CoursesTests
 
             //List<Course> c = (List<Course>)((OkObjectResult)response).Value;
             //Assert.True(c != null); // && c.LongCount() > 0);
-        }
+        //}
 
-        [Fact]
-        public async void _GetGroupedCoursesByUKPRN_Run()
-        {
+        //[Fact]
+        //public async void _GetGroupedCoursesByUKPRN_Run()
+        //{
             //DefaultHttpRequest request = new DefaultHttpRequest(new DefaultHttpContext())
             //{
             //    Query = new QueryCollection(new Dictionary<string, StringValues>
@@ -164,11 +164,11 @@ namespace Dfc.ProviderPortal.Courses.Tests.CoursesTests
 
             //var data = ((OkObjectResult)response).Value;
             //Assert.True(data != null); // && data.LongCount() > 0);
-        }
+        //}
 
-        [Fact]
-        public async void _CourseDetail_Run()
-        {
+        //[Fact]
+        //public async void _CourseDetail_Run()
+        //{
             //Task<FACSearchResult> task = _service.CourseSearch(NullLoggerFactory.Instance.CreateLogger("Null Logger"), _criteria);
             //FACSearchResult result = await task;
 
@@ -188,8 +188,8 @@ namespace Dfc.ProviderPortal.Courses.Tests.CoursesTests
 
             //Assert.True(detail != null && detail?.Course != null && detail?.Provider != null && detail?.Qualification != null);
 
-            Assert.True(true);
-        }
+        //    Assert.True(true);
+        //}
 
     }
 }
