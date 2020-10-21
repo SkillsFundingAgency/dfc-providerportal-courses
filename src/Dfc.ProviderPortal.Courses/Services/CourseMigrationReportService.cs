@@ -41,7 +41,7 @@ namespace Dfc.ProviderPortal.Courses.Services
             {
                 using (var client = _cosmosDbHelper.GetClient())
                 {
-                    var result = _cosmosDbHelper.GetDocumentsByUKPRN<CourseMigrationReport>(client, _settings.CoursesMigrationReportCollectionId,
+                    var result = await _cosmosDbHelper.GetDocumentsByUKPRN<CourseMigrationReport>(client, _settings.CoursesMigrationReportCollectionId,
                         courseReport.ProviderUKPRN);
 
                     if (result.Any())
@@ -65,13 +65,13 @@ namespace Dfc.ProviderPortal.Courses.Services
             }
         }
 
-        public CourseMigrationReport GetMigrationReport(int UKPRN)
+        public async Task<CourseMigrationReport> GetMigrationReport(int UKPRN)
         {
             try
             {
                 using (var client = _cosmosDbHelper.GetClient())
                 {
-                    var result =  _cosmosDbHelper.GetDocumentsByUKPRN<CourseMigrationReport>(client,
+                    var result =  await _cosmosDbHelper.GetDocumentsByUKPRN<CourseMigrationReport>(client,
                         _settings.CoursesMigrationReportCollectionId, UKPRN);
                     return result.FirstOrDefault();
                 }

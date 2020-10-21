@@ -9,6 +9,6 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
     {
         Task Initialise();
         Task AddMigrationReport(CourseMigrationReport courseReport);
-        CourseMigrationReport GetMigrationReport(int UKPRN);
+        Task<CourseMigrationReport> GetMigrationReport(int UKPRN);
     }
 }

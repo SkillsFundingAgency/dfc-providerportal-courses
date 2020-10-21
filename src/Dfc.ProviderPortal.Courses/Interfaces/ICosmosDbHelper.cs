@@ -18,16 +18,16 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         Document GetDocumentById<T>(DocumentClient client, string collectionId, T id);
         Task<Document> GetDocumentByIdAsync<T>(DocumentClient client, string collectionId, T id);
         Task<Document> UpdateDocumentAsync(DocumentClient client, string collectionId, object document);
-        List<Course> GetDocumentsByUKPRN(DocumentClient client, string collectionId, int UKPRN);
+        Task<List<Course>> GetDocumentsByUKPRN(DocumentClient client, string collectionId, int UKPRN);
         Task<List<string>> DeleteDocumentsByUKPRN(DocumentClient client, string collectionId, int UKPRN);
         Task<List<string>> DeleteBulkUploadCourses(DocumentClient client, string collectionId, int UKPRN);
-        IList<T> GetDocumentsByUKPRN<T>(DocumentClient client, string collectionId, int UKPRN);
+        Task<List<T>> GetDocumentsByUKPRN<T>(DocumentClient client, string collectionId, int UKPRN);
         Task<List<DfcMigrationReport>> GetAllDfcMigrationReports(DocumentClient client, string collectionId);
-        Task<int> GetTotalLiveCourses(DocumentClient client, string collectionId);       
+        Task<int> GetTotalLiveCourses(DocumentClient client, string collectionId);
         Task<int> UpdateRecordStatuses(DocumentClient client, string collectionId, string procedureName, int UKPRN, int? currentStatus, int statusToBeChangedTo, int partitionKey);
 
         Task CreateStoredProcedures();
         Task<int> ArchiveCoursesExceptBulkUploadReadytoGoLive(DocumentClient client, string collectionId, string procedureName, int UKPRN, int statusToBeChangedTo, int partitionKey);
-        
+
     }
 }

@@ -28,7 +28,7 @@ namespace Dfc.ProviderPortal.Courses.Functions
 
             try
             {
-                var result = courseMigrationReportService.GetMigrationReport(UKPRN);
+                var result = await courseMigrationReportService.GetMigrationReport(UKPRN);
                 return new OkObjectResult(result);
 
             }
