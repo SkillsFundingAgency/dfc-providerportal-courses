@@ -1,15 +1,13 @@
-﻿using Dfc.ProviderPortal.Courses.Interfaces;
+﻿using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Dfc.ProviderPortal.Courses.Interfaces;
 using Dfc.ProviderPortal.Courses.Models;
 using Dfc.ProviderPortal.Packages.AzureFunctions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Build.Framework;
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace Dfc.ProviderPortal.Courses.Functions
 {
@@ -17,11 +15,11 @@ namespace Dfc.ProviderPortal.Courses.Functions
     {
         [FunctionName("ArchiveCoursesExceptBulkUploadReadytoGoLive")]
         public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequestMessage req,
-                                                Microsoft.Extensions.Logging.ILogger log,
+                                                ILogger log,
                                                 [Inject] ICourseService coursesService)
         {
             var qryUKPRN = req.RequestUri.ParseQueryString()["UKPRN"]?.ToString()
-                               ?? (await (dynamic)req.Content.ReadAsAsync<object>())?.UKPRN;           
+                               ?? (await (dynamic)req.Content.ReadAsAsync<object>())?.UKPRN;
             var qryStatusToBeChangedTo = req.RequestUri.ParseQueryString()["StatusToBeChangedTo"]?.ToString()
                                ?? (await (dynamic)req.Content.ReadAsAsync<object>())?.StatusToBeChangedTo;
 
@@ -29,8 +27,8 @@ namespace Dfc.ProviderPortal.Courses.Functions
                 return new BadRequestObjectResult($"Empty or missing UKPRN value.");
 
             if (!int.TryParse(qryUKPRN, out int UKPRN))
-                return new BadRequestObjectResult($"Invalid UKPRN value, expected a valid integer");   
-        
+                return new BadRequestObjectResult($"Invalid UKPRN value, expected a valid integer");
+
 
             if (string.IsNullOrWhiteSpace(qryStatusToBeChangedTo))
                 return new BadRequestObjectResult($"Empty or missing StatusToBeChangedTo value.");
