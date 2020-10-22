@@ -20,7 +20,6 @@ namespace Dfc.ProviderPortal.Courses.Services
 {
     public class CoursesService : ICourseService
     {
-        //private readonly ILogger _log;
         private readonly ICosmosDbHelper _cosmosDbHelper;
         private readonly ICosmosDbCollectionSettings _settings;
         private readonly ISearchServiceSettings _searchServiceSettings;
@@ -31,7 +30,6 @@ namespace Dfc.ProviderPortal.Courses.Services
         private readonly FeChoiceServiceWrapper _feChoiceServiceWrapper;
 
         public CoursesService(
-            //ILogger log,
             ICosmosDbHelper cosmosDbHelper,
             ISearchServiceWrapper searchServiceWrapper,
             IOptions<SearchServiceSettings> searchServiceSettings,
@@ -41,13 +39,11 @@ namespace Dfc.ProviderPortal.Courses.Services
             VenueServiceWrapper venueServiceWrapper,
             FeChoiceServiceWrapper feChoiceServiceWrapper)
         {
-            //Throw.IfNull(log, nameof(log));
             Throw.IfNull(cosmosDbHelper, nameof(cosmosDbHelper));
             Throw.IfNull(searchServiceWrapper, nameof(searchServiceWrapper));
             Throw.IfNull(settings, nameof(settings));
             Throw.IfNull(searchServiceSettings, nameof(searchServiceSettings));
 
-            //_log = log;
             _cosmosDbHelper = cosmosDbHelper;
             _settings = settings.Value;
             _searchServiceSettings = searchServiceSettings.Value;
