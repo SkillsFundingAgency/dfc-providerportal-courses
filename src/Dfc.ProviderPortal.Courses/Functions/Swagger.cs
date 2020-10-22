@@ -37,7 +37,7 @@ namespace Dfc.ProviderPortal.Courses.Functions
                 //swagger.SerializeAsV3(jsonWriter);
                 swagger.SerializeAsV2(jsonWriter);
                 var obj = JObject.Parse(writer.ToString());
-                return new JsonResult(obj);
+                return await Task.FromResult(new JsonResult(obj));
             }
         }
     }

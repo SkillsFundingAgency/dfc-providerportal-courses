@@ -63,8 +63,6 @@ namespace Dfc.ProviderPortal.Courses.Services
             try {
                 // Get all course documents in the collection
                 string token = null;
-                Task<FeedResponse<dynamic>> task = null;
-                //List<dynamic> docs = new List<dynamic>();
                 List<Course> docs = new List<Course>();
                 log.LogInformation("Getting all courses from collection");
 
@@ -72,25 +70,17 @@ namespace Dfc.ProviderPortal.Courses.Services
                 using (DocumentClient client = _cosmosDbHelper.GetClient())
                 {
                     do {
-                        task = client.ReadDocumentFeedAsync(UriFactory.CreateDocumentCollectionUri("providerportal", _settings.CoursesCollectionId),
-                                                            new FeedOptions { MaxItemCount = -1, RequestContinuation = token });
-                        token = task.Result.ResponseContinuation;
-                        //log.LogInformation("Collating results");
-                        //docs.AddRange(task.Result.ToList());
+                        var feedResponse = await client.ReadDocumentFeedAsync(UriFactory.CreateDocumentCollectionUri("providerportal", _settings.CoursesCollectionId),
+                            new FeedOptions { MaxItemCount = -1, RequestContinuation = token });
+                        token = feedResponse.ResponseContinuation;
 
                         // Cast the data by serializing to json and then deserialising into Course objects
-                        log.LogInformation($"Serializing data for {task.Result.LongCount()} courses");
-                        string json = JsonConvert.SerializeObject(task.Result.ToList());
+                        log.LogInformation($"Serializing data for {feedResponse.LongCount()} courses");
+                        string json = JsonConvert.SerializeObject(feedResponse.ToList());
                         docs.AddRange(JsonConvert.DeserializeObject<IEnumerable<Course>>(json));
                     } while (token != null);
                 }
                 return docs;
-
-                //// Cast the returned data by serializing to json and then deserialising into Course objects
-                //log.LogInformation($"Serializing data for {docs.LongCount()} courses");
-                //string json = JsonConvert.SerializeObject(docs);
-                //return JsonConvert.DeserializeObject<IEnumerable<Course>>(json);
-
             } catch (Exception ex) {
                 throw ex;
             }
@@ -122,7 +112,7 @@ namespace Dfc.ProviderPortal.Courses.Services
 
             using (var client = _cosmosDbHelper.GetClient())
             {
-                var doc = _cosmosDbHelper.GetDocumentById(client, _settings.CoursesCollectionId, id);
+                var doc = await _cosmosDbHelper.GetDocumentByIdAsync(client, _settings.CoursesCollectionId, id);
                 persisted = _cosmosDbHelper.DocumentTo<Course>(doc);
             }
 
@@ -208,7 +198,7 @@ namespace Dfc.ProviderPortal.Courses.Services
             IEnumerable<Course> persisted = null;
             using (var client = _cosmosDbHelper.GetClient())
             {
-                var docs = _cosmosDbHelper.GetDocumentsByUKPRN(client, _settings.CoursesCollectionId, UKPRN);
+                var docs = await _cosmosDbHelper.GetDocumentsByUKPRN(client, _settings.CoursesCollectionId, UKPRN);
                 persisted = docs;
             }
 
@@ -266,7 +256,7 @@ namespace Dfc.ProviderPortal.Courses.Services
 
             }
 
-            var allCourses = GetCoursesByUKPRN(UKPRN).Result;
+            var allCourses = await GetCoursesByUKPRN(UKPRN);
             var coursesToArchive = allCourses.Where(x => x.CourseStatus == RecordStatus.Live).ToList();
             var coursesToMakeLive = allCourses.Where(x => x.CourseStatus == status).ToList();
 
@@ -279,7 +269,7 @@ namespace Dfc.ProviderPortal.Courses.Services
                         if (courseRun.RecordStatus == RecordStatus.Live)
                             courseRun.RecordStatus = RecordStatus.Archived;
                     }
-                    var result = Update(course);
+                    await Update(course);
                 }
 
                 if ((UIMode)UIMode != Models.UIMode.DeactivatedProvider)    // ensure nothing set live if provider is deactivated
@@ -291,13 +281,13 @@ namespace Dfc.ProviderPortal.Courses.Services
                             if (courseRun.RecordStatus == status)
                                 courseRun.RecordStatus = RecordStatus.Live;
                         }
-                        var result = Update(course);
+                        await Update(course);
                     }
                 }
 
                 return new HttpResponseMessage(HttpStatusCode.OK);
 
-            } catch (Exception ex) {
+            } catch (Exception) {
                 return new HttpResponseMessage(HttpStatusCode.ExpectationFailed);
             }
         }
@@ -322,7 +312,7 @@ namespace Dfc.ProviderPortal.Courses.Services
                     return new HttpResponseMessage(HttpStatusCode.OK);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return new HttpResponseMessage(HttpStatusCode.ExpectationFailed);
             }
@@ -337,7 +327,7 @@ namespace Dfc.ProviderPortal.Courses.Services
             {
                 using (var client = _cosmosDbHelper.GetClient())
                 {
-                    var coursesToUpdate =  _cosmosDbHelper.GetDocumentsByUKPRN(client, _settings.CoursesCollectionId, UKPRN);
+                    var coursesToUpdate =  await _cosmosDbHelper.GetDocumentsByUKPRN(client, _settings.CoursesCollectionId, UKPRN);
 
                     foreach(var course in coursesToUpdate)
                     {
@@ -354,7 +344,7 @@ namespace Dfc.ProviderPortal.Courses.Services
                     return new HttpResponseMessage(HttpStatusCode.OK);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return new HttpResponseMessage(HttpStatusCode.ExpectationFailed);
             }
@@ -381,7 +371,7 @@ namespace Dfc.ProviderPortal.Courses.Services
                     return new HttpResponseMessage(HttpStatusCode.OK);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return new HttpResponseMessage(HttpStatusCode.ExpectationFailed);
             }
@@ -445,7 +435,7 @@ namespace Dfc.ProviderPortal.Courses.Services
                     return new HttpResponseMessage(HttpStatusCode.OK);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return new HttpResponseMessage(HttpStatusCode.ExpectationFailed);
             }

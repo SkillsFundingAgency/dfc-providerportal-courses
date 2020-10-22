@@ -119,7 +119,7 @@ namespace Dfc.ProviderPortal.Courses.Helpers
             return await client.UpsertDocumentAsync(uri, document);
         }
 
-        public List<Models.Course> GetDocumentsByUKPRN(DocumentClient client, string collectionId, int UKPRN)
+        public async Task<List<Course>> GetDocumentsByUKPRN(DocumentClient client, string collectionId, int UKPRN)
         {
             Throw.IfNull(client, nameof(client));
             Throw.IfNullOrWhiteSpace(collectionId, nameof(collectionId));
@@ -128,14 +128,12 @@ namespace Dfc.ProviderPortal.Courses.Helpers
             Uri uri = UriFactory.CreateDocumentCollectionUri(_settings.DatabaseId, collectionId);
             FeedOptions options = new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 };
 
-            List<Models.Course> docs = client.CreateDocumentQuery<Course>(uri, options)
-                                             .Where(x => x.ProviderUKPRN == UKPRN)
-                                             .ToList(); // .AsEnumerable();
-
-            return docs;
+            return await client.CreateDocumentQuery<Course>(uri, options)
+                .Where(x => x.ProviderUKPRN == UKPRN)
+                .ToListAsync();
         }
 
-        public IList<T> GetDocumentsByUKPRN<T>(DocumentClient client, string collectionId, int UKPRN)
+        public async Task<List<T>> GetDocumentsByUKPRN<T>(DocumentClient client, string collectionId, int UKPRN)
         {
             Throw.IfNull(client, nameof(client));
             Throw.IfNullOrWhiteSpace(collectionId, nameof(collectionId));
@@ -146,7 +144,7 @@ namespace Dfc.ProviderPortal.Courses.Helpers
 
             var docs = client.CreateDocumentQuery<T>(uri, $"SELECT * FROM c WHERE c.ProviderUKPRN = {UKPRN}");
 
-            return docs == null ? new List<T>() : docs.ToList();
+            return docs == null ? new List<T>() : await docs.ToListAsync();
         }
 
         public async Task<List<string>> DeleteDocumentsByUKPRN(DocumentClient client, string collectionId, int UKPRN)
