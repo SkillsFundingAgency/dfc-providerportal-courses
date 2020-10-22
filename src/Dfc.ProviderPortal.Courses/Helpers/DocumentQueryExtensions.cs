@@ -5,7 +5,7 @@ using Microsoft.Azure.Documents.Linq;
 
 namespace Dfc.ProviderPortal.Courses.Helpers
 {
-    public static class IDocumentQueryExtensions
+    public static class DocumentQueryExtensions
     {
         // source: https://stackoverflow.com/questions/39338131/documentclient-createdocumentquery-async/49322332#49322332
         public static async Task<List<T>> ToListAsync<T>(this IDocumentQuery<T> queryable)
