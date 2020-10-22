@@ -128,11 +128,9 @@ namespace Dfc.ProviderPortal.Courses.Helpers
             Uri uri = UriFactory.CreateDocumentCollectionUri(_settings.DatabaseId, collectionId);
             FeedOptions options = new FeedOptions { EnableCrossPartitionQuery = true, MaxItemCount = -1 };
 
-            List<Models.Course> docs = await client.CreateDocumentQuery<Course>(uri, options)
-                                             .Where(x => x.ProviderUKPRN == UKPRN)
-                                             .ToListAsync();
-
-            return docs;
+            return await client.CreateDocumentQuery<Course>(uri, options)
+                .Where(x => x.ProviderUKPRN == UKPRN)
+                .ToListAsync();
         }
 
         public async Task<List<T>> GetDocumentsByUKPRN<T>(DocumentClient client, string collectionId, int UKPRN)
