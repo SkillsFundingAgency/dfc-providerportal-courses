@@ -7,7 +7,7 @@ using Dfc.ProviderPortal.Courses.Interfaces;
 
 namespace Dfc.ProviderPortal.Courses.Models
 {
-    public class Region //: IRegion
+    public class Region
     {
         public enum Regions
         {
