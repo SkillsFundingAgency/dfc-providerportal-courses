@@ -45,6 +45,7 @@ namespace Dfc.ProviderPortal.Courses.Functions
             }
             catch (Exception e)
             {
+                log.LogError("call to coursesService.ArchiveCourseRunsByUKPRN failed", e);
                 return new InternalServerErrorObjectResult(e);
             }
         }
