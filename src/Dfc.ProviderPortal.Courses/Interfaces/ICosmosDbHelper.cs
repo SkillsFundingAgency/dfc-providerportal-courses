@@ -19,7 +19,6 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         Task<Document> GetDocumentByIdAsync<T>(DocumentClient client, string collectionId, T id);
         Task<Document> UpdateDocumentAsync(DocumentClient client, string collectionId, object document);
         Task<List<Course>> GetDocumentsByUKPRN(DocumentClient client, string collectionId, int UKPRN);
-        Task<List<string>> DeleteBulkUploadCourses(DocumentClient client, string collectionId, int UKPRN);
         Task<List<T>> GetDocumentsByUKPRN<T>(DocumentClient client, string collectionId, int UKPRN);
         Task<List<DfcMigrationReport>> GetAllDfcMigrationReports(DocumentClient client, string collectionId);
         Task<int> GetTotalLiveCourses(DocumentClient client, string collectionId);
