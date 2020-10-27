@@ -1,16 +1,12 @@
-﻿using Dfc.ProviderPortal.Courses.Interfaces;
-using Dfc.ProviderPortal.Courses.Models;
+﻿using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Dfc.ProviderPortal.Courses.Interfaces;
 using Dfc.ProviderPortal.Packages.AzureFunctions.DependencyInjection;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Dfc.ProviderPortal.Courses.Functions
 {
@@ -26,8 +22,6 @@ namespace Dfc.ProviderPortal.Courses.Functions
             string strUKPRN = req.RequestUri.ParseQueryString()["UKPRN"]?.ToString()
                                 ?? (await (dynamic)req.Content.ReadAsAsync<object>())?.UKPRN;
 
-            List<string> messagesList = null;
-
             if (string.IsNullOrWhiteSpace(strUKPRN))
                 return new BadRequestObjectResult($"Empty or missing UKPRN value.");
 
@@ -36,12 +30,12 @@ namespace Dfc.ProviderPortal.Courses.Functions
 
             try
             {
-                messagesList = await coursesService.DeleteCoursesByUKPRN(UKPRN);
-                if (messagesList == null)
-                    return new NotFoundObjectResult(UKPRN);
-
-                return new OkObjectResult(messagesList);
-
+                // Soft-delete (archive) instead of deleting so that changes show up in the CosmosDB Change Feed Listener.
+                // https://stackoverflow.com/questions/48491932/detecting-update-and-deletion-in-cosmos-db-using-cosmosdbtrigger-in-an-azure-fun/48492092#48492092
+                // This will keep the rest of the system from becoming inconsistent and causing errors.
+                var result = await coursesService.ArchiveCourseRunsByUKPRN(UKPRN);
+                result.EnsureSuccessStatusCode();
+                return new OkResult();
             }
             catch (Exception e)
             {
