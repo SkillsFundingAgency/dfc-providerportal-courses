@@ -60,7 +60,7 @@ namespace Dfc.ProviderPortal.Courses
             //serviceProvider.GetService<ISearchServiceWrapper>().Initialise().Wait();
 
 
-            serviceProvider.GetService<ICosmosDbHelper>().CreateStoredProcedures().Wait();
+            serviceProvider.GetService<ICosmosDbHelper>().DeployStoredProcedures().Wait();
         }
     }
 }
