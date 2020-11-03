@@ -274,56 +274,6 @@ namespace Dfc.ProviderPortal.Courses.Helpers
             return response.Response.updated;
         }
 
-        public async Task CreateStoredProcedures()
-        {
-            string scriptFileName = @"Data/UpdateRecordStatuses.js";
-            string ArchiveCoursesSPName = @"Data/ArchiveCoursesExceptBulkUploadReadytoGoLive.js";
-            string StoredProcedureName = Path.GetFileNameWithoutExtension(scriptFileName);
-            string ArchiveCoursesStoredProcedureName = Path.GetFileNameWithoutExtension(ArchiveCoursesSPName);
-
-            await UpdateRecordStatuses(GetClient(), _settings.DatabaseId, StoredProcedureName, scriptFileName);
-
-            await ArchiveCoursesExceptBulkUploadReadytoGoLive(GetClient(), _settings.DatabaseId, ArchiveCoursesStoredProcedureName, ArchiveCoursesSPName);
-        }
-
-        public async Task UpdateRecordStatuses(DocumentClient client, string collectionId, string procedureName, string procedurePath)
-        {
-            Throw.IfNull(client, nameof(client));
-            Throw.IfNullOrWhiteSpace(collectionId, nameof(collectionId));
-
-            string StoredProcedureName = Path.GetFileNameWithoutExtension(procedurePath);
-
-            var collectionLink = string.Join(@",", UriFactory.CreateDocumentCollectionUri(_settings.DatabaseId, "courses") + "/sprocs/");
-
-            StoredProcedure isStoredProcedureExist = client.CreateStoredProcedureQuery(collectionLink)
-                                   .Where(sp => sp.Id == StoredProcedureName)
-                                   .AsEnumerable()
-                                   .FirstOrDefault();
-            try
-            {
-                if (isStoredProcedureExist == null)
-                {
-                    string sProcresult;
-                    Assembly assembly = this.GetType().Assembly;
-                    var resourceStream = assembly.GetManifestResourceStream(assembly.GetName().Name + "." + "Data.StoredProcedures" + ".UpdateRecordStatuses.js");
-                    using (var reader = new StreamReader(resourceStream, Encoding.UTF8))
-                    {
-                        sProcresult = await reader.ReadToEndAsync();
-                    }
-
-                    StoredProcedure sproc = await client.CreateStoredProcedureAsync(collectionLink, new StoredProcedure
-                    {
-                        Id = StoredProcedureName,
-                        Body = sProcresult
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
         public async Task<int> ArchiveCoursesExceptBulkUploadReadytoGoLive(DocumentClient client, string collectionId, string procedureName, int UKPRN, int statusToBeChangedTo, int partitionKey)
         {
             RequestOptions requestOptions = new RequestOptions { PartitionKey = new PartitionKey(partitionKey), EnableScriptLogging = true };
@@ -333,35 +283,54 @@ namespace Dfc.ProviderPortal.Courses.Helpers
             return response.Response.updated;
         }
 
-        public async Task ArchiveCoursesExceptBulkUploadReadytoGoLive(DocumentClient client, string collectionId, string procedureName, string procedurePath)
+        public async Task DeployStoredProcedures()
         {
-            Throw.IfNull(client, nameof(client));
-            Throw.IfNullOrWhiteSpace(collectionId, nameof(collectionId));
-
-            string StoredProcedureName = Path.GetFileNameWithoutExtension(procedurePath);
-
-            var collectionLink = string.Join(@",", UriFactory.CreateDocumentCollectionUri(_settings.DatabaseId, "courses") + "/sprocs/");
-
-            StoredProcedure isStoredProcedureExist = client.CreateStoredProcedureQuery(collectionLink)
-                                   .Where(sp => sp.Id == StoredProcedureName)
-                                   .AsEnumerable()
-                                   .FirstOrDefault();
-
-            if (isStoredProcedureExist == null)
+            using (var client = GetClient())
             {
-                string sProcresult;
-                Assembly assembly = this.GetType().Assembly;
-                var resourceStream = assembly.GetManifestResourceStream(assembly.GetName().Name + "." + "Data.StoredProcedures" + ".ArchiveCoursesExceptBulkUploadReadytoGoLive.js");
-                using (var reader = new StreamReader(resourceStream, Encoding.UTF8))
-                {
-                    sProcresult = await reader.ReadToEndAsync();
-                }
+                await DeployStoredProcedureToCollection("courses", "UpdateRecordStatuses");
+                await DeployStoredProcedureToCollection("courses", "ArchiveCoursesExceptBulkUploadReadytoGoLive");
 
-                StoredProcedure sproc = await client.CreateStoredProcedureAsync(collectionLink, new StoredProcedure
+                async Task DeployStoredProcedureToCollection(string collection, string storedProcedureName)
                 {
-                    Id = StoredProcedureName,
-                    Body = sProcresult
-                });
+                    var scriptFilePath = $"Dfc.ProviderPortal.Courses.Data.StoredProcedures.{storedProcedureName}.js";
+
+                    using (var stream = typeof(CosmosDbHelper).Assembly.GetManifestResourceStream(scriptFilePath))
+                    {
+                        if (stream == null)
+                        {
+                            throw new ArgumentException(
+                                $"Cannot find stored procedure '{scriptFilePath}'.",
+                                nameof(storedProcedureName));
+                        }
+
+                        string script;
+                        using (var reader = new StreamReader(stream))
+                        {
+                            script = reader.ReadToEnd();
+                        }
+
+                        var storedProcId = storedProcedureName;
+                        var collectionUri = UriFactory.CreateDocumentCollectionUri(_settings.DatabaseId, collection);
+
+                        var storedProcedure = new StoredProcedure()
+                        {
+                            Body = script,
+                            Id = storedProcId
+                        };
+
+                        try
+                        {
+                            await client.CreateStoredProcedureAsync(collectionUri, storedProcedure);
+                        }
+                        catch (DocumentClientException dex) when (dex.StatusCode == System.Net.HttpStatusCode.Conflict)
+                        {
+                            // Already exists - replace it
+
+                            var sprocUri = UriFactory.CreateStoredProcedureUri(_settings.DatabaseId, collection, storedProcId);
+                            await client.ReplaceStoredProcedureAsync(sprocUri, storedProcedure);
+                        }
+                    }
+                }
             }
         }
     }
