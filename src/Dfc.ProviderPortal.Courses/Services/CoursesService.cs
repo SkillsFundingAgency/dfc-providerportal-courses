@@ -201,32 +201,6 @@ namespace Dfc.ProviderPortal.Courses.Services
             return persisted;
         }
 
-        public async Task<List<string>> DeleteCoursesByUKPRN(int UKPRN)
-        {
-            Throw.IfNull<int>(UKPRN, nameof(UKPRN));
-            Throw.IfLessThan(0, UKPRN, nameof(UKPRN));
-
-            List<string> results = null;
-            using (var client = _cosmosDbHelper.GetClient())
-            {
-                results = await _cosmosDbHelper.DeleteDocumentsByUKPRN(client, _settings.CoursesCollectionId, UKPRN);
-            }
-
-            return results;
-        }
-        public async Task<List<string>> DeleteBulkUploadCourses(int UKPRN)
-        {
-            Throw.IfNull<int>(UKPRN, nameof(UKPRN));
-            Throw.IfLessThan(0, UKPRN, nameof(UKPRN));
-
-            List<string> results = null;
-            using (var client = _cosmosDbHelper.GetClient())
-            {
-                results = await _cosmosDbHelper.DeleteBulkUploadCourses(client, _settings.CoursesCollectionId, UKPRN);
-            }
-
-            return results;
-        }
         public async Task<HttpResponseMessage> ArchiveProvidersLiveCourses(int UKPRN, int UIMode)
         {
             Throw.IfNull<int>(UKPRN, nameof(UKPRN));
@@ -335,6 +309,37 @@ namespace Dfc.ProviderPortal.Courses.Services
 
                             await _cosmosDbHelper.UpdateDocumentAsync(client, _settings.CoursesCollectionId, course);
                         }
+                    }
+
+                    return new HttpResponseMessage(HttpStatusCode.OK);
+                }
+            }
+            catch (Exception)
+            {
+                return new HttpResponseMessage(HttpStatusCode.ExpectationFailed);
+            }
+        }
+
+        public async Task<HttpResponseMessage> ArchivePendingBulkUploadCourseRunsByUKPRN(int UKPRN)
+        {
+            Throw.IfNull<int>(UKPRN, nameof(UKPRN));
+            Throw.IfLessThan(0, UKPRN, nameof(UKPRN));
+
+            try
+            {
+                using (var client = _cosmosDbHelper.GetClient())
+                {
+                    var coursesToUpdate =  await _cosmosDbHelper.GetDocumentsByUKPRN(client, _settings.CoursesCollectionId, UKPRN);
+
+                    foreach (var course in coursesToUpdate.Where(
+                        course =>
+                            ((int)course.CourseStatus & (int)RecordStatus.BulkUploadPending) > 0 ||
+                            ((int)course.CourseStatus & (int)RecordStatus.BulkUploadReadyToGoLive) > 0))
+                    {
+                        course.CourseRuns.Where(cr => cr.RecordStatus != RecordStatus.Archived).ToList()
+                            .ForEach(cr => cr.RecordStatus = RecordStatus.Archived);
+
+                        await _cosmosDbHelper.UpdateDocumentAsync(client, _settings.CoursesCollectionId, course);
                     }
 
                     return new HttpResponseMessage(HttpStatusCode.OK);
