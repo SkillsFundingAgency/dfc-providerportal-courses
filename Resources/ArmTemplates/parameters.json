@@ -79,6 +79,9 @@
     },
     "AuditCollectionRequestUnits": {
       "value": "__AuditCollectionRequestUnits__"
+    },
+    "providerPortalApplicationInsights": {
+      "value": "__providerportalApplicationInsights__"
     }
   }
 }
