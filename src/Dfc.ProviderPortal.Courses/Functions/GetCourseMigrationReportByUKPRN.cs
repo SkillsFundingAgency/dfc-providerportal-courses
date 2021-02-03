@@ -1,26 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Dfc.ProviderPortal.Courses.Interfaces;
-using Dfc.ProviderPortal.Courses.Models;
-using Dfc.ProviderPortal.Packages.AzureFunctions.DependencyInjection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Extensions.Logging;
 
 namespace Dfc.ProviderPortal.Courses.Functions
 {
 
-    public static class GetCourseMigrationReportByUKPRN
+    public class GetCourseMigrationReportByUKPRN
     {
+        private readonly ICourseMigrationReportService _courseMigrationReportService;
+
+        public GetCourseMigrationReportByUKPRN(ICourseMigrationReportService courseMigrationReportService)
+        {
+            _courseMigrationReportService = courseMigrationReportService;
+        }
+
         [FunctionName("GetCourseMigrationReportByUKPRN")]
-        public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
-            ILogger log,
-            [Inject] ICourseMigrationReportService courseMigrationReportService)
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req)
         {
             string fromQuery = req.Query["UKPRN"];
             if (!int.TryParse(fromQuery, out int UKPRN))
@@ -28,7 +27,7 @@ namespace Dfc.ProviderPortal.Courses.Functions
 
             try
             {
-                var result = await courseMigrationReportService.GetMigrationReport(UKPRN);
+                var result = await _courseMigrationReportService.GetMigrationReport(UKPRN);
                 return new OkObjectResult(result);
 
             }

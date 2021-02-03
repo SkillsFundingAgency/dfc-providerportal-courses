@@ -1,25 +1,25 @@
 using System;
-using System.IO;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Dfc.ProviderPortal.Courses.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Dfc.ProviderPortal.Packages.AzureFunctions.DependencyInjection;
-using Dfc.ProviderPortal.Courses.Interfaces;
-using System.Collections.Generic;
-using Dfc.ProviderPortal.Courses.Models;
 
 namespace Dfc.ProviderPortal.Courses.Functions
 {
-    public static class ArchiveProvidersLiveCourses
+    public class ArchiveProvidersLiveCourses
     {
+        private readonly ICourseService _coursesService;
+
+        public ArchiveProvidersLiveCourses(ICourseService coursesService)
+        {
+            _coursesService = coursesService;
+        }
+
         [FunctionName("ArchiveProvidersLiveCourses")]
-        public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
-                                                    ILogger log,
-                                                    [Inject] ICourseService coursesService)
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req)
         {
             string qryUKPRN = req.Query["UKPRN"];
             string qryUIMode = req.Query["Mode"];
@@ -41,7 +41,7 @@ namespace Dfc.ProviderPortal.Courses.Functions
 
             try
             {
-                var returnCode = await coursesService.ArchiveProvidersLiveCourses(UKPRN, UIMode);
+                var returnCode = await _coursesService.ArchiveProvidersLiveCourses(UKPRN, UIMode);
 
                 return new OkObjectResult(persisted);
 

@@ -3,20 +3,23 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Dfc.ProviderPortal.Courses.Interfaces;
 using Dfc.ProviderPortal.Courses.Models;
-using Dfc.ProviderPortal.Packages.AzureFunctions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Extensions.Logging;
 
 namespace Dfc.ProviderPortal.Courses.Functions
 {
-    public static class ArchiveCoursesExceptBulkUploadReadytoGoLive
+    public class ArchiveCoursesExceptBulkUploadReadytoGoLive
     {
+        private readonly ICourseService _coursesService;
+
+        public ArchiveCoursesExceptBulkUploadReadytoGoLive(ICourseService coursesService)
+        {
+            _coursesService = coursesService;
+        }
+
         [FunctionName("ArchiveCoursesExceptBulkUploadReadytoGoLive")]
-        public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequestMessage req,
-                                                ILogger log,
-                                                [Inject] ICourseService coursesService)
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequestMessage req)
         {
             var qryUKPRN = req.RequestUri.ParseQueryString()["UKPRN"]?.ToString()
                                ?? (await (dynamic)req.Content.ReadAsAsync<object>())?.UKPRN;
@@ -54,7 +57,7 @@ namespace Dfc.ProviderPortal.Courses.Functions
 
             try
             {
-                var returnCode = await coursesService.ArchiveCoursesExceptBulkUploadReadytoGoLive(UKPRN, StatusToBeChangedTo);
+                var returnCode = await _coursesService.ArchiveCoursesExceptBulkUploadReadytoGoLive(UKPRN, StatusToBeChangedTo);
 
                 return new OkObjectResult(returnCode);
             }

@@ -1,26 +1,28 @@
 
 using System;
 using System.Threading.Tasks;
+//using Newtonsoft.Json;
+using Dfc.ProviderPortal.Courses.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Extensions.Logging;
-//using Newtonsoft.Json;
-using Dfc.ProviderPortal.Packages.AzureFunctions.DependencyInjection;
-using Dfc.ProviderPortal.Courses.Interfaces;
-using Dfc.ProviderPortal.Courses.Models;
 
 
 namespace Dfc.ProviderPortal.Courses.Functions
 {
-    public static class CourseDetail
+    public class CourseDetail
     {
+        private readonly ICourseService _coursesService;
+
+        public CourseDetail(ICourseService coursesService)
+        {
+            _coursesService = coursesService;
+        }
+
         [FunctionName("CourseDetail")] //GetCourseSearchDataByCourseAndRunIds")]
-        public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
-            ILogger log,
-            [Inject] ICourseService coursesService)
+        public async Task<IActionResult> Run(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req)
         {
             string qryCourseId = req.Query["CourseId"];
             string qryRunId = req.Query["RunId"];
@@ -35,7 +37,7 @@ namespace Dfc.ProviderPortal.Courses.Functions
             if (!Guid.TryParse(qryRunId, out Guid runId))
                 return new BadRequestObjectResult($"Invalid RunId value. Expected a non-empty valid {nameof(Guid)}");
 
-            var persisted = await coursesService.GetCourseSearchDataById(courseId, runId);
+            var persisted = await _coursesService.GetCourseSearchDataById(courseId, runId);
 
             if (persisted == null)
                 return new NotFoundResult();

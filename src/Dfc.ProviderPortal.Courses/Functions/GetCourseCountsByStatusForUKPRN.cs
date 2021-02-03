@@ -1,27 +1,29 @@
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Dfc.ProviderPortal.Courses.Interfaces;
+using Dfc.ProviderPortal.Courses.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Dfc.ProviderPortal.Courses.Interfaces;
-using Dfc.ProviderPortal.Packages.AzureFunctions.DependencyInjection;
-using Dfc.ProviderPortal.Courses.Models;
 
 
 namespace Dfc.ProviderPortal.Courses.Functions
 {
-    public static class GetCourseCountsByStatusForUKPRN
+    public class GetCourseCountsByStatusForUKPRN
     {
+        private readonly ICourseService _coursesService;
+
+        public GetCourseCountsByStatusForUKPRN(ICourseService coursesService)
+        {
+            _coursesService = coursesService;
+        }
+
         [FunctionName("GetCourseCountsByStatusForUKPRN")]
-        public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
-                                                    ILogger log,
-                                                    [Inject] ICourseService coursesService)
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req)
         {
             string fromQuery = req.Query["UKPRN"];
             List<Course> persisted = null;
@@ -33,7 +35,7 @@ namespace Dfc.ProviderPortal.Courses.Functions
                 return new BadRequestObjectResult($"Invalid UKPRN value, expected a valid integer");
 
             try {
-                persisted = (List<Course>) await coursesService.GetCoursesByUKPRN(UKPRN);
+                persisted = (List<Course>) await _coursesService.GetCoursesByUKPRN(UKPRN);
                 if (persisted == null)
                     return new NotFoundObjectResult(UKPRN);
 

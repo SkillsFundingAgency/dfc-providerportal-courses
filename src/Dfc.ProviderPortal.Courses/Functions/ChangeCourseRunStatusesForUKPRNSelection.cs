@@ -1,25 +1,25 @@
-﻿using Dfc.ProviderPortal.Courses.Interfaces;
+﻿using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Dfc.ProviderPortal.Courses.Interfaces;
 using Dfc.ProviderPortal.Courses.Models;
-using Dfc.ProviderPortal.Packages.AzureFunctions.DependencyInjection;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Dfc.ProviderPortal.Courses.Functions
 {
-    public static class ChangeCourseRunStatusesForUKPRNSelection
+    public class ChangeCourseRunStatusesForUKPRNSelection
     {
+        private readonly ICourseService _coursesService;
+
+        public ChangeCourseRunStatusesForUKPRNSelection(ICourseService coursesService)
+        {
+            _coursesService = coursesService;
+        }
+
         [FunctionName("ChangeCourseRunStatusesForUKPRNSelection")]
-        public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequestMessage req,
-                                            ILogger log,
-                                            [Inject] ICourseService coursesService)
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequestMessage req)
         {
             var qryUKPRN = req.RequestUri.ParseQueryString()["UKPRN"]?.ToString()
                                ?? (await (dynamic)req.Content.ReadAsAsync<object>())?.UKPRN;
@@ -74,7 +74,7 @@ namespace Dfc.ProviderPortal.Courses.Functions
 
             try
             {
-                var returnCode = await coursesService.ChangeCourseRunStatusesForUKPRNSelection(UKPRN, CurrentStatus, StatusToBeChangedTo);
+                var returnCode = await _coursesService.ChangeCourseRunStatusesForUKPRNSelection(UKPRN, CurrentStatus, StatusToBeChangedTo);
 
                 return new OkObjectResult(returnCode);
             }

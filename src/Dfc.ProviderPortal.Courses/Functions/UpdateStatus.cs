@@ -1,26 +1,26 @@
 using System;
-using System.IO;
 using System.Threading.Tasks;
+using Dfc.ProviderPortal.Courses.Interfaces;
+using Dfc.ProviderPortal.Courses.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Dfc.ProviderPortal.Packages.AzureFunctions.DependencyInjection;
-using Dfc.ProviderPortal.Courses.Interfaces;
-using System.Net.Http;
-using Dfc.ProviderPortal.Courses.Models;
 
 namespace Dfc.ProviderPortal.Courses.Functions
 {
-    public static class UpdateStatus
+    public class UpdateStatus
     {
+        private readonly ICourseService _coursesService;
+
+        public UpdateStatus(ICourseService coursesService)
+        {
+            _coursesService = coursesService;
+        }
+
         [FunctionName("UpdateStatus")]
-        public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
-            ILogger log,
-            [Inject] ICourseService coursesService)
+        public async Task<IActionResult> Run(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req)
         {
             string qryCourseId = req.Query["CourseId"];
             string qryCourseRunId = req.Query["CourseRunId"];
@@ -49,7 +49,7 @@ namespace Dfc.ProviderPortal.Courses.Functions
 
             try
             {
-                var updatedCourse = await coursesService.UpdateStatus(courseId, courseRunId, status);
+                var updatedCourse = await _coursesService.UpdateStatus(courseId, courseRunId, status);
                 return new OkObjectResult(StatusCodes.Status204NoContent);
 
             }
