@@ -1,26 +1,28 @@
-﻿using Dfc.ProviderPortal.Courses.Interfaces;
-using Dfc.ProviderPortal.Packages.AzureFunctions.DependencyInjection;
+﻿using System;
+using System.Threading.Tasks;
+using Dfc.ProviderPortal.Courses.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Dfc.ProviderPortal.Courses.Functions
 {
-    public static class GetTotalLiveCourses
+    public class GetTotalLiveCourses
     {
+        private readonly ICourseService _courseService;
+
+        public GetTotalLiveCourses(ICourseService courseService)
+        {
+            _courseService = courseService;
+        }
+
         [FunctionName("GetTotalLiveCourses")]
-        public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
-            ILogger log,
-            [Inject] ICourseService courseService)
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req)
         {
             try
             {
-                var allCourses = await courseService.GetTotalLiveCourses();
+                var allCourses = await _courseService.GetTotalLiveCourses();
                 return new OkObjectResult(allCourses);
 
             }

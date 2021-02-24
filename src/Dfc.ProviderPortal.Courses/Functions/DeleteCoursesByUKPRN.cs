@@ -12,12 +12,19 @@ namespace Dfc.ProviderPortal.Courses.Functions
 {
     public class DeleteCoursesByUKPRN
     {
-        [FunctionName("DeleteCoursesByUKPRN")]
-        public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequestMessage req,
-                                            ILogger log,
-                                            [Inject] ICourseService coursesService)
+        private readonly ICourseService _coursesService;
+        private readonly ILogger _logger;
+
+        public DeleteCoursesByUKPRN(ICourseService coursesService, ILogger<DeleteCoursesByUKPRN> logger)
         {
-            log.LogInformation($"DeleteCoursesByUKPRN starting");
+            _coursesService = coursesService;
+            _logger = logger;
+        }
+        
+        [FunctionName("DeleteCoursesByUKPRN")]
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequestMessage req)
+        {
+            _logger.LogInformation($"DeleteCoursesByUKPRN starting");
 
             string strUKPRN = req.RequestUri.ParseQueryString()["UKPRN"]?.ToString()
                                 ?? (await (dynamic)req.Content.ReadAsAsync<object>())?.UKPRN;
@@ -33,13 +40,13 @@ namespace Dfc.ProviderPortal.Courses.Functions
                 // Soft-delete (archive) instead of deleting so that changes show up in the CosmosDB Change Feed Listener.
                 // https://stackoverflow.com/questions/48491932/detecting-update-and-deletion-in-cosmos-db-using-cosmosdbtrigger-in-an-azure-fun/48492092#48492092
                 // This will keep the rest of the system from becoming inconsistent and causing errors.
-                var result = await coursesService.ArchiveCourseRunsByUKPRN(UKPRN);
+                var result = await _coursesService.ArchiveCourseRunsByUKPRN(UKPRN);
                 result.EnsureSuccessStatusCode();
                 return new OkResult();
             }
             catch (Exception e)
             {
-                log.LogError("call to coursesService.ArchiveCourseRunsByUKPRN failed", e);
+                _logger.LogError("call to coursesService.ArchiveCourseRunsByUKPRN failed", e);
                 return new InternalServerErrorObjectResult(e);
             }
         }

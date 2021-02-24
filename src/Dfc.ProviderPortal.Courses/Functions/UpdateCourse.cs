@@ -1,36 +1,35 @@
 
 using System;
-using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Dfc.ProviderPortal.Courses.Interfaces;
+using Dfc.ProviderPortal.Courses.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Dfc.ProviderPortal.Courses.Interfaces;
-using Dfc.ProviderPortal.Packages.AzureFunctions.DependencyInjection;
-using Dfc.ProviderPortal.Courses.Models;
-using Dfc.ProviderPortal.Courses.Helpers;
 
 
 namespace Dfc.ProviderPortal.Courses.Functions
 {
-    public static class UpdateCourse
+    public class UpdateCourse
     {
+        private readonly ICourseService _coursesService;
+
+        public UpdateCourse(ICourseService coursesService)
+        {
+            _coursesService = coursesService;
+        }
+
         [FunctionName("UpdateCourse")]
-        public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequestMessage req,
-            ILogger log,
-            [Inject] ICourseService coursesService)
+        public async Task<IActionResult> Run(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequestMessage req)
         {
 
             Course course = await req.Content.ReadAsAsync<Course>();
 
             try
             {
-                var updatedCourse = (Course)await coursesService.Update(course);
+                var updatedCourse = (Course)await _coursesService.Update(course);
                 return new OkObjectResult(updatedCourse);
 
             } catch (Exception e) {
