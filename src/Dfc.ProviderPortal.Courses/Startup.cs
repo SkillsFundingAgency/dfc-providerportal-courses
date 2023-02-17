@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
@@ -19,12 +20,9 @@ namespace Dfc.ProviderPortal.Courses
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services
-                .AddMvcCore()
-                .SetCompatibilityVersion(CompatibilityVersion.Latest)
-                .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver())
-                .AddApiExplorer();
-
+            services.AddControllers()
+                .AddNewtonsoftJson(options => {
+                    options.SerializerSettings.ContractResolver = new DefaultContractResolver();});
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Course Directory Course API", Version = "v1" });
@@ -32,7 +30,7 @@ namespace Dfc.ProviderPortal.Courses
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
             app.UseSwagger();
 
