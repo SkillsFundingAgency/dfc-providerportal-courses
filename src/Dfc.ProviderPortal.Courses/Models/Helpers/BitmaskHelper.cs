@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Dfc.ProviderPortal.Courses.Models.Helpers
+﻿namespace Dfc.ProviderPortal.Courses.Models.Helpers
 {
     public class BitmaskHelper
     {

@@ -1,6 +1,6 @@
-﻿using Dfc.ProviderPortal.Courses.Helpers;
+﻿using System;
+using Dfc.ProviderPortal.Courses.Helpers;
 using Newtonsoft.Json;
-using System;
 
 
 namespace Dfc.ProviderPortal.Courses.Models
@@ -10,6 +10,6 @@ namespace Dfc.ProviderPortal.Courses.Models
     {
         public Guid? id { get; set; }
         public int UnitedKingdomProviderReferenceNumber { get; set; }
-        public string ProviderName { get; set; }  
+        public string ProviderName { get; set; }
     }
 }

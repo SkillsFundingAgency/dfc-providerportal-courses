@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Dfc.ProviderPortal.Courses.Functions
 {
-    
+
     public static class UpdateCourseMigrationReport
     {
         [FunctionName("UpdateCourseMigrationReport")]
@@ -20,7 +20,7 @@ namespace Dfc.ProviderPortal.Courses.Functions
             [Inject] ICourseMigrationReportService courseMigrationReportService)
         {
             var courseMigrationReport = await req.Content.ReadAsAsync<CourseMigrationReport>();
-            
+
             try
             {
                 await courseMigrationReportService.AddMigrationReport(courseMigrationReport);

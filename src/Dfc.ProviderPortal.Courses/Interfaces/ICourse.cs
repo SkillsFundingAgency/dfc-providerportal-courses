@@ -1,6 +1,5 @@
 ﻿
 using System;
-using System.Text;
 using System.Collections.Generic;
 using Dfc.ProviderPortal.Courses.Models;
 
@@ -26,7 +25,7 @@ namespace Dfc.ProviderPortal.Courses.Interfaces
         string WhereNext { get; }
         bool AdultEducationBudget { get; }
         bool AdvancedLearnerLoan { get; }
-       
+
         RecordStatus CourseStatus { get; }
         DateTime CreatedDate { get; }
         string CreatedBy { get; }

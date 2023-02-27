@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using System.IO;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
@@ -10,9 +13,6 @@ using Microsoft.OpenApi.Models;
 using Microsoft.OpenApi.Writers;
 using Newtonsoft.Json.Linq;
 using Swashbuckle.AspNetCore.Swagger;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Dfc.ProviderPortal.Courses.Functions
 {

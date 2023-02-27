@@ -1,8 +1,4 @@
-﻿
-using System;
-
-
-namespace Dfc.ProviderPortal.Courses.Models
+﻿namespace Dfc.ProviderPortal.Courses.Models
 {
     public class FACSearchResultItem : AzureSearchCourse
     {

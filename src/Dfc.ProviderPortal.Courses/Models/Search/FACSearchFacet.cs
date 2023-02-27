@@ -1,7 +1,4 @@
-﻿
-using System;
-using System.Collections.Generic;
-using Dfc.ProviderPortal.Courses.Interfaces;
+﻿using Dfc.ProviderPortal.Courses.Interfaces;
 
 
 namespace Dfc.ProviderPortal.Courses.Models

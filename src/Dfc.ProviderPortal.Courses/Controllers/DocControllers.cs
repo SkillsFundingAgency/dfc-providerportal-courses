@@ -1,10 +1,10 @@
-﻿using Dfc.ProviderPortal.Courses.Functions;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using Dfc.ProviderPortal.Courses.Functions;
 using Dfc.ProviderPortal.Courses.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
 namespace Dfc.ProviderPortal.Courses.Controllers
 {
@@ -123,7 +123,7 @@ namespace Dfc.ProviderPortal.Courses.Controllers
         [ProducesResponseType(typeof(Course), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult GetCourseMigrationReportByUKPRN([Required]int UKPRN)
+        public IActionResult GetCourseMigrationReportByUKPRN([Required] int UKPRN)
         {
             return Ok();
         }
@@ -133,7 +133,7 @@ namespace Dfc.ProviderPortal.Courses.Controllers
         [ProducesResponseType(typeof(Course), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult ArchiveCourseRunsByUKPRN([Required]int UKPRN)
+        public IActionResult ArchiveCourseRunsByUKPRN([Required] int UKPRN)
         {
             return Ok();
         }
@@ -152,7 +152,7 @@ namespace Dfc.ProviderPortal.Courses.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(UpdateStatus), StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult UpdateStatus([Required]string CourseId, [Required]string CourseRunId, [Required]string Status)
+        public IActionResult UpdateStatus([Required] string CourseId, [Required] string CourseRunId, [Required] string Status)
         {
             return Ok();
         }
@@ -162,7 +162,7 @@ namespace Dfc.ProviderPortal.Courses.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult GetCourseCountsByStatusForUKPRN([Required]int UKPRN)
+        public IActionResult GetCourseCountsByStatusForUKPRN([Required] int UKPRN)
         {
             return Ok();
         }
@@ -172,7 +172,7 @@ namespace Dfc.ProviderPortal.Courses.Controllers
         [ProducesResponseType(typeof(ChangeCourseRunStatusesForUKPRNSelection), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult ChangeCourseRunStatusesForUKPRNSelection([Required]string UKPRN, [Required]string CurrentStatus, [Required]string StatusToBeChangedTo)
+        public IActionResult ChangeCourseRunStatusesForUKPRNSelection([Required] string UKPRN, [Required] string CurrentStatus, [Required] string StatusToBeChangedTo)
         {
             return Ok();
         }
@@ -191,7 +191,7 @@ namespace Dfc.ProviderPortal.Courses.Controllers
         [ProducesResponseType(typeof(ArchiveCoursesExceptBulkUploadReadytoGoLive), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult ArchiveCoursesExceptBulkUploadReadytoGoLive([Required]string UKPRN, [Required]string StatusToBeChangedTo)
+        public IActionResult ArchiveCoursesExceptBulkUploadReadytoGoLive([Required] string UKPRN, [Required] string StatusToBeChangedTo)
         {
             return Ok();
         }
