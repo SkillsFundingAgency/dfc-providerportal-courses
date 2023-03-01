@@ -445,6 +445,9 @@
           },
           "offerThroughput": {
               "value": "[dfc.getCollectionRUs(parameters('CourseDirectoryDefaultRequestsUnits'), parameters('CourseMigrationReportCollectionRequestUnits'))]"
+          },
+          "partitionKey": {
+            "value": "/_partitionKey"
           }
         }
       }
