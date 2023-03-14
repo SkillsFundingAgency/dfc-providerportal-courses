@@ -26,7 +26,6 @@ namespace Dfc.ProviderPortal.Courses.Models
     public enum ProviderType
     {
         Undefined = 0,
-        Fe = 1,
-        Apprenticeship = 2
+        Fe = 1
     }
 }
