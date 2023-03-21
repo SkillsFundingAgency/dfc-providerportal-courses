@@ -1,8 +1,6 @@
 ﻿
 using System;
-using System.Collections.Generic;
 using Microsoft.Azure.Documents;
-using Dfc.ProviderPortal.Courses.Models;
 
 
 namespace Dfc.ProviderPortal.Courses.Interfaces

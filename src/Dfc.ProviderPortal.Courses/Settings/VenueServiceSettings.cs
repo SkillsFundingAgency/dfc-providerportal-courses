@@ -1,6 +1,4 @@
-﻿
-using System;
-using Dfc.ProviderPortal.Courses.Interfaces;
+﻿using Dfc.ProviderPortal.Courses.Interfaces;
 
 
 namespace Dfc.ProviderPortal.Courses.Settings

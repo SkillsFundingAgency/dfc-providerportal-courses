@@ -59,13 +59,13 @@ namespace Dfc.ProviderPortal.Courses.Helpers
             try
             {
                 _log.LogInformation($"Removing course index decuments for PRN {UKPRN}");
-                SearchParameters parms = new SearchParameters()
+                SearchParameters parms = new()
                 {
-                        Select = new[] { "id" },
-                        Filter = $"UKPRN eq '{UKPRN}'",
-                        SearchMode = SearchMode.All,
-                        QueryType = QueryType.Full,
-                        Top = 99999
+                    Select = new[] { "id" },
+                    Filter = $"UKPRN eq '{UKPRN}'",
+                    SearchMode = SearchMode.All,
+                    QueryType = QueryType.Full,
+                    Top = 99999
                 };
                 IEnumerable<dynamic> docs = _adminIndex.Documents
                                                       .Search<dynamic>("*", parms)
@@ -82,15 +82,19 @@ namespace Dfc.ProviderPortal.Courses.Helpers
                     return null; //docs;
                 }
 
-            } catch (IndexBatchException ex) {
+            }
+            catch (IndexBatchException ex)
+            {
                 IEnumerable<IndexingResult> failed = ex.IndexingResults.Where(r => !r.Succeeded);
                 _log.LogError(ex, string.Format("Failed to index some of the documents: {0}",
                                                 string.Join(", ", failed)));
                 _log.LogError(ex.ToString());
                 return null;
 
-            } catch (Exception e) {
-                throw e;
+            }
+            catch (Exception)
+            {
+                throw;
             }
 
             // Return empty list of failed IndexingResults
@@ -102,15 +106,16 @@ namespace Dfc.ProviderPortal.Courses.Helpers
             try
             {
                 IEnumerable<dynamic> docs;
-                do {
-                    _log.LogInformation($"Removing course index decuments updated before {deleteBefore.ToString()}");
-                    SearchParameters parms = new SearchParameters()
+                do
+                {
+                    _log.LogInformation($"Removing course index decuments updated before {deleteBefore}");
+                    SearchParameters parms = new()
                     {
-                            Select = new[] { "id" },
-                            Filter = $"UpdatedOn eq null or UpdatedOn lt {deleteBefore.ToString("yyyy-MM-ddTHH:mm:ssZ")}",
-                            SearchMode = SearchMode.All,
-                            QueryType = QueryType.Full,
-                            Top = 99999
+                        Select = new[] { "id" },
+                        Filter = $"UpdatedOn eq null or UpdatedOn lt {deleteBefore:yyyy-MM-ddTHH:mm:ssZ}",
+                        SearchMode = SearchMode.All,
+                        QueryType = QueryType.Full,
+                        Top = 99999
                     };
                     docs = _adminIndex.Documents
                                       .Search<dynamic>("*", parms)
@@ -129,15 +134,18 @@ namespace Dfc.ProviderPortal.Courses.Helpers
                 return null; //docs;
 
             }
-            catch (IndexBatchException ex) {
+            catch (IndexBatchException ex)
+            {
                 IEnumerable<IndexingResult> failed = ex.IndexingResults.Where(r => !r.Succeeded);
                 _log.LogError(ex, string.Format("Failed to index some of the documents: {0}",
                                                 string.Join(", ", failed)));
                 _log.LogError(ex.ToString());
                 return null;
 
-            } catch (Exception e) {
-                throw e;
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
 
@@ -150,7 +158,7 @@ namespace Dfc.ProviderPortal.Courses.Helpers
                 await _adminService.Indexes.DeleteAsync(indexName);
             }
 
-            var index = new Index()
+            var index = new Microsoft.Azure.Search.Models.Index()
             {
                 Name = indexName,
                 Fields = new List<Field>()

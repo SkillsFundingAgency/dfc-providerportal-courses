@@ -1,6 +1,6 @@
-﻿using Dfc.ProviderPortal.Courses.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Dfc.ProviderPortal.Courses.Models;
 
 namespace Dfc.ProviderPortal.Courses.Interfaces
 {

@@ -250,7 +250,7 @@
               },
               {
                 "name": "FUNCTIONS_EXTENSION_VERSION",
-                "value": "~3"
+                "value": "~4"
               },
               {
                 "name": "AzureWebJobsStorage",
@@ -445,6 +445,9 @@
           },
           "offerThroughput": {
               "value": "[dfc.getCollectionRUs(parameters('CourseDirectoryDefaultRequestsUnits'), parameters('CourseMigrationReportCollectionRequestUnits'))]"
+          },
+          "partitionKey": {
+            "value": "/_partitionKey"
           }
         }
       }

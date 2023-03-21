@@ -1,9 +1,4 @@
-﻿
-using System;
-using Dfc.ProviderPortal.Packages;
-
-
-namespace Dfc.ProviderPortal.Courses.Models
+﻿namespace Dfc.ProviderPortal.Courses.Models
 {
     public class SearchCriteriaStructure
     {

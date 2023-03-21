@@ -1,14 +1,13 @@
 ﻿
 using System;
-using System.Text;
 using System.Collections.Generic;
+using System.Linq;
 using Dfc.ProviderPortal.Courses.Interfaces;
 using Dfc.ProviderPortal.Courses.Models.Helpers;
-using System.Linq;
 
 namespace Dfc.ProviderPortal.Courses.Models
 {
-    public class Course : ICourse 
+    public class Course : ICourse
     {
         public Guid id { get; set; }
         public int? CourseId { get; set; }

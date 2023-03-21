@@ -1,4 +1,6 @@
-﻿using Dfc.ProviderPortal.Courses;
+﻿using System;
+using System.Net.Http;
+using Dfc.ProviderPortal.Courses;
 using Dfc.ProviderPortal.Courses.Helpers;
 using Dfc.ProviderPortal.Courses.Interfaces;
 using Dfc.ProviderPortal.Courses.Services;
@@ -9,8 +11,6 @@ using Microsoft.Azure.WebJobs.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using System;
-using System.Net.Http;
 
 [assembly: WebJobsStartup(typeof(WebJobsExtensionStartup), "Web Jobs Extension Startup")]
 
@@ -18,7 +18,7 @@ namespace Dfc.ProviderPortal.Courses
 {
     public class WebJobsExtensionStartup : IWebJobsStartup
     {
-       
+
         public void Configure(IWebJobsBuilder builder)
         {
             builder.AddDependencyInjection();

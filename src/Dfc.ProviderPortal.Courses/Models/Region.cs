@@ -1,8 +1,7 @@
 ﻿
 using System;
-using System.Linq;
 using System.Collections.Generic;
-using Dfc.ProviderPortal.Courses.Interfaces;
+using System.Linq;
 
 
 namespace Dfc.ProviderPortal.Courses.Models
