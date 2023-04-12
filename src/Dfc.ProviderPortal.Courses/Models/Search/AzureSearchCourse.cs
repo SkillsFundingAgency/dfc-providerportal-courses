@@ -1,9 +1,7 @@
 ﻿
 using System;
-using System.Text;
-using System.Collections.Generic;
-using Microsoft.Spatial;
 using Dfc.ProviderPortal.Courses.Interfaces;
+using Microsoft.Spatial;
 
 
 namespace Dfc.ProviderPortal.Courses.Models

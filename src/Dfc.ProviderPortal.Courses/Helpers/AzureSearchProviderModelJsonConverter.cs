@@ -1,9 +1,9 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Dfc.ProviderPortal.Courses.Helpers
 {
@@ -41,13 +41,13 @@ namespace Dfc.ProviderPortal.Courses.Helpers
             foreach (var pom in _propertyOverrideMappings)
             {
                 PropertyInfo targetProp = targetProps.FirstOrDefault(pi => pi.CanWrite && pi.Name == pom.Key);
-                if(null != targetProp)
+                if (null != targetProp)
                 {
                     var sourceProp = sourceProps.FirstOrDefault(p => p.Name == pom.Value);
-                    if(null != sourceProp)
+                    if (null != sourceProp)
                     {
                         var value = sourceProp.Value.ToObject(targetProp.PropertyType, serializer);
-                        if(null != value)
+                        if (null != value)
                         {
                             targetProp.SetValue(instance, value);
                         }

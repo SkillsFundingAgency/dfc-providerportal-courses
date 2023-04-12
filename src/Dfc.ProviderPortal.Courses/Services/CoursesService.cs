@@ -56,7 +56,8 @@ namespace Dfc.ProviderPortal.Courses.Services
 
         public async Task<IEnumerable<ICourse>> GetAllCourses(ILogger log)
         {
-            try {
+            try
+            {
                 // Get all course documents in the collection
                 string token = null;
                 List<Course> docs = new List<Course>();
@@ -65,7 +66,8 @@ namespace Dfc.ProviderPortal.Courses.Services
                 // Read documents in batches, using continuation token to make sure we get them all
                 using (DocumentClient client = _cosmosDbHelper.GetClient())
                 {
-                    do {
+                    do
+                    {
                         var feedResponse = await client.ReadDocumentFeedAsync(UriFactory.CreateDocumentCollectionUri("providerportal", _settings.CoursesCollectionId),
                             new FeedOptions { MaxItemCount = -1, RequestContinuation = token });
                         token = feedResponse.ResponseContinuation;
@@ -77,8 +79,10 @@ namespace Dfc.ProviderPortal.Courses.Services
                     } while (token != null);
                 }
                 return docs;
-            } catch (Exception ex) {
-                throw ex;
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
 
@@ -172,7 +176,8 @@ namespace Dfc.ProviderPortal.Courses.Services
         {
             Throw.IfNull(course, nameof(course));
 
-            try {
+            try
+            {
                 Course updated = null;
                 using (var client = _cosmosDbHelper.GetClient())
                 {
@@ -181,8 +186,10 @@ namespace Dfc.ProviderPortal.Courses.Services
                 }
                 return updated;
 
-            } catch (Exception ex) {
-                throw ex;
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
 
@@ -257,7 +264,9 @@ namespace Dfc.ProviderPortal.Courses.Services
 
                 return new HttpResponseMessage(HttpStatusCode.OK);
 
-            } catch (Exception) {
+            }
+            catch (Exception)
+            {
                 return new HttpResponseMessage(HttpStatusCode.ExpectationFailed);
             }
         }
@@ -297,9 +306,9 @@ namespace Dfc.ProviderPortal.Courses.Services
             {
                 using (var client = _cosmosDbHelper.GetClient())
                 {
-                    var coursesToUpdate =  await _cosmosDbHelper.GetDocumentsByUKPRN(client, _settings.CoursesCollectionId, UKPRN);
+                    var coursesToUpdate = await _cosmosDbHelper.GetDocumentsByUKPRN(client, _settings.CoursesCollectionId, UKPRN);
 
-                    foreach(var course in coursesToUpdate)
+                    foreach (var course in coursesToUpdate)
                     {
                         // Only Archive if not already archived
                         if (course.CourseRuns.Where(cr => cr.RecordStatus != RecordStatus.Archived).Any())
@@ -329,7 +338,7 @@ namespace Dfc.ProviderPortal.Courses.Services
             {
                 using (var client = _cosmosDbHelper.GetClient())
                 {
-                    var coursesToUpdate =  await _cosmosDbHelper.GetDocumentsByUKPRN(client, _settings.CoursesCollectionId, UKPRN);
+                    var coursesToUpdate = await _cosmosDbHelper.GetDocumentsByUKPRN(client, _settings.CoursesCollectionId, UKPRN);
 
                     foreach (var course in coursesToUpdate.Where(
                         course =>

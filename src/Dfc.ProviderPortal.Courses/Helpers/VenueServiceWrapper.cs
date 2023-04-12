@@ -1,15 +1,13 @@
 ﻿
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Dfc.ProviderPortal.Packages;
-using Dfc.ProviderPortal.Courses.Models;
-using Dfc.ProviderPortal.Courses.Settings;
 using Dfc.ProviderPortal.Courses.Interfaces;
+using Dfc.ProviderPortal.Courses.Models;
+using Dfc.ProviderPortal.Packages;
+using Newtonsoft.Json;
 
 
 namespace Dfc.ProviderPortal.Courses.Helpers
@@ -63,7 +61,7 @@ namespace Dfc.ProviderPortal.Courses.Helpers
             Task<string> taskJSON = taskResponse.Result.Content.ReadAsStringAsync();
             taskJSON.Wait();
             string json = taskJSON.Result;
-                
+
             // Return data as model objects
             if (!json.StartsWith("["))
                 json = "[" + json + "]";

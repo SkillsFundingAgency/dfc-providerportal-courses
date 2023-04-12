@@ -1,8 +1,4 @@
-﻿
-using System;
-
-
-namespace Dfc.ProviderPortal.Courses.Interfaces
+﻿namespace Dfc.ProviderPortal.Courses.Interfaces
 {
     public interface IProviderServiceSettings
     {

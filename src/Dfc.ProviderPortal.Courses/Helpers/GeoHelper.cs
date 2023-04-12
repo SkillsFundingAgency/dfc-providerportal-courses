@@ -1,7 +1,5 @@
 
 using System;
-using Microsoft.Azure.Search.Models;
-using Microsoft.Spatial;
 
 
 namespace Dfc.GeoCoordinate

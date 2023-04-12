@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Dfc.ProviderPortal.Courses.Interfaces;
 using Dfc.ProviderPortal.Courses.Models;
@@ -71,7 +69,7 @@ namespace Dfc.ProviderPortal.Courses.Services
             {
                 using (var client = _cosmosDbHelper.GetClient())
                 {
-                    var result =  await _cosmosDbHelper.GetDocumentsByUKPRN<CourseMigrationReport>(client,
+                    var result = await _cosmosDbHelper.GetDocumentsByUKPRN<CourseMigrationReport>(client,
                         _settings.CoursesMigrationReportCollectionId, UKPRN);
                     return result.FirstOrDefault();
                 }
