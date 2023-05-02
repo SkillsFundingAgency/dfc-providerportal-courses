@@ -203,10 +203,7 @@
     {
       "apiVersion": "2017-05-10",
       "name": "ppcourseAppService",
-      "type": "Microsoft.Resources/deployments",
-      "dependsOn": [
-        "ppcourseAppInsights"
-      ],
+      "type": "Microsoft.Resources/deployments",      
       "properties": {
         "mode": "Incremental",
         "templateLink": {
