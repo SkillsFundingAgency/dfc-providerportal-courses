@@ -32,42 +32,6 @@
         "description": "Connection string for the storage account to store function app files"
       }
     },
-    "cosmosDBfqdn": {
-      "type": "string",
-      "metadata": {
-        "description": "Cosmos DB account name in the format https://dfc-xxx-xxx-cdb.documents.azure.com/ for app settings"
-      }
-    },
-    "cosmosDBkey": {
-      "type": "securestring",
-      "metadata": {
-        "description": "Cosmos DB access key for app settings"
-      }
-    },
-    "cosmosDbAccount": {
-      "type": "string",
-      "metadata": {
-        "description": "Cosmos DB account name (used to create collections)"
-      }
-    },
-    "cosmosDBdatabase": {
-      "type": "string",
-      "metadata": {
-        "description": "Cosmos DB database name for app settings"
-      }
-    },
-    "cosmosDBcollection": {
-      "type": "string",
-      "metadata": {
-        "description": "Base Cosmos DB collection name for app settings"
-      }
-    },
-    "cosmosDBcollectionMigrationReport": {
-      "type": "string",
-      "metadata": {
-        "description": "Migration report Cosmos DB collection name for app settings"
-      }
-    },
     "venueApiUrl": {
       "type": "string",
       "metadata": {
@@ -265,26 +229,6 @@
                 "value": "dotnet"
               },
               {
-                "name": "CosmosDbSettings__EndpointUri",
-                "value": "[parameters('cosmosDBfqdn')]"
-              },
-              {
-                "name": "CosmosDbSettings__PrimaryKey",
-                "value": "[parameters('cosmosDBkey')]"
-              },
-              {
-                "name": "CosmosDbSettings__DatabaseId",
-                "value": "[parameters('cosmosDBdatabase')]"
-              },
-              {
-                "name": "CosmosDbCollectionSettings__CoursesCollectionId",
-                "value": "[parameters('cosmosDBcollection')]"
-              },
-              {
-                "name": "CosmosDbCollectionSettings__CoursesMigrationReportCollectionId",
-                "value": "[parameters('cosmosDBcollectionMigrationReport')]"
-              },
-              {
                 "name": "VenueServiceSettings__ApiUrl",
                 "value": "[parameters('venueApiUrl')]"
               },
@@ -349,20 +293,8 @@
                 "value": "10"
               },
               {
-                "name": "SearchServiceSettings__CoursesConnectionString",
-                "value": "[concat('AccountEndpoint=', parameters('cosmosDBfqdn'), ';AccountKey=', parameters('cosmosDBkey'), ';Database=', parameters('cosmosDBdatabase'), ';')]"
-              },
-              {
                 "name": "SearchServiceSettings__ThresholdVenueCount",
                 "value": "100"
-              },
-              {
-                "name": "CosmosDbCollectionSettings__AuditCollectionId",
-                "value": "audit"
-              },
-              {
-                "name": "CosmosDbSettings__RecentCount",
-                "value": "3"
               },
               {
                 "name": "SearchServiceSettings__RegionSearchBoost",
@@ -371,10 +303,6 @@
               {
                 "name": "SearchServiceSettings__SubRegionSearchBoost",
                 "value": "4.5"
-              },
-              {
-                "name": "CosmosDbCollectionSettings__DfcReportCollectionId",
-                "value": "DfcReport"
               },
               {
                 "name": "ReferenceDataServiceSettings__ApiKey",
@@ -388,96 +316,6 @@
           },
           "deployStagingSlot": {
             "value": true
-          }
-        }
-      }
-    },
-    {
-      "apiVersion": "2017-05-10",
-      "name": "cosmosCollectionAudit",
-      "type": "Microsoft.Resources/deployments",
-      "resourceGroup": "[parameters('appServicePlanResourceGroup')]",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-            "uri": "[concat(variables('deploymentUrlBase'),'CosmosDb/cosmos-collection.json')]",
-            "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "accountName": {
-              "value": "[parameters('cosmosDbAccount')]"
-          },
-          "databaseName": {
-              "value": "[parameters('cosmosDBdatabase')]"
-          },
-          "collectionName": {
-              "value": "audit"
-          },
-          "offerThroughput": {
-              "value": "[dfc.getCollectionRUs(parameters('CourseDirectoryDefaultRequestsUnits'), parameters('AuditCollectionRequestUnits'))]"
-          },
-          "partitionKey": {
-            "value": "/Collection"
-          }
-        }
-      }
-    },
-    {
-      "apiVersion": "2017-05-10",
-      "name": "cosmosCollectionCourseMigrationReports",
-      "type": "Microsoft.Resources/deployments",
-      "resourceGroup": "[parameters('appServicePlanResourceGroup')]",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-            "uri": "[concat(variables('deploymentUrlBase'),'CosmosDb/cosmos-collection.json')]",
-            "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "accountName": {
-              "value": "[parameters('cosmosDbAccount')]"
-          },
-          "databaseName": {
-              "value": "[parameters('cosmosDBdatabase')]"
-          },
-          "collectionName": {
-              "value": "courseMigrationReports"
-          },
-          "offerThroughput": {
-              "value": "[dfc.getCollectionRUs(parameters('CourseDirectoryDefaultRequestsUnits'), parameters('CourseMigrationReportCollectionRequestUnits'))]"
-          },
-          "partitionKey": {
-            "value": "/_partitionKey"
-          }
-        }
-      }
-    },
-    {
-      "apiVersion": "2017-05-10",
-      "name": "cosmosCollectionCourses",
-      "type": "Microsoft.Resources/deployments",
-      "resourceGroup": "[parameters('appServicePlanResourceGroup')]",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-            "uri": "[concat(variables('deploymentUrlBase'),'CosmosDb/cosmos-collection.json')]",
-            "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "accountName": {
-              "value": "[parameters('cosmosDbAccount')]"
-          },
-          "databaseName": {
-              "value": "[parameters('cosmosDBdatabase')]"
-          },
-          "collectionName": {
-              "value": "courses"
-          },
-          "offerThroughput": {
-              "value": "[dfc.getCollectionRUs(parameters('CourseDirectoryDefaultRequestsUnits'), parameters('CourseCollectionRequestUnits'))]"
-          },
-          "partitionKey": {
-            "value": "/ProviderUKPRN"
           }
         }
       }
